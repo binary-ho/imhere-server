@@ -42,7 +42,7 @@ public class Lecture {
     private String className;
 
     @Enumerated(EnumType.STRING)
-    private LectureState state;
+    private LectureState lectureState;
 
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL)
     private List<LectureStudent> lectureStudents = new ArrayList<>();
