@@ -12,6 +12,7 @@ import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.domain.member.Role;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,6 +30,7 @@ public class LectureService {
         this.memberRepository = memberRepository;
     }
 
+    @Transactional
     public void createLecture(LectureCreateRequest request) {
         Member lecturer = memberRepository.findById(request.getLecturerId()).orElseThrow();
         if (!lecturer.hasRole(Role.LECTURER)) {
@@ -56,6 +58,7 @@ public class LectureService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
     public void changeLectureState(LectureStateChangeRequest lectureStateChangeRequest) {
         Lecture lecture = lectureRepository.findById(lectureStateChangeRequest.getLecturerId()).orElseThrow();
         lecture.setLectureState(lectureStateChangeRequest.getLectureState());

@@ -9,6 +9,7 @@ import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,15 +28,16 @@ public class EnrollmentService {
         this.enrollmentInfoRepository = enrollmentInfoRepository;
     }
 
+    @Transactional
     public void enrollStudents(EnrollRequest enrollRequest) {
         Lecture lecture = lectureRepository.findById(enrollRequest.getLectureId()).orElseThrow();
         List<Member> students = getStudentsByUnivId(enrollRequest.getUnivIds());
         students.forEach(student -> enrollStudent(lecture, student));
     }
 
-    private EnrollmentInfo enrollStudent(Lecture lecture, Member student) {
+    private void enrollStudent(Lecture lecture, Member student) {
         EnrollmentInfo enrollmentInfo = EnrollmentInfo.createEnrollmentInfo(lecture, student);
-        return enrollmentInfoRepository.save(enrollmentInfo);
+        enrollmentInfoRepository.save(enrollmentInfo);
     }
 
     private List<Member> getStudentsByUnivId(List<String> univIds) {
