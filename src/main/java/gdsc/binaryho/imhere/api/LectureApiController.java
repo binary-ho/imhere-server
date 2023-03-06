@@ -35,6 +35,13 @@ public class LectureApiController {
         return lectures.stream().map(LectureDto::createLectureDto).collect(Collectors.toList());
     }
 
+    @GetMapping("/api/v1/member/{id}/open-lectures")
+    public List<LectureDto> getStudentOpenLectures(@PathVariable("id") Long student_id) {
+        List<Lecture> lectures = lectureService.getStudentOpenLectures(student_id);
+        return lectures.stream().map(LectureDto::createLectureDto).collect(Collectors.toList());
+    }
+
+
     @GetMapping("/api/v1/lecturer/{id}/lectures")
     public List<LectureDto> getLectures(@PathVariable("id") Long lecturer_id) {
         List<Lecture> lectures = lectureRepository.findAllByMemberId(lecturer_id);

@@ -41,13 +41,17 @@ public class LectureService {
 
     public List<Lecture> getStudentLectures(Long studentId) {
         List<LectureStudent> lectureStudents = lectureStudentRepository.findAllByMemberId(studentId);
-        return lectureStudents.stream()
-            .map(LectureStudent::getLecture)
-            .filter(LectureService::isLectureOpen)
-            .collect(Collectors.toList());
+        return getLectures(lectureStudents);
     }
 
-    private static boolean isLectureOpen(Lecture lecture) {
-        return lecture.getLectureState() == LectureState.OPEN;
+    public List<Lecture> getStudentOpenLectures(Long studentId) {
+        List<LectureStudent> lectureStudents = lectureStudentRepository.findAllByMemberIdAndLecture_LectureState(studentId, LectureState.OPEN);
+        return getLectures(lectureStudents);
+    }
+
+    private List<Lecture> getLectures(List<LectureStudent> lectureStudents) {
+        return lectureStudents.stream()
+            .map(LectureStudent::getLecture)
+            .collect(Collectors.toList());
     }
 }
