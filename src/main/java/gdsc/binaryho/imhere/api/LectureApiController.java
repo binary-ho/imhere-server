@@ -1,13 +1,10 @@
 package gdsc.binaryho.imhere.api;
 
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
+import gdsc.binaryho.imhere.domain.lecture.LectureCreateRequest;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.service.LectureService;
-import java.net.http.HttpResponse;
 import java.util.List;
-import javax.validation.Valid;
-import lombok.Data;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,22 +32,11 @@ public class LectureApiController {
     @PostMapping("/api/v1/lecture/new")
     public ResponseEntity<String> createLecture(@RequestBody LectureCreateRequest request) {
         try {
-            lectureService.createLecture(request.getLecturerId(), request.getClassName());
+            lectureService.createLecture(request);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-
-    @Getter
-    private static class LectureCreateRequest {
-        private final Long lecturerId;
-        private final String className;
-
-        public LectureCreateRequest(Long lecturerId, String className) {
-            this.lecturerId = lecturerId;
-            this.className = className;
         }
     }
 }

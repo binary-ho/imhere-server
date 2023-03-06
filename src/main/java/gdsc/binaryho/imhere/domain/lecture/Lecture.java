@@ -40,7 +40,7 @@ public class Lecture {
     private Member member;
 
     private String lecturerName;
-    private String className;
+    private String lectureName;
 
     @Enumerated(EnumType.STRING)
     private LectureState lectureState;
@@ -53,7 +53,7 @@ public class Lecture {
         lecture.setId(lecture.id);
         lecture.setMember(lecturer);
         lecture.setLecturerName(lecturer.getName());
-        lecture.setClassName(className);
+        lecture.setLectureName(className);
         lecture.setLectureState(LectureState.CLOSE);
         return lecture;
     }
