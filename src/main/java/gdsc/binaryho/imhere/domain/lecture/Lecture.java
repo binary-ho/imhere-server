@@ -39,8 +39,8 @@ public class Lecture {
     @JoinColumn(name = "lecturer_id")
     private Member member;
 
-    private String lecturerName;
     private String lectureName;
+    private String lecturerName;
 
     @Enumerated(EnumType.STRING)
     private LectureState lectureState;
@@ -48,12 +48,12 @@ public class Lecture {
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL)
     private List<LectureStudent> lectureStudents = new ArrayList<>();
 
-    public static Lecture createLecture(Member lecturer, String className) {
+    public static Lecture createLecture(Member lecturer, String lectureName) {
         Lecture lecture = new Lecture();
         lecture.setId(lecture.id);
         lecture.setMember(lecturer);
+        lecture.setLectureName(lectureName);
         lecture.setLecturerName(lecturer.getName());
-        lecture.setLectureName(className);
         lecture.setLectureState(LectureState.CLOSE);
         return lecture;
     }
