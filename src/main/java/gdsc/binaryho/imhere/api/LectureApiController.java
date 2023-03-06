@@ -4,7 +4,7 @@ import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureCreateRequest;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
-import gdsc.binaryho.imhere.domain.roster.LectureStudent;
+import gdsc.binaryho.imhere.domain.lecturestudent.LectureStudent;
 import gdsc.binaryho.imhere.service.LectureService;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +29,16 @@ public class LectureApiController {
         this.lectureService = lectureService;
     }
 
+    @GetMapping("/api/v1/member/{id}/lectures")
+    public List<LectureDto> getStudentLectures(@PathVariable("id") Long student_id) {
+        List<Lecture> lectures = lectureService.getStudentLectures(student_id);
+        return lectures.stream().map(LectureDto::createLectureDto).collect(Collectors.toList());
+    }
+
     @GetMapping("/api/v1/lecturer/{id}/lectures")
-    public List<LectureDto> getLectures(@PathVariable("id") Long id) {
-        List<Lecture> lectures = lectureRepository.findAllByMemberId(id);
-        return lectures.stream().map(LectureDto::createLectureDtoForLecturer).collect(Collectors.toList());
+    public List<LectureDto> getLectures(@PathVariable("id") Long lecturer_id) {
+        List<Lecture> lectures = lectureRepository.findAllByMemberId(lecturer_id);
+        return lectures.stream().map(LectureDto::createLectureDtoWithLectureStudents).collect(Collectors.toList());
     }
 
     @PostMapping("/api/v1/lecture/new")
@@ -56,7 +62,7 @@ public class LectureApiController {
 
         private LectureDto() {}
 
-        public static LectureDto createLectureDtoForLecturer(Lecture lecture) {
+        public static LectureDto createLectureDtoWithLectureStudents(Lecture lecture) {
             LectureDto lectureDto = createLectureDto(lecture);
             lectureDto.lectureStudents = List.copyOf(lecture.getLectureStudents());
             return lectureDto;

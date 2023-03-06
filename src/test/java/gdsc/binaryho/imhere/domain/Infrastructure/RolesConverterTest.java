@@ -1,7 +1,5 @@
 package gdsc.binaryho.imhere.domain.Infrastructure;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gdsc.binaryho.imhere.domain.member.Role;
