@@ -4,6 +4,7 @@ import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureCreateRequest;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
+import gdsc.binaryho.imhere.domain.lecture.LectureStateChangeRequest;
 import gdsc.binaryho.imhere.service.LectureService;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,18 @@ public class LectureApiController {
         return lectures.stream().map(LectureDto::createLectureDtoWithLectureStudents).collect(Collectors.toList());
     }
 
+    @PostMapping("/api/v1/lecturer/state")
+    public ResponseEntity<String> changeLectureState(@RequestBody LectureStateChangeRequest lectureStateChangeRequest) {
+        /* TODO: 강의 소유자 검증 로직 필요 */
+        try {
+            lectureService.changeLectureState(lectureStateChangeRequest);
+            return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
     @PostMapping("/api/v1/lecture/new")
     public ResponseEntity<String> createLecture(@RequestBody LectureCreateRequest request) {
         try {
@@ -56,8 +69,6 @@ public class LectureApiController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-
-    // 출첵 열고 딛기
 
     @Getter
     private static class LectureDto {

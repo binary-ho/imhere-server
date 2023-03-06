@@ -6,6 +6,7 @@ import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureCreateRequest;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
+import gdsc.binaryho.imhere.domain.lecture.LectureStateChangeRequest;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.domain.member.Role;
@@ -53,5 +54,10 @@ public class LectureService {
         return enrollmentInfos.stream()
             .map(EnrollmentInfo::getLecture)
             .collect(Collectors.toList());
+    }
+
+    public void changeLectureState(LectureStateChangeRequest lectureStateChangeRequest) {
+        Lecture lecture = lectureRepository.findById(lectureStateChangeRequest.getLecturerId()).orElseThrow();
+        lecture.setLectureState(lectureStateChangeRequest.getLectureState());
     }
 }

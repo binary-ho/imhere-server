@@ -54,7 +54,7 @@ public class Lecture {
         lecture.setMember(lecturer);
         lecture.setLectureName(lectureName);
         lecture.setLecturerName(lecturer.getName());
-        lecture.setLectureState(LectureState.CLOSE);
+        lecture.setLectureState(LectureState.CLOSED);
         return lecture;
     }
 }
