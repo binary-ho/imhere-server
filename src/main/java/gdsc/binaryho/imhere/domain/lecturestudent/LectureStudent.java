@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.domain.roster;
+package gdsc.binaryho.imhere.domain.lecturestudent;
 
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.member.Member;

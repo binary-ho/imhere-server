@@ -1,6 +1,5 @@
 package gdsc.binaryho.imhere.domain.lecture;
 
-import gdsc.binaryho.imhere.domain.member.Member;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

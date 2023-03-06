@@ -1,8 +1,8 @@
 package gdsc.binaryho.imhere.domain.lecture;
 
 
+import gdsc.binaryho.imhere.domain.lecturestudent.LectureStudent;
 import gdsc.binaryho.imhere.domain.member.Member;
-import gdsc.binaryho.imhere.domain.roster.LectureStudent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
