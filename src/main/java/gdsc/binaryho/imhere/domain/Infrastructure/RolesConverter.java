@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
+@Converter
 public class RolesConverter implements AttributeConverter<Roles, String> {
 
     @Override

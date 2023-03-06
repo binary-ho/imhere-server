@@ -34,7 +34,8 @@ public class Lecture {
     @Column(name = "lecture_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+//    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lecturer_id")
     private Member member;
 
@@ -46,4 +47,14 @@ public class Lecture {
 
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL)
     private List<LectureStudent> lectureStudents = new ArrayList<>();
+
+    public static Lecture createLecture(Member lecturer, String className) {
+        Lecture lecture = new Lecture();
+        lecture.setId(lecture.id);
+        lecture.setMember(lecturer);
+        lecture.setLecturerName(lecturer.getName());
+        lecture.setClassName(className);
+        lecture.setLectureState(LectureState.CLOSE);
+        return lecture;
+    }
 }

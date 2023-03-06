@@ -11,14 +11,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@RequiredArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id
@@ -27,8 +28,8 @@ public class Member {
     private Long id;
 
     @Column(unique=true)
-    private Long studentId;
-    private String memberName;
+    private String univId;
+    private String name;
     private String password;
 
     @Embedded
@@ -36,4 +37,17 @@ public class Member {
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<LectureStudent> studentLectures = new ArrayList<>();
+
+    public boolean hasRole(Role role) {
+        return roles.getRoles().contains(role);
+    }
+
+    public static Member createMember(String univId, String name, String password, Roles roles) {
+        Member member = new Member();
+        member.setUnivId(univId);
+        member.setName(name);
+        member.setPassword(password);
+        member.setRoles(roles);
+        return member;
+    }
 }
