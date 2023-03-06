@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.domain.lecturestudent;
+package gdsc.binaryho.imhere.domain.enrollment;
 
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.member.Member;
@@ -18,11 +18,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class LectureStudent {
+public class EnrollmentInfo {
 
     @Id
     @GeneratedValue
-    @Column(name = "lecture_student_id")
+    @Column(name = "enrollment_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,7 +32,16 @@ public class LectureStudent {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     private Member member;
+    private String studentName;
 
     @Column(columnDefinition = "integer default 0")
     private int attendanceCount;
+
+    public static EnrollmentInfo createEnrollmentInfo(Lecture lecture, Member member) {
+        EnrollmentInfo enrollmentInfo = new EnrollmentInfo();
+        enrollmentInfo.setLecture(lecture);
+        enrollmentInfo.setMember(member);
+        enrollmentInfo.setStudentName(member.getName());
+        return enrollmentInfo;
+    }
 }

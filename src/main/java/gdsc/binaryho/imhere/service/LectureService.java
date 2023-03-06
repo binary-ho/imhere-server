@@ -1,11 +1,11 @@
 package gdsc.binaryho.imhere.service;
 
+import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
+import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureCreateRequest;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
-import gdsc.binaryho.imhere.domain.lecturestudent.LectureStudent;
-import gdsc.binaryho.imhere.domain.lecturestudent.LectureStudentRepository;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.domain.member.Role;
@@ -17,14 +17,14 @@ import org.springframework.stereotype.Service;
 public class LectureService {
 
     private final LectureRepository lectureRepository;
-    private final LectureStudentRepository lectureStudentRepository;
+    private final EnrollmentInfoRepository enrollmentInfoRepository;
     private final MemberRepository memberRepository;
 
     public LectureService(LectureRepository lectureRepository,
-        LectureStudentRepository lectureStudentRepository,
+        EnrollmentInfoRepository enrollmentInfoRepository,
         MemberRepository memberRepository) {
         this.lectureRepository = lectureRepository;
-        this.lectureStudentRepository = lectureStudentRepository;
+        this.enrollmentInfoRepository = enrollmentInfoRepository;
         this.memberRepository = memberRepository;
     }
 
@@ -40,18 +40,18 @@ public class LectureService {
     }
 
     public List<Lecture> getStudentLectures(Long studentId) {
-        List<LectureStudent> lectureStudents = lectureStudentRepository.findAllByMemberId(studentId);
-        return getLectures(lectureStudents);
+        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberId(studentId);
+        return getLectures(enrollmentInfos);
     }
 
     public List<Lecture> getStudentOpenLectures(Long studentId) {
-        List<LectureStudent> lectureStudents = lectureStudentRepository.findAllByMemberIdAndLecture_LectureState(studentId, LectureState.OPEN);
-        return getLectures(lectureStudents);
+        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberIdAndLecture_LectureState(studentId, LectureState.OPEN);
+        return getLectures(enrollmentInfos);
     }
 
-    private List<Lecture> getLectures(List<LectureStudent> lectureStudents) {
-        return lectureStudents.stream()
-            .map(LectureStudent::getLecture)
+    private List<Lecture> getLectures(List<EnrollmentInfo> enrollmentInfos) {
+        return enrollmentInfos.stream()
+            .map(EnrollmentInfo::getLecture)
             .collect(Collectors.toList());
     }
 }

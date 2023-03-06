@@ -1,10 +1,11 @@
 package gdsc.binaryho.imhere.api;
 
+import gdsc.binaryho.imhere.domain.enrollment.EnrollRequest;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureCreateRequest;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
-import gdsc.binaryho.imhere.domain.lecturestudent.LectureStudent;
+import gdsc.binaryho.imhere.service.EnrollmentService;
 import gdsc.binaryho.imhere.service.LectureService;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +24,13 @@ public class LectureApiController {
 
     private final LectureRepository lectureRepository;
     private final LectureService lectureService;
+    private final EnrollmentService enrollmentService;
 
-    public LectureApiController(LectureRepository lectureRepository, LectureService lectureService) {
+    public LectureApiController(LectureRepository lectureRepository, LectureService lectureService,
+        EnrollmentService enrollmentService) {
         this.lectureRepository = lectureRepository;
         this.lectureService = lectureService;
+        this.enrollmentService = enrollmentService;
     }
 
     @GetMapping("/api/v1/member/{id}/lectures")
@@ -40,7 +44,6 @@ public class LectureApiController {
         List<Lecture> lectures = lectureService.getStudentOpenLectures(student_id);
         return lectures.stream().map(LectureDto::createLectureDto).collect(Collectors.toList());
     }
-
 
     @GetMapping("/api/v1/lecturer/{id}/lectures")
     public List<LectureDto> getLectures(@PathVariable("id") Long lecturer_id) {
@@ -59,19 +62,32 @@ public class LectureApiController {
         }
     }
 
+    @PostMapping("/api/v1/lecturer/enrollment")
+    public void enrollLecture(@RequestBody EnrollRequest enrollRequest) {
+        /* TODO: security 도입 이후 context 에서 id 가져와서 비교 해야함 */
+        enrollmentService.enrollStudents(enrollRequest);
+        System.out.println(enrollRequest.getLectureId());
+        enrollRequest.getUnivIds().forEach(studentInfo ->
+            System.out.println(studentInfo.getStudentId() + ": " + studentInfo.getStudentName()
+            ));
+    }
+
+    // 등록 출첵 열고 딛기
+    // 출첵이 문제 출석 기록부 있어야 할듯듯
+
     @Getter
     private static class LectureDto {
         private Long id;
         private String lectureName;
         private String lecturerName;
         private LectureState lectureState;
-        private List<LectureStudent> lectureStudents;
+        private List<gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo> enrollmentInfos;
 
         private LectureDto() {}
 
         public static LectureDto createLectureDtoWithLectureStudents(Lecture lecture) {
             LectureDto lectureDto = createLectureDto(lecture);
-            lectureDto.lectureStudents = List.copyOf(lecture.getLectureStudents());
+            lectureDto.enrollmentInfos = List.copyOf(lecture.getEnrollmentInfos());
             return lectureDto;
         }
 
@@ -81,7 +97,7 @@ public class LectureApiController {
             lectureDto.lectureName = lecture.getLectureName();
             lectureDto.lecturerName = lecture.getLecturerName();
             lectureDto.lectureState = lecture.getLectureState();
-            lectureDto.lectureStudents = new ArrayList<>();
+            lectureDto.enrollmentInfos = new ArrayList<>();
             return lectureDto;
         }
     }

@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.domain.lecture;
 
 
-import gdsc.binaryho.imhere.domain.lecturestudent.LectureStudent;
+import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.member.Member;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class Lecture {
     private LectureState lectureState;
 
     @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL)
-    private List<LectureStudent> lectureStudents = new ArrayList<>();
+    private List<EnrollmentInfo> enrollmentInfos = new ArrayList<>();
 
     public static Lecture createLecture(Member lecturer, String lectureName) {
         Lecture lecture = new Lecture();

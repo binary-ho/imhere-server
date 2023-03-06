@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.domain.member;
 
-import gdsc.binaryho.imhere.domain.lecturestudent.LectureStudent;
+import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -36,7 +36,7 @@ public class Member {
     private Roles roles;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-    private List<LectureStudent> studentLectures = new ArrayList<>();
+    private List<EnrollmentInfo> enrollmentInfos = new ArrayList<>();
 
     public boolean hasRole(Role role) {
         return roles.getRoles().contains(role);
