@@ -10,15 +10,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "enrollment_infos")
 @Getter @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EnrollmentInfo {
 
     @Id
@@ -33,7 +30,6 @@ public class EnrollmentInfo {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
     private Member member;
-    private String studentName;
 
     @Column(columnDefinition = "integer default 0")
     private int attendanceCount;
@@ -42,7 +38,6 @@ public class EnrollmentInfo {
         EnrollmentInfo enrollmentInfo = new EnrollmentInfo();
         enrollmentInfo.setLecture(lecture);
         enrollmentInfo.setMember(member);
-        enrollmentInfo.setStudentName(member.getName());
         return enrollmentInfo;
     }
 }
