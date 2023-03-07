@@ -43,13 +43,3 @@ public class AttendanceService {
             .ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("Asia/Seoul"));
     }
 }
-
-/*
-*    private Long lecture_id;
-    private Long member_id;
-    private String distance;
-    private String accuracy;
-    private Long timestamp;
-*
-*
-* */
