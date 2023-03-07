@@ -1,5 +1,6 @@
 package gdsc.binaryho.imhere.api;
 
+import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureCreateRequest;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
@@ -76,7 +77,7 @@ public class LectureApiController {
         private String lectureName;
         private String lecturerName;
         private LectureState lectureState;
-        private List<gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo> enrollmentInfos;
+        private List<EnrollmentInfo> enrollmentInfos;
 
         private LectureDto() {}
 
