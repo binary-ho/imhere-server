@@ -19,40 +19,53 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/* TODO: 유저의 권한을 바꾸는 API들 필요
+* 좀 더 고민하자 그냥 MEMBER랑 LECTURER 두개만 필요할 수도 있다.
+*  */
 @RestController
 public class LectureApiController {
 
     private final LectureRepository lectureRepository;
     private final LectureService lectureService;
 
+    /* TODO: 시큐리티 도입 이후 제거 */
+    private final static Long mockLoginUserId = 1L;
+
     public LectureApiController(LectureRepository lectureRepository, LectureService lectureService) {
         this.lectureRepository = lectureRepository;
         this.lectureService = lectureService;
     }
 
-    @GetMapping("/api/v1/member/{id}/lectures")
-    public List<LectureDto> getStudentLectures(@PathVariable("id") Long student_id) {
+    @GetMapping("/api/v1/students/{student_id}/lectures")
+    public List<LectureDto> getStudentLectures(@PathVariable("student_id") Long student_id) {
         List<Lecture> lectures = lectureService.getStudentLectures(student_id);
         return lectures.stream().map(LectureDto::createLectureDto).collect(Collectors.toList());
     }
 
-    @GetMapping("/api/v1/member/{id}/open-lectures")
-    public List<LectureDto> getStudentOpenLectures(@PathVariable("id") Long student_id) {
+    @GetMapping("/api/v1/students/{student_id}/open-lectures")
+    public List<LectureDto> getStudentOpenLectures(@PathVariable("student_id") Long student_id) {
         List<Lecture> lectures = lectureService.getStudentOpenLectures(student_id);
         return lectures.stream().map(LectureDto::createLectureDto).collect(Collectors.toList());
     }
 
-    @GetMapping("/api/v1/lecturer/{id}/lectures")
-    public List<LectureDto> getLectures(@PathVariable("id") Long lecturer_id) {
-        List<Lecture> lectures = lectureRepository.findAllByMemberId(lecturer_id);
+    /*
+    * 강사 본인이 만든 강의들 가져오기
+    * */
+    @GetMapping("/api/v1/lectures")
+    public List<LectureDto> getLectures() {
+        /* TODO : 시큐리티 도입 이후 id 가져와야함 */
+        List<Lecture> lectures = lectureRepository.findAllByMemberId(mockLoginUserId);
         return lectures.stream().map(LectureDto::createLectureDtoWithLectureStudents).collect(Collectors.toList());
     }
 
-    @PostMapping("/api/v1/lecturer/state")
-    public ResponseEntity<String> changeLectureState(@RequestBody LectureStateChangeRequest lectureStateChangeRequest) {
-        /* TODO: 강의 소유자 검증 로직 필요 */
+    /*
+     * 강의 생성
+     * */
+    @PostMapping("/api/v1/lectures")
+    public ResponseEntity<String> createLecture(@RequestBody LectureCreateRequest request) {
         try {
-            lectureService.changeLectureState(lectureStateChangeRequest);
+            /* TODO : 시큐리티 도입 이후 id 가져와야함 */
+            lectureService.createLecture(request, mockLoginUserId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,10 +73,15 @@ public class LectureApiController {
         }
     }
 
-    @PostMapping("/api/v1/lecture/new")
-    public ResponseEntity<String> createLecture(@RequestBody LectureCreateRequest request) {
+    /*
+    * 강의 상태 변경
+    * */
+    @PostMapping("/api/v1/lectures/{lecture_id}/state")
+    public ResponseEntity<String> changeLectureState(@RequestBody LectureStateChangeRequest lectureStateChangeRequest,
+        @PathVariable("lecture_id") Long lecture_id) {
+        /* TODO: 시큐리티 도입 이후, 강의 소유자 검증 로직 필요 */
         try {
-            lectureService.createLecture(request);
+            lectureService.changeLectureState(lectureStateChangeRequest, lecture_id, mockLoginUserId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {
             e.printStackTrace();

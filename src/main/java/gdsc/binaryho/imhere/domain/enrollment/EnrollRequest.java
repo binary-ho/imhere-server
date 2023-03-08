@@ -5,6 +5,9 @@ import lombok.Getter;
 
 @Getter
 public class EnrollRequest {
-    private Long lectureId;
-    private List<String> univIds;
+    private final List<String> univIds;
+
+    public EnrollRequest(List<String> univIds) {
+        this.univIds = univIds;
+    }
 }

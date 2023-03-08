@@ -24,13 +24,14 @@ public class AttendanceService {
     }
 
     @Transactional
-    public void takeAttendance(AttendanceRequest attendanceRequest) throws NoSuchObjectException {
+    public void takeAttendance(AttendanceRequest attendanceRequest,
+        Long studentId, Long lectureId) throws NoSuchObjectException {
         EnrollmentInfo enrollmentInfo = enrollmentRepository
-            .findByMemberIdAndLectureId(attendanceRequest.getMember_id(), attendanceRequest.getLecture_id())
+            .findByMemberIdAndLectureId(studentId, lectureId)
             .orElseThrow();
 
         if (enrollmentInfo.getLecture().getLectureState() != LectureState.OPEN) {
-            /* 예외 대체 필요 */
+            /* TODO: 예외 대체 필요 */
             throw new NoSuchObjectException("lecture is not opened");
         }
 
@@ -40,7 +41,7 @@ public class AttendanceService {
             attendanceRequest.getDistance(), attendanceRequest.getAccuracy(), localDateTime);
     }
 
-    private LocalDateTime getLocalDateTime(Long milliseconds ) {
+    private LocalDateTime getLocalDateTime(Long milliseconds) {
         return LocalDateTime
             .ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("Asia/Seoul"));
     }

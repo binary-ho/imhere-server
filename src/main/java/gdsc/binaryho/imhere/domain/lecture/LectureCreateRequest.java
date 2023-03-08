@@ -5,11 +5,9 @@ import lombok.Getter;
 @Getter
 public class LectureCreateRequest {
 
-    private final Long lecturerId;
     private final String lectureName;
 
-    public LectureCreateRequest(Long lecturerId, String lectureName) {
-        this.lecturerId = lecturerId;
+    public LectureCreateRequest(String lectureName) {
         this.lectureName = lectureName;
     }
 }

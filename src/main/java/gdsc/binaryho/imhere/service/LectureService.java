@@ -31,8 +31,8 @@ public class LectureService {
     }
 
     @Transactional
-    public void createLecture(LectureCreateRequest request) {
-        Member lecturer = memberRepository.findById(request.getLecturerId()).orElseThrow();
+    public void createLecture(LectureCreateRequest request, Long loginUserId) {
+        Member lecturer = memberRepository.findById(loginUserId).orElseThrow();
         if (!lecturer.hasRole(Role.LECTURER)) {
             /* TODO: Exception 만들어서 대체 */
             throw new IllegalArgumentException();
@@ -59,8 +59,17 @@ public class LectureService {
     }
 
     @Transactional
-    public void changeLectureState(LectureStateChangeRequest lectureStateChangeRequest) {
-        Lecture lecture = lectureRepository.findById(lectureStateChangeRequest.getLecturerId()).orElseThrow();
+    public void changeLectureState(
+        LectureStateChangeRequest lectureStateChangeRequest,
+        Long lectureId, Long loginUserId) throws Exception {
+
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+
+        if (!loginUserId.equals(lecture.getMember().getId())) {
+            /* TODO: 예외 만들어서 대체 */
+            throw new Exception();
+        }
+
         lecture.setLectureState(lectureStateChangeRequest.getLectureState());
     }
 }

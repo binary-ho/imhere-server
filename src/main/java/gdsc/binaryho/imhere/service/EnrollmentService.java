@@ -29,8 +29,15 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public void enrollStudents(EnrollRequest enrollRequest) {
-        Lecture lecture = lectureRepository.findById(enrollRequest.getLectureId()).orElseThrow();
+    public void enrollStudents(EnrollRequest enrollRequest,
+        Long lectureId, Long loginUserId) throws Exception {
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+
+        if (!loginUserId.equals(lecture.getMember().getId())) {
+            /* TODO: 예외 만들어서 대체 */
+            throw new Exception();
+        }
+
         List<Member> students = getStudentsByUnivId(enrollRequest.getUnivIds());
         students.forEach(student -> enrollStudent(lecture, student));
     }

@@ -5,9 +5,13 @@ import lombok.Getter;
 @Getter
 public class AttendanceRequest {
 
-    private Long lecture_id;
-    private Long member_id;
-    private String distance;
-    private String accuracy;
-    private Long milliseconds;
+    private final String distance;
+    private final String accuracy;
+    private final Long milliseconds;
+
+    public AttendanceRequest(String distance, String accuracy, Long milliseconds) {
+        this.distance = distance;
+        this.accuracy = accuracy;
+        this.milliseconds = milliseconds;
+    }
 }
