@@ -11,7 +11,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import javax.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AttendanceService {
 
     private final EnrollmentInfoRepository enrollmentRepository;
