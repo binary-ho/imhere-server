@@ -1,10 +1,12 @@
 package gdsc.binaryho.imhere.domain.member;
 
+import gdsc.binaryho.imhere.domain.Infrastructure.RolesConverter;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,12 +30,14 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(unique=true)
+    @Column(unique = true, nullable = false)
     private String univId;
+    @Column(nullable = false)
     private String name;
     private String password;
 
     @Embedded
+    @Convert(converter = RolesConverter.class)
     private Roles roles;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
