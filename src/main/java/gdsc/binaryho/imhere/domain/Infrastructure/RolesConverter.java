@@ -13,18 +13,18 @@ import javax.persistence.Converter;
 public class RolesConverter implements AttributeConverter<Roles, String> {
 
     @Override
-    public String convertToDatabaseColumn(Roles roles) {
-        if (roles == null) {
+    public String convertToDatabaseColumn(Roles attribute) {
+        if (attribute == null) {
             return null;
         }
 
-        String roleString = roles.getRoles().toString();
+        String roleString = attribute.getRoles().toString();
         return roleString.substring(1, roleString.length() - 1);
     }
 
     @Override
-    public Roles convertToEntityAttribute(String rolesString) {
-        List<Role> roleList = Arrays.stream(rolesString.split(", "))
+    public Roles convertToEntityAttribute(String dbData) {
+        List<Role> roleList = Arrays.stream(dbData.split(", "))
             .map(Role::valueOf)
             .collect(Collectors.toList());
         return new Roles(EnumSet.copyOf(roleList));

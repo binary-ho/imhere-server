@@ -1,11 +1,9 @@
 package gdsc.binaryho.imhere.domain.member;
 
 import java.util.EnumSet;
-import javax.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Embeddable
 @Getter
 @NoArgsConstructor
 public class Roles {

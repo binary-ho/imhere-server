@@ -9,7 +9,7 @@ public enum Role {
         this.key = role;
     }
 
-    protected String getKey() {
+    public String getKey() {
         return key;
     }
 }

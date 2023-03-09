@@ -1,14 +1,13 @@
 package gdsc.binaryho.imhere.domain.member;
 
-import gdsc.binaryho.imhere.domain.Infrastructure.RolesConverter;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,23 +35,23 @@ public class Member {
     private String name;
     private String password;
 
-    @Embedded
-    @Convert(converter = RolesConverter.class)
-    private Roles roles;
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<EnrollmentInfo> enrollmentInfos = new ArrayList<>();
 
     public boolean hasRole(Role role) {
-        return roles.getRoles().contains(role);
+        return role.equals(role);
     }
 
-    public static Member createMember(String univId, String name, String password, Roles roles) {
+    public static Member createMember(String univId, String name, String password, Role role) {
         Member member = new Member();
         member.setUnivId(univId);
         member.setName(name);
         member.setPassword(password);
-        member.setRoles(roles);
+        member.setRole(role);
         return member;
     }
 }
