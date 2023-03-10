@@ -1,12 +1,17 @@
 package gdsc.binaryho.imhere.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gdsc.binaryho.imhere.config.auth.PrincipalDetails;
+import gdsc.binaryho.imhere.service.JWTService;
 import java.io.IOException;
+import javax.servlet.FilterChain;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,17 +19,19 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JWTService jwtService;
 
-    public JwtAuthenticationFilter(
-        AuthenticationManager authenticationManager,
-        BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.authenticationManager = authenticationManager;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
+
+    @Value("${jwt.header-string}")
+    private String HEADER_STRING;
+
+    @Value("${jwt.access-token-prefix}")
+    private String ACCESS_TOKEN_PREFIX;
 
     @Override
     public Authentication attemptAuthentication(
@@ -60,6 +67,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             signInRequest.univId, bCryptPasswordEncoder.encode(signInRequest.getPassword()));
     }
 
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request,
+        HttpServletResponse response, FilterChain chain, Authentication authResult) {
+        System.out.println("successfulAuthentication 실행됨 (인증이 완료됨) ");
+
+        PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
+
+        Token jwtToken = jwtService.createToken(principalDetails.getMember().getId(), principalDetails.getMember().getRole());
+
+        response.addHeader(HEADER_STRING, ACCESS_TOKEN_PREFIX + jwtToken.getAccessToken());
+    }
 
     @Getter
     @Setter
