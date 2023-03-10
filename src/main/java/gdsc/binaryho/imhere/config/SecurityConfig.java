@@ -4,6 +4,7 @@ package gdsc.binaryho.imhere.config;
 import gdsc.binaryho.imhere.config.jwt.JwtAuthenticationFilter;
 import gdsc.binaryho.imhere.config.jwt.JwtAuthorizationFilter;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
+import gdsc.binaryho.imhere.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,8 +29,21 @@ public class SecurityConfig {
     private final MemberRepository memberRepository;
 
     private final CorsFilter corsFilter;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final JwtAuthorizationFilter jwtAuthorizationFilter;
+//    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+//    private final JwtAuthorizationFilter jwtAuthorizationFilter;
+
+    private final TokenService tokenService;
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+        AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -42,7 +56,15 @@ public class SecurityConfig {
             .formLogin().disable()
             .httpBasic().disable()
 
+//            .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(authenticationConfiguration), tokenService, memberRepository))
+//            .addFilter(new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration), passwordEncoder(), tokenService))
+//            .addFilter(new JwtAuthorizationFilter(authenticationManager(authenticationConfiguration), tokenService, memberRepository))
+
             .authorizeRequests()
+
+            .antMatchers("/login", "/member/**")
+            .anonymous()
+
             .antMatchers("/api/v1/admin/**")
             .access("hasRole('ROLE_ADMIN')")
 
@@ -52,27 +74,18 @@ public class SecurityConfig {
             .antMatchers("/api/v1/students/**")
             .access("hasAnyRole('ROLE_ADMIN', 'ROLE_LECTURER', 'ROLE_STUDENT')")
 
-            .antMatchers("/login", "/member/**")
-            .permitAll()
 
             .anyRequest().authenticated();
 
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(jwtAuthorizationFilter, BasicAuthenticationFilter.class);
+//        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(jwtAuthorizationFilter, BasicAuthenticationFilter.class);
+
+        http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration), passwordEncoder(), tokenService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthorizationFilter(authenticationManager(authenticationConfiguration), tokenService, memberRepository), BasicAuthenticationFilter.class);
 
         return http.build();
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(
-        AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }
 // ADMIN, LECTURER, STUDENT
 // "/api/v1/admin/{admin_id}/member/{member_id}.state" 권한 변경 -> 어드민
