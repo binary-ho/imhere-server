@@ -2,7 +2,7 @@ package gdsc.binaryho.imhere.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gdsc.binaryho.imhere.config.auth.PrincipalDetails;
-import gdsc.binaryho.imhere.service.JWTService;
+import gdsc.binaryho.imhere.service.TokenService;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletInputStream;
@@ -22,16 +22,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final JWTService jwtService;
-
-
     @Value("${jwt.header-string}")
     private String HEADER_STRING;
 
     @Value("${jwt.access-token-prefix}")
     private String ACCESS_TOKEN_PREFIX;
+
+    private final AuthenticationManager authenticationManager;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final TokenService tokenService;
 
     @Override
     public Authentication attemptAuthentication(
@@ -74,7 +73,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         PrincipalDetails principalDetails = (PrincipalDetails) authResult.getPrincipal();
 
-        Token jwtToken = jwtService.createToken(principalDetails.getMember().getId(), principalDetails.getMember().getRole());
+        Token jwtToken = tokenService.createToken(principalDetails.getMember().getId(), principalDetails.getMember().getRole());
 
         response.addHeader(HEADER_STRING, ACCESS_TOKEN_PREFIX + jwtToken.getAccessToken());
     }
