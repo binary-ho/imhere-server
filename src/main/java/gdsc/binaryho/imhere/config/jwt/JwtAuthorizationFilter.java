@@ -9,22 +9,18 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.stereotype.Component;
 
-@Component
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    @Value("${jwt.header-string}")
-    private String HEADER_STRING;
-
-    @Value("${jwt.access-token-prefix}")
-    private String ACCESS_TOKEN_PREFIX;
+    //    @Value("${jwt.header-string}")
+    private static final String HEADER_STRING = "Authorization";
+    //    @Value("${jwt.access-token-prefix}")
+    private static final String ACCESS_TOKEN_PREFIX = "Token ";
 
     private final TokenService tokenService;
     private final MemberRepository memberRepository;
@@ -51,8 +47,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         if (tokenService.validateTokenExpirationTime(jwtToken)) {
 
-            long memberId = tokenService.getMemberId(jwtToken);
-            Member member = memberRepository.findById(memberId).orElseThrow();
+            String univId = tokenService.getUnivId(jwtToken);
+            Member member = memberRepository.findByUnivId(univId).orElseThrow();
             PrincipalDetails principalDetails = new PrincipalDetails(member);
 
             Authentication authentication =
@@ -67,7 +63,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private boolean checkTokenHeader(HttpServletRequest request) {
         String jwtHeader = request.getHeader(HEADER_STRING);
 
-        if (jwtHeader.isEmpty() || !jwtHeader.startsWith(ACCESS_TOKEN_PREFIX)) {
+        if (jwtHeader == null || !jwtHeader.startsWith(ACCESS_TOKEN_PREFIX)) {
             return false;
         }
         return true;
