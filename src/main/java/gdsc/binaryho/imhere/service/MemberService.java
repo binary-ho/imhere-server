@@ -4,17 +4,18 @@ import com.sun.jdi.request.DuplicateRequestException;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.domain.member.Role;
+import gdsc.binaryho.imhere.domain.member.SignInRequest;
+import gdsc.binaryho.imhere.domain.member.SignInResponseDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class MemberService {
 
     private final MemberRepository memberRepository;
-
-
-    public MemberService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void signUp(String univId, String name, String password) {
         validateDuplicate(univId);
@@ -26,5 +27,19 @@ public class MemberService {
         if (memberRepository.findByUnivId(univId).isPresent()) {
             throw new DuplicateRequestException();
         }
+    }
+
+    public SignInResponseDto login(SignInRequest signInRequest) {
+        Member member = memberRepository.findByUnivId(signInRequest.getUnivId()).orElseThrow();
+
+        if (validateMatchesPassword(member.getPassword(), signInRequest.getPassword())) {
+            return new SignInResponseDto(member.getUnivId(), member.getRoleKey());
+        }
+
+        throw new IllegalArgumentException();
+    }
+
+    private boolean validateMatchesPassword(String rawPassword, String encodedPassword) {
+        return bCryptPasswordEncoder.matches(rawPassword, encodedPassword);
     }
 }
