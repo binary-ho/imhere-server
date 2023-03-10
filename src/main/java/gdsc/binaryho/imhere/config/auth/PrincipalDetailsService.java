@@ -17,7 +17,7 @@ public class PrincipalDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String univId) {
-        /* TODO: 미가입 회원 오류 */
+        /* TODO: 미가입 회원 오류 만들기 */
         Member member = memberRepository.findByUnivId(univId).orElseThrow();
         return new PrincipalDetails(member);
     }

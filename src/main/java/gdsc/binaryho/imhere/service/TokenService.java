@@ -1,7 +1,6 @@
 package gdsc.binaryho.imhere.service;
 
 import gdsc.binaryho.imhere.config.jwt.Token;
-import gdsc.binaryho.imhere.domain.member.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -19,9 +18,9 @@ public class TokenService {
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000L * 60L * 20L;
 //    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 1000L * 60L * 60L * 24L * 8L;
 
-    public Token createToken(Long memberId, Role role) {
-        Claims memberClaims = Jwts.claims().setSubject(String.valueOf(memberId));
-        memberClaims.put("role", role);
+    public Token createToken(String univId, String roleKey) {
+        Claims memberClaims = Jwts.claims().setSubject(univId);
+        memberClaims.put("role", roleKey);
 
         Date timeNow = new Date();
         return new Token(
@@ -53,13 +52,11 @@ public class TokenService {
         }
     }
 
-    public long getMemberId(String token) {
-        String memberId = Jwts.parser()
+    public String getUnivId(String token) {
+        return Jwts.parser()
             .setSigningKey(SECRET)
             .parseClaimsJws(token)
             .getBody()
             .getSubject();
-
-        return Long.parseLong(memberId);
     }
 }

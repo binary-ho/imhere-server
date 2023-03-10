@@ -42,8 +42,12 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
     private List<EnrollmentInfo> enrollmentInfos = new ArrayList<>();
 
+    public String getRoleKey() {
+        return role.getKey();
+    }
+
     public boolean hasRole(Role role) {
-        return role.equals(role);
+        return this.role.equals(role);
     }
 
     public static Member createMember(String univId, String name, String password, Role role) {
