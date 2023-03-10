@@ -1,24 +1,35 @@
 package gdsc.binaryho.imhere.config;
 
 
+import gdsc.binaryho.imhere.config.jwt.JwtAuthenticationFilter;
+import gdsc.binaryho.imhere.config.jwt.JwtAuthorizationFilter;
+import gdsc.binaryho.imhere.domain.member.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
+// 필터 추가, url 허용
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CorsFilter corsFilter;
+    private final AuthenticationConfiguration authenticationConfiguration;
+    private final MemberRepository memberRepository;
 
-    public SecurityConfig(CorsFilter corsFilter) {
-        this.corsFilter = corsFilter;
-    }
+    private final CorsFilter corsFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,9 +51,22 @@ public class SecurityConfig {
 
             .antMatchers("/api/v1/students/**")
             .access("hasAnyRole('ROLE_ADMIN', 'ROLE_LECTURER', 'ROLE_STUDENT')")
+
+            .antMatchers("/login", "/member/**")
+            .permitAll()
+
             .anyRequest().authenticated();
 
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthorizationFilter, BasicAuthenticationFilter.class);
+
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+        AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean

@@ -15,7 +15,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     @Value("${jwt.header-string}")
