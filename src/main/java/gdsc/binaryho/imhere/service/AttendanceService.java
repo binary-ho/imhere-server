@@ -5,33 +5,31 @@ import gdsc.binaryho.imhere.domain.attendance.Attendance;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
+import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.mapper.requests.AttendanceRequest;
 import java.rmi.NoSuchObjectException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AttendanceService {
 
     private final EnrollmentInfoRepository enrollmentRepository;
-
-    public AttendanceService(
-        EnrollmentInfoRepository enrollmentRepository) {
-        this.enrollmentRepository = enrollmentRepository;
-    }
+    private final AuthenticationService authenticationService;
 
     @Transactional
-    public void takeAttendance(AttendanceRequest attendanceRequest,
-        Long studentId, Long lectureId) throws NoSuchObjectException {
+    public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) throws NoSuchObjectException {
+        Member currentStudent = authenticationService.getCurrentMember();
         EnrollmentInfo enrollmentInfo = enrollmentRepository
-            .findByMemberIdAndLectureId(studentId, lectureId)
-            .orElseThrow();
+            .findByMemberIdAndLectureId(currentStudent.getId(), lectureId)
+            .orElseThrow(IllegalAccessError::new);
 
         if (enrollmentInfo.getLecture().getLectureState() != LectureState.OPEN) {
-            /* TODO: 예외 대체 필요 */
             throw new NoSuchObjectException("lecture is not opened");
         }
 

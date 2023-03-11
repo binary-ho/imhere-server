@@ -21,11 +21,11 @@ public class AttendanceApiController {
     /*
     *  학생들의 출석 시도 메서드
     * */
-    @PostMapping("/api/v1/students/{student_id}/attendance/{lecture_id}")
+    @PostMapping("/api/v1/students/attendance/{lecture_id}")
     public ResponseEntity<String> takeAttendance(@RequestBody AttendanceRequest attendanceRequest,
-        @PathVariable("student_id") Long student_id, @PathVariable("lecture_id") Long lecture_id) {
+        @PathVariable("lecture_id") Long lecture_id) {
         try {
-            attendanceService.takeAttendance(attendanceRequest, student_id, lecture_id);
+            attendanceService.takeAttendance(attendanceRequest, lecture_id);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {
             e.printStackTrace();
