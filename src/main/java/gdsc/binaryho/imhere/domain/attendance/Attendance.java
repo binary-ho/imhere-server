@@ -1,6 +1,7 @@
 package gdsc.binaryho.imhere.domain.attendance;
 
-import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
+import gdsc.binaryho.imhere.domain.lecture.Lecture;
+import gdsc.binaryho.imhere.domain.member.Member;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -17,17 +18,22 @@ public class Attendance {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "enrollment_id")
-    private EnrollmentInfo enrollmentInfo;
+    @JoinColumn(name = "lecture_id")
+    private Lecture lecture;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
+    private Member member;
 
     private String distance;
     private String accuracy;
     private LocalDateTime timestamp;
 
-    public static Attendance createAttendance(EnrollmentInfo enrollmentInfo, String distance,
+    public static Attendance createAttendance(Member member, Lecture lecture, String distance,
         String accuracy, LocalDateTime timestamp) {
         Attendance attendance = new Attendance();
-        attendance.enrollmentInfo = enrollmentInfo;
+        attendance.member = member;
+        attendance.lecture = lecture;
         attendance.distance = distance;
         attendance.accuracy = accuracy;
         attendance.timestamp = timestamp;

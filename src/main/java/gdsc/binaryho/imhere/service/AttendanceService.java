@@ -2,6 +2,7 @@ package gdsc.binaryho.imhere.service;
 
 
 import gdsc.binaryho.imhere.domain.attendance.Attendance;
+import gdsc.binaryho.imhere.domain.attendance.AttendanceRepository;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AttendanceService {
 
+    private final AttendanceRepository attendanceRepository;
     private final EnrollmentInfoRepository enrollmentRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -36,8 +38,11 @@ public class AttendanceService {
 
         LocalDateTime localDateTime = getLocalDateTime(attendanceRequest.getMilliseconds());
 
-        Attendance.createAttendance(enrollmentInfo.getMember(), enrollmentInfo.getLecture(),
+        Attendance attendance = Attendance.createAttendance(enrollmentInfo.getMember(),
+            enrollmentInfo.getLecture(),
             attendanceRequest.getDistance(), attendanceRequest.getAccuracy(), localDateTime);
+
+        attendanceRepository.save(attendance);
     }
 
     private void validateLectureOpen(EnrollmentInfo enrollmentInfo) throws NoSuchObjectException {
