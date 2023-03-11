@@ -20,10 +20,34 @@ public class EnrollmentApiController {
     }
 
     @PostMapping("/api/v1/enrollment/{lecture_id}")
-    public HttpEntity<String> enrollStudentsForLecturer(@RequestBody EnrollMentRequestForLecturer enrollMentRequestForLecturer, @PathVariable("lecture_id") Long lecture_id) {
+    public HttpEntity<String> enrollStudentsForLecturer(@RequestBody EnrollMentRequestForLecturer enrollMentRequestForLecturer, @PathVariable("lecture_id") Long lectureId) {
 
         try {
-            enrollmentService.enrollStudents(enrollMentRequestForLecturer, lecture_id);
+            enrollmentService.enrollStudents(enrollMentRequestForLecturer, lectureId);
+            return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @PostMapping("/api/v1/enrollment/{lecture_id}/student/{student_id}/approval")
+    public HttpEntity<String> approveStudents(@PathVariable("lecture_id") Long lectureId, @PathVariable("student_id") Long studentId) {
+
+        try {
+            enrollmentService.approveStudents(lectureId, studentId);
+            return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @PostMapping("/api/v1/enrollment/{lecture_id}/student/{student_id}/rejection")
+    public HttpEntity<String> rejectStudents(@PathVariable("lecture_id") Long lectureId, @PathVariable("student_id") Long studentId) {
+
+        try {
+            enrollmentService.rejectStudents(lectureId, studentId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {
             e.printStackTrace();
