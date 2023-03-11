@@ -32,7 +32,7 @@ public class MemberService {
     public SignInResponseDto login(SignInRequest signInRequest) {
         Member member = memberRepository.findByUnivId(signInRequest.getUnivId()).orElseThrow();
 
-        if (validateMatchesPassword(member.getPassword(), signInRequest.getPassword())) {
+        if (validateMatchesPassword(signInRequest.getPassword(), member.getPassword())) {
             return new SignInResponseDto(member.getUnivId(), member.getRoleKey());
         }
 
