@@ -8,6 +8,7 @@ import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.mapper.requests.EnrollMentRequestForLecturer;
+import java.rmi.NoSuchObjectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,11 +36,11 @@ public class EnrollmentService {
         AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         List<Member> students = getStudentsByUnivId(enrollMentRequestForLecturer.getUnivIds());
-        students.forEach(student -> enrollStudent(lecture, student));
+        students.forEach(student -> enrollStudent(lecture, student, EnrollmentState.APPROVAL));
     }
 
-    private void enrollStudent(Lecture lecture, Member student) {
-        EnrollmentInfo enrollmentInfo = EnrollmentInfo.createEnrollmentInfo(lecture, student, EnrollmentState.APPROVAL);
+    private void enrollStudent(Lecture lecture, Member student, EnrollmentState enrollmentState) {
+        EnrollmentInfo enrollmentInfo = EnrollmentInfo.createEnrollmentInfo(lecture, student, enrollmentState);
         enrollmentInfoRepository.save(enrollmentInfo);
     }
 
@@ -55,5 +56,13 @@ public class EnrollmentService {
         }
 
         return members;
+    }
+
+    @Transactional
+    public void requestEnrollment(Long lectureId) throws NoSuchObjectException {
+        Member student = AuthenticationService.getCurrentMember();
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        EnrollmentInfo enrollmentInfo = EnrollmentInfo.createEnrollmentInfo(lecture, student, EnrollmentState.AWAIT);
+        enrollmentInfoRepository.save(enrollmentInfo);
     }
 }

@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.api;
 
-import gdsc.binaryho.imhere.mapper.requests.EnrollRequest;
+import gdsc.binaryho.imhere.mapper.requests.EnrollMentRequestForLecturer;
 import gdsc.binaryho.imhere.service.EnrollmentService;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -20,10 +20,22 @@ public class EnrollmentApiController {
     }
 
     @PostMapping("/api/v1/enrollment/{lecture_id}")
-    public HttpEntity<String> enrollStudents(@RequestBody EnrollRequest enrollRequest, @PathVariable("lecture_id") Long lecture_id) {
+    public HttpEntity<String> enrollStudentsForLecturer(@RequestBody EnrollMentRequestForLecturer enrollMentRequestForLecturer, @PathVariable("lecture_id") Long lecture_id) {
 
         try {
-            enrollmentService.enrollStudents(enrollRequest, lecture_id);
+            enrollmentService.enrollStudents(enrollMentRequestForLecturer, lecture_id);
+            return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @PostMapping("/api/v1/students/enrollment/{lecture_id}")
+    public HttpEntity<String> requestEnrollment(@PathVariable("lecture_id") Long lecture_id) {
+
+        try {
+            enrollmentService.requestEnrollment(lecture_id);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {
             e.printStackTrace();
