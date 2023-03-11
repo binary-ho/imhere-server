@@ -15,19 +15,15 @@ public class EnrollmentApiController {
 
     private final EnrollmentService enrollmentService;
 
-    /* TODO: 시큐리티 도입 이후 제거 */
-    private final static Long mockLoginUserId = 1L;
-
     public EnrollmentApiController(EnrollmentService enrollmentService) {
         this.enrollmentService = enrollmentService;
     }
 
     @PostMapping("/api/v1/enrollment/{lecture_id}")
     public HttpEntity<String> enrollStudents(@RequestBody EnrollRequest enrollRequest, @PathVariable("lecture_id") Long lecture_id) {
-        /* TODO: security 도입 이후 context 에서 id 가져와서 소유자가 맞는지 비교 해야함 */
 
         try {
-            enrollmentService.enrollStudents(enrollRequest, lecture_id, mockLoginUserId);
+            enrollmentService.enrollStudents(enrollRequest, lecture_id);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {
             e.printStackTrace();

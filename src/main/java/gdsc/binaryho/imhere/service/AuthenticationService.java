@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationService {
 
-    public Member getCurrentMember() throws NoSuchObjectException {
+    public static Member getCurrentMember() throws NoSuchObjectException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated()) {
@@ -21,13 +21,13 @@ public class AuthenticationService {
         throw new NoSuchObjectException("No Authentication Member");
     }
 
-    public void verifyRequestMemberLogInMember(Long requestId) throws NoSuchObjectException {
+    public static void verifyRequestMemberLogInMember(Long requestId) throws NoSuchObjectException {
         if (!requestId.equals(getCurrentMember().getId())) {
             throw new IllegalArgumentException();
         }
     }
 
-    public void verifyRequestMemberLogInMember(String univId) throws NoSuchObjectException {
+    public static void verifyRequestMemberLogInMember(String univId) throws NoSuchObjectException {
         if (!univId.equals(getCurrentMember().getUnivId())) {
             throw new IllegalArgumentException();
         }

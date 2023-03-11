@@ -10,33 +10,22 @@ import gdsc.binaryho.imhere.mapper.requests.EnrollRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class EnrollmentService {
 
     private final LectureRepository lectureRepository;
     private final MemberRepository memberRepository;
     private final EnrollmentInfoRepository enrollmentInfoRepository;
 
-    public EnrollmentService(
-        LectureRepository lectureRepository,
-        MemberRepository memberRepository,
-        EnrollmentInfoRepository enrollmentInfoRepository) {
-        this.lectureRepository = lectureRepository;
-        this.memberRepository = memberRepository;
-        this.enrollmentInfoRepository = enrollmentInfoRepository;
-    }
-
     @Transactional
     public void enrollStudents(EnrollRequest enrollRequest,
-        Long lectureId, Long loginUserId) throws Exception {
+        Long lectureId) throws Exception {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
-
-        if (!loginUserId.equals(lecture.getMember().getId())) {
-            /* TODO: 예외 만들어서 대체 */
-            throw new Exception();
-        }
+        AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         List<Member> students = getStudentsByUnivId(enrollRequest.getUnivIds());
         students.forEach(student -> enrollStudent(lecture, student));
