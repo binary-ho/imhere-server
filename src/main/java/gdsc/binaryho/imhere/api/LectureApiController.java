@@ -2,14 +2,14 @@ package gdsc.binaryho.imhere.api;
 
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
-import gdsc.binaryho.imhere.domain.lecture.LectureCreateRequest;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
-import gdsc.binaryho.imhere.domain.lecture.LectureStateChangeRequest;
+import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
 import gdsc.binaryho.imhere.service.LectureService;
 import java.rmi.NoSuchObjectException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -25,11 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LectureApiController {
 
-    private final LectureRepository lectureRepository;
     private final LectureService lectureService;
+    private static Long mockLoginUserId = 1L;
 
     public LectureApiController(LectureRepository lectureRepository, LectureService lectureService) {
-        this.lectureRepository = lectureRepository;
         this.lectureService = lectureService;
     }
 
@@ -61,7 +60,7 @@ public class LectureApiController {
     @PostMapping("/api/v1/lectures")
     public ResponseEntity<String> createLecture(@RequestBody LectureCreateRequest request) {
         try {
-            lectureService.createLecture(request, mockLoginUserId);
+            lectureService.createLecture(request);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {
             e.printStackTrace();
@@ -69,15 +68,29 @@ public class LectureApiController {
         }
     }
 
+//    /*
+//    * 강의 상태 변경
+//    * */
+//    @PostMapping("/api/v1/lectures/{lecture_id}/state")
+//    public ResponseEntity<String> changeLectureState(@RequestBody LectureStateChangeRequest lectureStateChangeRequest,
+//        @PathVariable("lecture_id") Long lecture_id) {
+//        try {
+//            lectureService.changeLectureState(lectureStateChangeRequest, lecture_id, mockLoginUserId);
+//            return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//    }
+
     /*
-    * 강의 상태 변경
-    * */
-    @PostMapping("/api/v1/lectures/{lecture_id}/state")
-    public ResponseEntity<String> changeLectureState(@RequestBody LectureStateChangeRequest lectureStateChangeRequest,
-        @PathVariable("lecture_id") Long lecture_id) {
+     * 강의 열고 출석 번호 반환
+     * */
+    @PostMapping("/api/v1/lectures/{lecture_id}/open")
+    public ResponseEntity<String> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lecture_id) {
         try {
-            lectureService.changeLectureState(lectureStateChangeRequest, lecture_id, mockLoginUserId);
-            return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
+            int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lecture_id);
+            return ResponseEntity.ok(Map.of("attendanceNumber", attendanceNumber).toString());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

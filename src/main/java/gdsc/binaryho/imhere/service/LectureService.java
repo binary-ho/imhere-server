@@ -6,7 +6,6 @@ import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
 import gdsc.binaryho.imhere.domain.member.Member;
-import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.domain.member.Role;
 import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
 import java.rmi.NoSuchObjectException;
@@ -25,12 +24,10 @@ public class LectureService {
 
     private final LectureRepository lectureRepository;
     private final EnrollmentInfoRepository enrollmentInfoRepository;
-    private final MemberRepository memberRepository;
     private final AuthenticationService authenticationService;
 
     @Transactional
-    public void createLecture(LectureCreateRequest request)
-        throws NoSuchObjectException {
+    public void createLecture(LectureCreateRequest request) throws NoSuchObjectException {
         Member lecturer = authenticationService.getCurrentMember();
         if (!lecturer.hasRole(Role.LECTURER)) {
             /* TODO: Exception 만들어서 대체 */
@@ -60,6 +57,27 @@ public class LectureService {
     public List<Lecture> getOwnLectures() throws NoSuchObjectException {
         Member currentLecturer = authenticationService.getCurrentMember();
         return lectureRepository.findAllByMemberId(currentLecturer.getId());
+    }
+
+    @Transactional
+    public int openLectureAndGetAttendanceNumber(Long lectureId) throws Exception {
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        authenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
+
+        lecture.setLectureState(LectureState.OPEN);
+
+        int attendanceName = generateRandomNumber();
+        lecture.setAttendanceNumber(attendanceName);
+
+        return attendanceName;
+    }
+
+    @Transactional
+    public void closeLecture(Long lectureId) throws Exception {
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        authenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
+
+        lecture.setLectureState(LectureState.CLOSED);
     }
 
     private int generateRandomNumber() {
