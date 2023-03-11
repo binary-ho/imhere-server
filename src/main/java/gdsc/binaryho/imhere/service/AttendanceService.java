@@ -28,14 +28,25 @@ public class AttendanceService {
             .findByMemberIdAndLectureId(currentStudent.getId(), lectureId)
             .orElseThrow(IllegalAccessError::new);
 
-        if (enrollmentInfo.getLecture().getLectureState() != LectureState.OPEN) {
-            throw new NoSuchObjectException("lecture is not opened");
-        }
+        validateLectureOpen(enrollmentInfo);
+        validateAttendanceNumber(enrollmentInfo, attendanceRequest.getAttendanceNumber());
 
         LocalDateTime localDateTime = getLocalDateTime(attendanceRequest.getMilliseconds());
 
         Attendance.createAttendance(enrollmentInfo,
             attendanceRequest.getDistance(), attendanceRequest.getAccuracy(), localDateTime);
+    }
+
+    private void validateLectureOpen(EnrollmentInfo enrollmentInfo) throws NoSuchObjectException {
+        if (enrollmentInfo.getLecture().getLectureState() != LectureState.OPEN) {
+            throw new NoSuchObjectException("lecture is not opened");
+        }
+    }
+
+    private void validateAttendanceNumber(EnrollmentInfo enrollmentInfo, int attendanceNumber) {
+        if (enrollmentInfo.getLecture().getAttendanceNumber() != attendanceNumber) {
+            throw new IllegalArgumentException("wrong attendanceNumber");
+        }
     }
 
     private LocalDateTime getLocalDateTime(Long milliseconds) {

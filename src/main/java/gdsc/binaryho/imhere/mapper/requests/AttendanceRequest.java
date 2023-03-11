@@ -9,6 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AttendanceRequest {
 
+    private Integer attendanceNumber;
     private String distance;
     private String accuracy;
     private Long milliseconds;
