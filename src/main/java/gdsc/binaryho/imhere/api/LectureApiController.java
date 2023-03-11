@@ -26,21 +26,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class LectureApiController {
 
     private final LectureService lectureService;
-    private static Long mockLoginUserId = 1L;
 
     public LectureApiController(LectureRepository lectureRepository, LectureService lectureService) {
         this.lectureService = lectureService;
     }
 
-    @GetMapping("/api/v1/students/{student_id}/lectures")
-    public List<LectureDto> getStudentLectures(@PathVariable("student_id") Long student_id) {
-        List<Lecture> lectures = lectureService.getStudentLectures(student_id);
+    @GetMapping("/api/v1/students/lectures")
+    public List<LectureDto> getStudentLectures() throws NoSuchObjectException {
+        List<Lecture> lectures = lectureService.getStudentLectures();
         return lectures.stream().map(LectureDto::createLectureDto).collect(Collectors.toList());
     }
 
-    @GetMapping("/api/v1/students/{student_id}/open-lectures")
-    public List<LectureDto> getStudentOpenLectures(@PathVariable("student_id") Long student_id) {
-        List<Lecture> lectures = lectureService.getStudentOpenLectures(student_id);
+    @GetMapping("/api/v1/students/open-lectures")
+    public List<LectureDto> getStudentOpenLectures() throws NoSuchObjectException {
+        List<Lecture> lectures = lectureService.getStudentOpenLectures();
         return lectures.stream().map(LectureDto::createLectureDto).collect(Collectors.toList());
     }
 
@@ -85,7 +84,7 @@ public class LectureApiController {
     /*
      * 강의 닫기
      * */
-    @PostMapping("/api/v1/lectures/{lecture_id}/state")
+    @PostMapping("/api/v1/lectures/{lecture_id}/close")
     public ResponseEntity<String> changeLectureState(@PathVariable("lecture_id") Long lecture_id) {
         try {
             lectureService.closeLecture(lecture_id);

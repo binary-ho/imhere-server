@@ -38,13 +38,15 @@ public class LectureService {
         lectureRepository.save(newLecture);
     }
 
-    public List<Lecture> getStudentLectures(Long studentId) {
-        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberId(studentId);
+    public List<Lecture> getStudentLectures() throws NoSuchObjectException {
+        Member currentStudent = authenticationService.getCurrentMember();
+        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberId(currentStudent.getId());
         return getLectures(enrollmentInfos);
     }
 
-    public List<Lecture> getStudentOpenLectures(Long studentId) {
-        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberIdAndLecture_LectureState(studentId, LectureState.OPEN);
+    public List<Lecture> getStudentOpenLectures() throws NoSuchObjectException {
+        Member currentStudent = authenticationService.getCurrentMember();
+        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberIdAndLecture_LectureState(currentStudent.getId(), LectureState.OPEN);
         return getLectures(enrollmentInfos);
     }
 
