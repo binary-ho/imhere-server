@@ -80,7 +80,7 @@ public class SecurityConfig {
 //        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 //        http.addFilterBefore(jwtAuthorizationFilter, BasicAuthenticationFilter.class);
 
-        http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration), passwordEncoder(), tokenService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration), tokenService), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new JwtAuthorizationFilter(authenticationManager(authenticationConfiguration), tokenService, memberRepository), BasicAuthenticationFilter.class);
 
         return http.build();
