@@ -73,7 +73,7 @@ public class AttendanceService {
             .ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("Asia/Seoul"));
     }
 
-    public AttendanceDto getAttendance(Long lectureId) throws NoSuchObjectException {
+    public AttendanceDto getAttendances(Long lectureId) throws NoSuchObjectException {
         List<Attendance> attendances = attendanceRepository.findAllByLectureId(lectureId);
 
         if (attendances.isEmpty()) {
@@ -97,5 +97,19 @@ public class AttendanceService {
     private AttendanceDto getNullAttendanceDto(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
         return new AttendanceDto(lecture, new ArrayList<>());
+    }
+
+    public AttendanceDto getDayAttendances(Long lectureId, Long milliseconds) throws NoSuchObjectException {
+        LocalDateTime timestamp = getLocalDateTime(milliseconds).withHour(0).withMinute(0).withSecond(0);
+        List<Attendance> attendances = attendanceRepository.findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
+
+        if (attendances.isEmpty()) {
+            return getNullAttendanceDto(lectureId);
+        }
+
+        Lecture lecture = attendances.get(0).getLecture();
+        verifyRequestMemberLogInMember(lecture.getMember());
+
+        return getAttendanceDto(lecture, attendances);
     }
 }

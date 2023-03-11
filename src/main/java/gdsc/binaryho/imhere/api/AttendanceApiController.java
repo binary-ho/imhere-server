@@ -37,8 +37,14 @@ public class AttendanceApiController {
     }
 
     @GetMapping("/api/v1/lecturer/{lecture_id}/attendance")
-    public AttendanceDto getAttendance(@PathVariable("lecture_id") Long lecture_id)
+    public AttendanceDto getAttendance(@PathVariable("lecture_id") Long lectureId)
         throws NoSuchObjectException {
-        return attendanceService.getAttendance(lecture_id);
+        return attendanceService.getAttendances(lectureId);
+    }
+
+    @GetMapping("/api/v1/lecturer/{lecture_id}/attendance/{day_milliseconds}")
+    public AttendanceDto getTodayAttendance(@PathVariable("lecture_id") Long lectureId,
+        @PathVariable("day_milliseconds") Long milliseconds) throws NoSuchObjectException {
+        return attendanceService.getDayAttendances(lectureId, milliseconds);
     }
 }
