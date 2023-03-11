@@ -68,21 +68,6 @@ public class LectureApiController {
         }
     }
 
-//    /*
-//    * 강의 상태 변경
-//    * */
-//    @PostMapping("/api/v1/lectures/{lecture_id}/state")
-//    public ResponseEntity<String> changeLectureState(@RequestBody LectureStateChangeRequest lectureStateChangeRequest,
-//        @PathVariable("lecture_id") Long lecture_id) {
-//        try {
-//            lectureService.changeLectureState(lectureStateChangeRequest, lecture_id, mockLoginUserId);
-//            return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        }
-//    }
-
     /*
      * 강의 열고 출석 번호 반환
      * */
@@ -91,6 +76,20 @@ public class LectureApiController {
         try {
             int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lecture_id);
             return ResponseEntity.ok(Map.of("attendanceNumber", attendanceNumber).toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    /*
+     * 강의 닫기
+     * */
+    @PostMapping("/api/v1/lectures/{lecture_id}/state")
+    public ResponseEntity<String> changeLectureState(@PathVariable("lecture_id") Long lecture_id) {
+        try {
+            lectureService.closeLecture(lecture_id);
+            return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
