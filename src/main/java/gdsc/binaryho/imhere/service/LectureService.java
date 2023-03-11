@@ -6,7 +6,6 @@ import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
 import gdsc.binaryho.imhere.domain.member.Member;
-import gdsc.binaryho.imhere.domain.member.Role;
 import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
 import java.rmi.NoSuchObjectException;
 import java.util.List;
@@ -29,11 +28,6 @@ public class LectureService {
     @Transactional
     public void createLecture(LectureCreateRequest request) throws NoSuchObjectException {
         Member lecturer = AuthenticationService.getCurrentMember();
-        if (!lecturer.hasRole(Role.LECTURER)) {
-            /* TODO: Exception 만들어서 대체 */
-            throw new IllegalArgumentException();
-        }
-
         Lecture newLecture = Lecture.createLecture(lecturer, request.getLectureName());
         lectureRepository.save(newLecture);
     }

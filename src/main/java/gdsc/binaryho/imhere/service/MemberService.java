@@ -7,7 +7,6 @@ import gdsc.binaryho.imhere.domain.member.Role;
 import gdsc.binaryho.imhere.mapper.dtos.SignInResponseDto;
 import gdsc.binaryho.imhere.mapper.requests.RoleChangeRequest;
 import gdsc.binaryho.imhere.mapper.requests.SignInRequest;
-import java.rmi.NoSuchObjectException;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -49,10 +48,7 @@ public class MemberService {
     }
 
     @Transactional
-    public void memberRoleChange(RoleChangeRequest roleChangeRequest, Long memberId)
-        throws NoSuchObjectException {
-        AuthenticationService.verifyMemberHasRole(Role.ADMIN);
-
+    public void memberRoleChange(RoleChangeRequest roleChangeRequest, Long memberId) {
         Member targetMember = memberRepository.findById(memberId).orElseThrow();
 
         Role newRole = Role.valueOf(roleChangeRequest.getRole());

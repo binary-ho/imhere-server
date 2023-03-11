@@ -48,7 +48,6 @@ public class LectureApiController {
     * */
     @GetMapping("/api/v1/lectures")
     public List<LectureDto> getLectures() throws NoSuchObjectException {
-        /* TODO : 시큐리티 도입 이후 id 가져와야함 */
         List<Lecture> lectures = lectureService.getOwnLectures();
         return lectures.stream().map(LectureDto::createLectureDtoWithLectureStudents).collect(Collectors.toList());
     }
