@@ -4,12 +4,20 @@ import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.member.Member;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
+@Entity
+@Table(name = "attendances")
+@Getter
+@Setter
 public class Attendance {
 
     @Id
