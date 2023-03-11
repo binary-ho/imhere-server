@@ -3,12 +3,12 @@ package gdsc.binaryho.imhere.service;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
-import gdsc.binaryho.imhere.domain.lecture.LectureCreateRequest;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.domain.member.Role;
+import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
 import java.rmi.NoSuchObjectException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,8 +29,9 @@ public class LectureService {
     private final AuthenticationService authenticationService;
 
     @Transactional
-    public void createLecture(LectureCreateRequest request, Long loginUserId) {
-        Member lecturer = memberRepository.findById(loginUserId).orElseThrow();
+    public void createLecture(LectureCreateRequest request)
+        throws NoSuchObjectException {
+        Member lecturer = authenticationService.getCurrentMember();
         if (!lecturer.hasRole(Role.LECTURER)) {
             /* TODO: Exception 만들어서 대체 */
             throw new IllegalArgumentException();
