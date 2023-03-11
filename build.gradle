@@ -42,6 +42,9 @@ dependencies {
 
 	/* SMTP */
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	/* log4j */
+	implementation 'org.apache.logging.log4j:log4j-core:2.17.1'
 }
 
 tasks.named('test') {

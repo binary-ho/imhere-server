@@ -7,11 +7,15 @@ import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.mapper.requests.EnrollRequest;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,8 @@ public class EnrollmentService {
     private final LectureRepository lectureRepository;
     private final MemberRepository memberRepository;
     private final EnrollmentInfoRepository enrollmentInfoRepository;
+
+    private final Logger logger = LogManager.getLogger(EnrollmentService.class);
 
     @Transactional
     public void enrollStudents(EnrollRequest enrollRequest,
@@ -37,8 +43,16 @@ public class EnrollmentService {
     }
 
     private List<Member> getStudentsByUnivId(List<String> univIds) {
-        return univIds.stream()
-            .map(univId -> memberRepository.findByUnivId(univId).orElseThrow())
-            .collect(Collectors.toList());
+        List<Member> members = new ArrayList<>();
+        for (String univId : univIds) {
+            Optional<Member> member = memberRepository.findByUnivId(univId);
+            if (member.isEmpty()) {
+                logger.error("Enrollment Error : there is no such member '" + univId + "' in database");
+                continue;
+            }
+            members.add(member.get());
+        }
+
+        return members;
     }
 }
