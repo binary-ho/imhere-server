@@ -1,6 +1,5 @@
 package gdsc.binaryho.imhere.mapper.requests;
 
-import gdsc.binaryho.imhere.domain.lecture.LectureState;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class LectureStateChangeRequest {
+public class RoleChangeRequest {
 
-    private LectureState lectureState;
+    private String role;
 }

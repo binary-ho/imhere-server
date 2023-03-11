@@ -2,6 +2,7 @@ package gdsc.binaryho.imhere.service;
 
 import gdsc.binaryho.imhere.config.auth.PrincipalDetails;
 import gdsc.binaryho.imhere.domain.member.Member;
+import gdsc.binaryho.imhere.domain.member.Role;
 import java.rmi.NoSuchObjectException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,6 +30,12 @@ public class AuthenticationService {
 
     public static void verifyRequestMemberLogInMember(String univId) throws NoSuchObjectException {
         if (!univId.equals(getCurrentMember().getUnivId())) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public static void verifyMemberHasRole(Role role) throws NoSuchObjectException {
+        if (!getCurrentMember().hasRole(role)) {
             throw new IllegalArgumentException();
         }
     }

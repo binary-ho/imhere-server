@@ -5,7 +5,10 @@ import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.domain.member.Role;
 import gdsc.binaryho.imhere.mapper.dtos.SignInResponseDto;
+import gdsc.binaryho.imhere.mapper.requests.RoleChangeRequest;
 import gdsc.binaryho.imhere.mapper.requests.SignInRequest;
+import java.rmi.NoSuchObjectException;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,9 +17,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberService {
 
-    private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final MemberRepository memberRepository;
 
+    @Transactional
     public void signUp(String univId, String name, String password) {
         validateDuplicate(univId);
         Member newMember = Member.createMember(univId, name, password, Role.STUDENT);
@@ -29,6 +33,7 @@ public class MemberService {
         }
     }
 
+    @Transactional
     public SignInResponseDto login(SignInRequest signInRequest) {
         Member member = memberRepository.findByUnivId(signInRequest.getUnivId()).orElseThrow();
 
@@ -41,5 +46,16 @@ public class MemberService {
 
     private boolean validateMatchesPassword(String rawPassword, String encodedPassword) {
         return bCryptPasswordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    @Transactional
+    public void memberRoleChange(RoleChangeRequest roleChangeRequest, Long memberId)
+        throws NoSuchObjectException {
+        AuthenticationService.verifyMemberHasRole(Role.ADMIN);
+
+        Member targetMember = memberRepository.findById(memberId).orElseThrow();
+
+        Role newRole = Role.valueOf(roleChangeRequest.getRole());
+        targetMember.setRole(newRole);
     }
 }
