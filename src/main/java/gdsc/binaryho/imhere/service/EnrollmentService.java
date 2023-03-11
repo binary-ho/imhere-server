@@ -1,12 +1,12 @@
 package gdsc.binaryho.imhere.service;
 
-import gdsc.binaryho.imhere.domain.enrollment.EnrollRequest;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
+import gdsc.binaryho.imhere.mapper.requests.EnrollRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;

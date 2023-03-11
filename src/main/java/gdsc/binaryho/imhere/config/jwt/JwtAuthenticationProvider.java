@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.config.jwt;
 
-import gdsc.binaryho.imhere.domain.member.SignInRequest;
-import gdsc.binaryho.imhere.domain.member.SignInResponseDto;
+import gdsc.binaryho.imhere.mapper.dtos.SignInResponseDto;
+import gdsc.binaryho.imhere.mapper.requests.SignInRequest;
 import gdsc.binaryho.imhere.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;

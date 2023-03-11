@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.domain.member;
+package gdsc.binaryho.imhere.mapper.requests;
 
 import lombok.Getter;
 

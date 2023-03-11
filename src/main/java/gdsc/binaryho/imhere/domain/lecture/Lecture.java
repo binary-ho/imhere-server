@@ -41,6 +41,7 @@ public class Lecture {
 
     private String lectureName;
     private String lecturerName;
+    private Integer attendanceNumber;
 
     @Enumerated(EnumType.STRING)
     private LectureState lectureState;
@@ -50,11 +51,11 @@ public class Lecture {
 
     public static Lecture createLecture(Member lecturer, String lectureName) {
         Lecture lecture = new Lecture();
-        lecture.setId(lecture.id);
         lecture.setMember(lecturer);
         lecture.setLectureName(lectureName);
         lecture.setLecturerName(lecturer.getName());
         lecture.setLectureState(LectureState.CLOSED);
+        lecture.setAttendanceNumber(0);
         return lecture;
     }
 }

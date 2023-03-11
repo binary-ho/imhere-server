@@ -16,7 +16,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @RequiredArgsConstructor
@@ -28,7 +27,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private static final String ACCESS_TOKEN_PREFIX = "Token ";
 
     private final AuthenticationManager authenticationManager;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final TokenService tokenService;
 
     @Override

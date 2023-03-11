@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.api;
 
-import gdsc.binaryho.imhere.domain.enrollment.EnrollRequest;
+import gdsc.binaryho.imhere.mapper.requests.EnrollRequest;
 import gdsc.binaryho.imhere.service.EnrollmentService;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.api;
 
-import gdsc.binaryho.imhere.domain.attendance.AttendanceRequest;
+import gdsc.binaryho.imhere.mapper.requests.AttendanceRequest;
 import gdsc.binaryho.imhere.service.AttendanceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

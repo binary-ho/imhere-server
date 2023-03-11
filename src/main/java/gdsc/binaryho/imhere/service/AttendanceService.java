@@ -2,10 +2,10 @@ package gdsc.binaryho.imhere.service;
 
 
 import gdsc.binaryho.imhere.domain.attendance.Attendance;
-import gdsc.binaryho.imhere.domain.attendance.AttendanceRequest;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
+import gdsc.binaryho.imhere.mapper.requests.AttendanceRequest;
 import java.rmi.NoSuchObjectException;
 import java.time.Instant;
 import java.time.LocalDateTime;
