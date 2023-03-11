@@ -20,11 +20,10 @@ import org.springframework.stereotype.Service;
 public class AttendanceService {
 
     private final EnrollmentInfoRepository enrollmentRepository;
-    private final AuthenticationService authenticationService;
 
     @Transactional
     public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) throws NoSuchObjectException {
-        Member currentStudent = authenticationService.getCurrentMember();
+        Member currentStudent = AuthenticationService.getCurrentMember();
         EnrollmentInfo enrollmentInfo = enrollmentRepository
             .findByMemberIdAndLectureId(currentStudent.getId(), lectureId)
             .orElseThrow(IllegalAccessError::new);

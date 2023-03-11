@@ -28,7 +28,7 @@ public class LectureService {
 
     @Transactional
     public void createLecture(LectureCreateRequest request) throws NoSuchObjectException {
-        Member lecturer = authenticationService.getCurrentMember();
+        Member lecturer = AuthenticationService.getCurrentMember();
         if (!lecturer.hasRole(Role.LECTURER)) {
             /* TODO: Exception 만들어서 대체 */
             throw new IllegalArgumentException();
@@ -39,13 +39,13 @@ public class LectureService {
     }
 
     public List<Lecture> getStudentLectures() throws NoSuchObjectException {
-        Member currentStudent = authenticationService.getCurrentMember();
+        Member currentStudent = AuthenticationService.getCurrentMember();
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberId(currentStudent.getId());
         return getLectures(enrollmentInfos);
     }
 
     public List<Lecture> getStudentOpenLectures() throws NoSuchObjectException {
-        Member currentStudent = authenticationService.getCurrentMember();
+        Member currentStudent = AuthenticationService.getCurrentMember();
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberIdAndLecture_LectureState(currentStudent.getId(), LectureState.OPEN);
         return getLectures(enrollmentInfos);
     }
@@ -57,14 +57,14 @@ public class LectureService {
     }
 
     public List<Lecture> getOwnLectures() throws NoSuchObjectException {
-        Member currentLecturer = authenticationService.getCurrentMember();
+        Member currentLecturer = AuthenticationService.getCurrentMember();
         return lectureRepository.findAllByMemberId(currentLecturer.getId());
     }
 
     @Transactional
     public int openLectureAndGetAttendanceNumber(Long lectureId) throws Exception {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
-        authenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
+        AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         lecture.setLectureState(LectureState.OPEN);
 
@@ -77,7 +77,7 @@ public class LectureService {
     @Transactional
     public void closeLecture(Long lectureId) throws Exception {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
-        authenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
+        AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         lecture.setLectureState(LectureState.CLOSED);
     }
