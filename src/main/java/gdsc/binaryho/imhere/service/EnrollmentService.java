@@ -2,11 +2,12 @@ package gdsc.binaryho.imhere.service;
 
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfoRepository;
+import gdsc.binaryho.imhere.domain.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
-import gdsc.binaryho.imhere.mapper.requests.EnrollRequest;
+import gdsc.binaryho.imhere.mapper.requests.EnrollMentRequestForLecturer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,17 +29,17 @@ public class EnrollmentService {
     private final Logger logger = LogManager.getLogger(EnrollmentService.class);
 
     @Transactional
-    public void enrollStudents(EnrollRequest enrollRequest,
+    public void enrollStudents(EnrollMentRequestForLecturer enrollMentRequestForLecturer,
         Long lectureId) throws Exception {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
         AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
-        List<Member> students = getStudentsByUnivId(enrollRequest.getUnivIds());
+        List<Member> students = getStudentsByUnivId(enrollMentRequestForLecturer.getUnivIds());
         students.forEach(student -> enrollStudent(lecture, student));
     }
 
     private void enrollStudent(Lecture lecture, Member student) {
-        EnrollmentInfo enrollmentInfo = EnrollmentInfo.createEnrollmentInfo(lecture, student);
+        EnrollmentInfo enrollmentInfo = EnrollmentInfo.createEnrollmentInfo(lecture, student, EnrollmentState.APPROVAL);
         enrollmentInfoRepository.save(enrollmentInfo);
     }
 

@@ -5,6 +5,7 @@ import gdsc.binaryho.imhere.domain.attendance.Attendance;
 import gdsc.binaryho.imhere.domain.attendance.AttendanceRepository;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfoRepository;
+import gdsc.binaryho.imhere.domain.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
@@ -37,7 +38,7 @@ public class AttendanceService {
     public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) throws NoSuchObjectException {
         Member currentStudent = AuthenticationService.getCurrentMember();
         EnrollmentInfo enrollmentInfo = enrollmentRepository
-            .findByMemberIdAndLectureId(currentStudent.getId(), lectureId)
+            .findByMemberIdAndLectureIdAndEnrollmentState(currentStudent.getId(), lectureId, EnrollmentState.APPROVAL)
             .orElseThrow(IllegalAccessError::new);
 
         validateLectureOpen(enrollmentInfo);

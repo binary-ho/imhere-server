@@ -2,6 +2,7 @@ package gdsc.binaryho.imhere.service;
 
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfoRepository;
+import gdsc.binaryho.imhere.domain.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
@@ -38,13 +39,13 @@ public class LectureService {
 
     public List<Lecture> getStudentLectures() throws NoSuchObjectException {
         Member currentStudent = AuthenticationService.getCurrentMember();
-        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberId(currentStudent.getId());
+        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberIdAndEnrollmentState(currentStudent.getId(), EnrollmentState.APPROVAL);
         return getLectures(enrollmentInfos);
     }
 
     public List<Lecture> getStudentOpenLectures() throws NoSuchObjectException {
         Member currentStudent = AuthenticationService.getCurrentMember();
-        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberIdAndLecture_LectureState(currentStudent.getId(), LectureState.OPEN);
+        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberIdAndLecture_LectureStateAndEnrollmentState(currentStudent.getId(), LectureState.OPEN, EnrollmentState.APPROVAL);
         return getLectures(enrollmentInfos);
     }
 

@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EnrollmentInfoRepository extends JpaRepository<EnrollmentInfo, Long> {
 
-    List<EnrollmentInfo> findAllByMemberId(Long memberId);
-    List<EnrollmentInfo> findAllByMemberIdAndLecture_LectureState(Long memberId, LectureState lectureState);
+    List<EnrollmentInfo> findAllByMemberIdAndEnrollmentState(Long member_id, EnrollmentState enrollmentState);
+    List<EnrollmentInfo> findAllByMemberIdAndLecture_LectureStateAndEnrollmentState(Long memberId, LectureState lectureState, EnrollmentState enrollmentState);
     List<EnrollmentInfo> findAllByLecture(Lecture lecture);
-    Optional<EnrollmentInfo> findByMemberIdAndLectureId(Long memberId, Long lectureId);
+    Optional<EnrollmentInfo> findByMemberIdAndLectureIdAndEnrollmentState(Long memberId, Long lectureId, EnrollmentState enrollmentState);
 }

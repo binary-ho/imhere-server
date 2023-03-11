@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class EnrollRequest {
+public class EnrollMentRequestForLecturer {
     private List<String> univIds;
 }
