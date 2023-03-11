@@ -7,6 +7,7 @@ import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
 import gdsc.binaryho.imhere.domain.lecture.LectureStateChangeRequest;
 import gdsc.binaryho.imhere.service.LectureService;
+import java.rmi.NoSuchObjectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,9 +27,6 @@ public class LectureApiController {
 
     private final LectureRepository lectureRepository;
     private final LectureService lectureService;
-
-    /* TODO: 시큐리티 도입 이후 제거 */
-    private final static Long mockLoginUserId = 1L;
 
     public LectureApiController(LectureRepository lectureRepository, LectureService lectureService) {
         this.lectureRepository = lectureRepository;
@@ -51,9 +49,9 @@ public class LectureApiController {
     * 강사 본인이 만든 강의들 가져오기
     * */
     @GetMapping("/api/v1/lectures")
-    public List<LectureDto> getLectures() {
+    public List<LectureDto> getLectures() throws NoSuchObjectException {
         /* TODO : 시큐리티 도입 이후 id 가져와야함 */
-        List<Lecture> lectures = lectureRepository.findAllByMemberId(mockLoginUserId);
+        List<Lecture> lectures = lectureService.getOwnLectures();
         return lectures.stream().map(LectureDto::createLectureDtoWithLectureStudents).collect(Collectors.toList());
     }
 
@@ -63,7 +61,6 @@ public class LectureApiController {
     @PostMapping("/api/v1/lectures")
     public ResponseEntity<String> createLecture(@RequestBody LectureCreateRequest request) {
         try {
-            /* TODO : 시큐리티 도입 이후 id 가져와야함 */
             lectureService.createLecture(request, mockLoginUserId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {
@@ -78,7 +75,6 @@ public class LectureApiController {
     @PostMapping("/api/v1/lectures/{lecture_id}/state")
     public ResponseEntity<String> changeLectureState(@RequestBody LectureStateChangeRequest lectureStateChangeRequest,
         @PathVariable("lecture_id") Long lecture_id) {
-        /* TODO: 시큐리티 도입 이후, 강의 소유자 검증 로직 필요 */
         try {
             lectureService.changeLectureState(lectureStateChangeRequest, lecture_id, mockLoginUserId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());

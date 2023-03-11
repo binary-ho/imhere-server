@@ -6,29 +6,27 @@ import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureCreateRequest;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
-import gdsc.binaryho.imhere.domain.lecture.LectureStateChangeRequest;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.domain.member.Role;
+import java.rmi.NoSuchObjectException;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class LectureService {
+
+    private final static Integer RANDOM_NUMBER_START = 100;
+    private final static Integer RANDOM_NUMBER_END = 1000;
 
     private final LectureRepository lectureRepository;
     private final EnrollmentInfoRepository enrollmentInfoRepository;
     private final MemberRepository memberRepository;
-
-    public LectureService(LectureRepository lectureRepository,
-        EnrollmentInfoRepository enrollmentInfoRepository,
-        MemberRepository memberRepository) {
-        this.lectureRepository = lectureRepository;
-        this.enrollmentInfoRepository = enrollmentInfoRepository;
-        this.memberRepository = memberRepository;
-    }
+    private final AuthenticationService authenticationService;
 
     @Transactional
     public void createLecture(LectureCreateRequest request, Long loginUserId) {
@@ -58,18 +56,13 @@ public class LectureService {
             .collect(Collectors.toList());
     }
 
-    @Transactional
-    public void changeLectureState(
-        LectureStateChangeRequest lectureStateChangeRequest,
-        Long lectureId, Long loginUserId) throws Exception {
+    public List<Lecture> getOwnLectures() throws NoSuchObjectException {
+        Member currentLecturer = authenticationService.getCurrentMember();
+        return lectureRepository.findAllByMemberId(currentLecturer.getId());
+    }
 
-        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
-
-        if (!loginUserId.equals(lecture.getMember().getId())) {
-            /* TODO: 예외 만들어서 대체 */
-            throw new Exception();
-        }
-
-        lecture.setLectureState(lectureStateChangeRequest.getLectureState());
+    private int generateRandomNumber() {
+        int rangeSize = RANDOM_NUMBER_END - RANDOM_NUMBER_START + 1;
+        return (int) (Math.random() * (rangeSize)) + RANDOM_NUMBER_START;
     }
 }
