@@ -26,8 +26,9 @@ public class MemberController {
 
     @PostMapping("/member/new")
     public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest) {
-        String encodedPassword = bCryptPasswordEncoder.encode(signUpRequest.getPassword());
         try {
+            String encodedPassword = bCryptPasswordEncoder.encode(signUpRequest.getPassword());
+
             memberService.signUp(signUpRequest.getUnivId(), signUpRequest.getName(), encodedPassword);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {
