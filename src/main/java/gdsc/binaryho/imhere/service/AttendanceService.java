@@ -36,11 +36,10 @@ public class AttendanceService {
         validateLectureOpen(enrollmentInfo);
         validateAttendanceNumber(enrollmentInfo, attendanceRequest.getAttendanceNumber());
 
-        LocalDateTime localDateTime = getLocalDateTime(attendanceRequest.getMilliseconds());
-
         Attendance attendance = Attendance.createAttendance(enrollmentInfo.getMember(),
             enrollmentInfo.getLecture(),
-            attendanceRequest.getDistance(), attendanceRequest.getAccuracy(), localDateTime);
+            attendanceRequest.getDistance(), attendanceRequest.getAccuracy(),
+            getLocalDateTime(attendanceRequest.getMilliseconds()));
 
         attendanceRepository.save(attendance);
     }

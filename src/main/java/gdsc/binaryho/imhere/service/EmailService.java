@@ -1,10 +1,12 @@
 package gdsc.binaryho.imhere.service;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import javax.mail.Message.RecipientType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -27,21 +29,26 @@ public class EmailService {
         + "</div>"
         + "<p> 감사합니다. <p>"
         + "<br>";
+    private final static int ATTENDANCE_NUMBER_EXPIRE_TIME = 10;
+    private final static String EMAIL_REGEX = "^[a-zA-Z0-9]+@[g.]?hongik\\.ac\\.kr$";
 
     private final JavaMailSender emailSender;
     private final StringBuilder stringBuilder = new StringBuilder();
+    private final RedisTemplate<String, String> redisTemplate;
 
-    public String sendMailAndGetVerificationCode(String recipient) throws Exception {
+    public void sendMailAndGetVerificationCode(String recipient) throws Exception {
+        validateEmailForm(recipient);
+
         String verificationCode = UUID.randomUUID().toString();
         MimeMessage message = writeMail(recipient, verificationCode);
 
         try {
             emailSender.send(message);
+            setVerificationCode(recipient, verificationCode);
         } catch (MailException e) {
             e.printStackTrace();
             throw new IllegalArgumentException();
         }
-        return verificationCode;
     }
 
     private MimeMessage writeMail(String recipient, String verificationCode) throws Exception {
@@ -61,5 +68,20 @@ public class EmailService {
         return String.valueOf(stringBuilder.append(MESSAGE_PREFIX)
             .append(verificationCode)
             .append(MESSAGE_SUFFIX));
+    }
+
+    private void setVerificationCode(String recipient, String verificationCode) {
+        redisTemplate.opsForValue().set(
+            recipient,
+            verificationCode,
+            ATTENDANCE_NUMBER_EXPIRE_TIME,
+            TimeUnit.MINUTES
+        );
+    }
+
+    private void validateEmailForm(String recipient) {
+        if (!recipient.matches(EMAIL_REGEX)) {
+            throw new IllegalArgumentException();
+        }
     }
 }
