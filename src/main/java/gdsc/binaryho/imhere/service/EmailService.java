@@ -18,19 +18,16 @@ public class EmailService {
     private final static String MESSAGE_PREFIX = ""
         + "<div style='margin:20px;'>"
         + "<div style='margin:20px;'>"
-        + "<h2> GDSC Hongik i'm here 입니다 </h1> <br>"
-        + "<h3>회원가입 인증 코드입니다.</h3>"
-        + "<div align='center' style='border:1px solid black; font-family:verdana';>"
-        + "<div style='font-size:130%'>"
+        + "<h1> GDSC Hongik i'm here 인증 코드 입니다! </h1> <br>"
+        + "<h3>아래는 회원가입 인증 코드입니다.</h3> <br>"
         + "CODE : <strong>";
 
     private final static String MESSAGE_SUFFIX = ""
-        + "</strong><div><br/> "
-        + "</div>"
-        + "<p> 감사합니다. <p>"
+        + "</strong>"
+        + "<h3> 10분안에 입력 부탁드립니다. 감사합니다. <h3>"
         + "<br>";
     private final static int ATTENDANCE_NUMBER_EXPIRE_TIME = 10;
-    private final static String EMAIL_REGEX = "^[a-zA-Z0-9]+@[g.]?hongik\\.ac\\.kr$";
+    private final static String EMAIL_REGEX = "^[a-zA-Z0-9]+@(?:(?:g\\.)?hongik\\.ac\\.kr)$";;
 
     private final JavaMailSender emailSender;
     private final StringBuilder stringBuilder = new StringBuilder();
@@ -54,8 +51,8 @@ public class EmailService {
     private MimeMessage writeMail(String recipient, String verificationCode) throws Exception {
         MimeMessage message = emailSender.createMimeMessage();
 
-        message.addRecipients(RecipientType.TO, recipient);//보내는 대상
-        message.setSubject("이메일 인증 테스트");//제목
+        message.addRecipients(RecipientType.TO, recipient);
+        message.setSubject("Hello There! GDSC Hongik i'm here 회원가입 인증 코드입니다.");
 
         message.setText(getMessage(verificationCode), "utf-8", "html");//내용
         message.setFrom(new InternetAddress("gdscimhere@gmail.com", "jinholee"));//보내는 사람
