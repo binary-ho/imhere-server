@@ -5,13 +5,19 @@ import gdsc.binaryho.imhere.domain.attendance.Attendance;
 import gdsc.binaryho.imhere.domain.attendance.AttendanceRepository;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfoRepository;
+import gdsc.binaryho.imhere.domain.lecture.Lecture;
+import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
 import gdsc.binaryho.imhere.domain.member.Member;
+import gdsc.binaryho.imhere.mapper.dtos.AttendanceDto;
+import gdsc.binaryho.imhere.mapper.dtos.AttendanceInfo;
 import gdsc.binaryho.imhere.mapper.requests.AttendanceRequest;
 import java.rmi.NoSuchObjectException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +30,7 @@ public class AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
     private final EnrollmentInfoRepository enrollmentRepository;
+    private final LectureRepository lectureRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
@@ -64,5 +71,31 @@ public class AttendanceService {
     private LocalDateTime getLocalDateTime(Long milliseconds) {
         return LocalDateTime
             .ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("Asia/Seoul"));
+    }
+
+    public AttendanceDto getAttendance(Long lectureId) throws NoSuchObjectException {
+        List<Attendance> attendances = attendanceRepository.findAllByLectureId(lectureId);
+
+        if (attendances.isEmpty()) {
+            return getNullAttendanceDto(lectureId);
+        }
+
+        Lecture lecture = attendances.get(0).getLecture();
+        verifyRequestMemberLogInMember(lecture.getMember());
+
+        return getAttendanceDto(lecture, attendances);
+    }
+
+    private void verifyRequestMemberLogInMember(Member lecturer) throws NoSuchObjectException {
+        AuthenticationService.verifyRequestMemberLogInMember(lecturer.getId());
+    }
+
+    private AttendanceDto getAttendanceDto(Lecture lecture, List<Attendance> attendances) {
+        return new AttendanceDto(lecture, AttendanceInfo.getAttendanceInfos(attendances));
+    }
+
+    private AttendanceDto getNullAttendanceDto(Long lectureId) {
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        return new AttendanceDto(lecture, new ArrayList<>());
     }
 }
