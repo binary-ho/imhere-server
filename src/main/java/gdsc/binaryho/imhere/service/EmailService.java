@@ -20,12 +20,11 @@ public class EmailService {
         + "<div style='margin:20px;'>"
         + "<div style='margin:20px;'>"
         + "<h1> GDSC Hongik i'm here 인증 코드 입니다! </h1> <br>"
-        + "<h3>아래는 회원가입 인증 코드입니다.</h3> <br>"
         + "CODE : <strong>";
 
     private final static String MESSAGE_SUFFIX = ""
         + "</strong>"
-        + "<h3> 10분안에 입력 부탁드립니다. 감사합니다. <h3>"
+        + "<h3> 10분안에 입력 부탁드립니다. 감사합니다! <h3>"
         + "<br>";
     private final static int ATTENDANCE_NUMBER_EXPIRE_TIME = 10;
     private final static String EMAIL_REGEX = "^[a-zA-Z0-9]+@(?:(?:g\\.)?hongik\\.ac\\.kr)$";;

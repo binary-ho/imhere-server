@@ -16,19 +16,28 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberService {
 
+    private static final String PASSWORD_REGEX = "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,20}$";
+
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MemberRepository memberRepository;
 
     @Transactional
     public void signUp(String univId, String name, String password) {
-        validateDuplicate(univId);
-        Member newMember = Member.createMember(univId, name, password, Role.STUDENT);
+        validateDuplicateMember(univId);
+        validatePasswordForm(password);
+        Member newMember = Member.createMember(univId, name, bCryptPasswordEncoder.encode(password), Role.STUDENT);
         memberRepository.save(newMember);
     }
 
-    private void validateDuplicate(String univId) {
+    private void validateDuplicateMember(String univId) {
         if (memberRepository.findByUnivId(univId).isPresent()) {
             throw new DuplicateRequestException();
+        }
+    }
+
+    private void validatePasswordForm(String password) {
+        if (!password.matches(PASSWORD_REGEX)) {
+            throw new IllegalArgumentException();
         }
     }
 

@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/* TODO: 유저의 권한을 바꾸는 API 필요
-*  */
 @RestController
 public class LectureApiController {
 
