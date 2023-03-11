@@ -1,5 +1,6 @@
 package gdsc.binaryho.imhere.service;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.mail.Message.RecipientType;
@@ -80,5 +81,11 @@ public class EmailService {
         if (!recipient.matches(EMAIL_REGEX)) {
             throw new IllegalArgumentException();
         }
+    }
+
+    public boolean verifyCode(String email, String verificationCode) {
+        String nonNullEmail = Objects.requireNonNull(email);
+        String nonNullVerificationCode = Objects.requireNonNull(verificationCode);
+        return Objects.equals(redisTemplate.opsForValue().get(nonNullEmail), nonNullVerificationCode);
     }
 }
