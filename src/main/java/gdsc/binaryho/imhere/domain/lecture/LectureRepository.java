@@ -8,4 +8,5 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> {
 
     Optional<Lecture> findById(Long id);
     List<Lecture> findAllByMemberId(Long id);
+    List<Lecture> findAllByLectureStateNot(LectureState lectureState);
 }

@@ -1,6 +1,8 @@
 package gdsc.binaryho.imhere.api;
 
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
+import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
+import gdsc.binaryho.imhere.domain.lecture.LectureState;
 import gdsc.binaryho.imhere.mapper.dtos.LectureDto;
 import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
 import gdsc.binaryho.imhere.service.LectureService;
@@ -8,6 +10,7 @@ import java.rmi.NoSuchObjectException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +20,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 public class LectureApiController {
 
     private final LectureService lectureService;
+    private final LectureRepository lectureRepository;
 
-    public LectureApiController(LectureService lectureService) {
-        this.lectureService = lectureService;
+    @GetMapping("/api/v1/students/all-lectures")
+    public List<LectureDto> getAllLectures() {
+        List<Lecture> lectures = lectureRepository.findAllByLectureStateNot(LectureState.TERMINATED);
+        return lectures.stream().map(LectureDto::createLectureDto).collect(Collectors.toList());
     }
 
     @GetMapping("/api/v1/students/lectures")
@@ -44,7 +51,6 @@ public class LectureApiController {
     public List<LectureDto> getLectures() throws NoSuchObjectException {
         return lectureService.getOwnLectures();
     }
-
     /*
      * 강의 생성
      * */
