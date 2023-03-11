@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 public class LectureDto {
@@ -41,5 +43,20 @@ public class LectureDto {
         lectureDto.lectureState = lecture.getLectureState();
         lectureDto.studentInfos = new ArrayList<>();
         return lectureDto;
+    }
+
+    @Getter @Setter
+    @NoArgsConstructor
+    public static class StudentInfo {
+
+        private Long id;
+        private String univId;
+        private String name;
+
+        public StudentInfo(Long id, String univId, String name) {
+            this.id = id;
+            this.univId = univId;
+            this.name = name;
+        }
     }
 }

@@ -7,6 +7,7 @@ import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
+import gdsc.binaryho.imhere.mapper.dtos.EnrollmentInfoDto;
 import gdsc.binaryho.imhere.mapper.requests.EnrollMentRequestForLecturer;
 import java.rmi.NoSuchObjectException;
 import java.util.ArrayList;
@@ -82,5 +83,12 @@ public class EnrollmentService {
 
         AuthenticationService.verifyRequestMemberLogInMember(enrollmentInfoAwaited.getLecture().getId());
         enrollmentInfoAwaited.setEnrollmentState(EnrollmentState.REJECTION);
+    }
+
+    public EnrollmentInfoDto getLectureEnrollment(Long lectureId) throws NoSuchObjectException {
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
+        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByLecture(lecture);
+        return EnrollmentInfoDto.createEnrollmentInfoDto(enrollmentInfos);
     }
 }
