@@ -28,6 +28,7 @@ public class EmailService {
         + "<br>";
     private final static int ATTENDANCE_NUMBER_EXPIRE_TIME = 10;
     private final static String EMAIL_REGEX = "^[a-zA-Z0-9]+@(?:(?:g\\.)?hongik\\.ac\\.kr)$";;
+    private final static String GMAIL_REGEX = "^[a-zA-Z0-9]+@gmail\\.com$";
 
     private final JavaMailSender emailSender;
     private final StringBuilder stringBuilder = new StringBuilder();
@@ -77,7 +78,7 @@ public class EmailService {
     }
 
     private void validateEmailForm(String recipient) {
-        if (!recipient.matches(EMAIL_REGEX)) {
+        if (!recipient.matches(EMAIL_REGEX) || !recipient.matches(GMAIL_REGEX)) {
             throw new IllegalArgumentException();
         }
     }
