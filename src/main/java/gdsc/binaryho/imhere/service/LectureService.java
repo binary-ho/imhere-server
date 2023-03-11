@@ -6,12 +6,15 @@ import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
 import gdsc.binaryho.imhere.domain.member.Member;
+import gdsc.binaryho.imhere.mapper.dtos.LectureDto;
 import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
 import java.rmi.NoSuchObjectException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,10 +23,11 @@ public class LectureService {
 
     private final static Integer RANDOM_NUMBER_START = 100;
     private final static Integer RANDOM_NUMBER_END = 1000;
+    private final static Integer ATTENDANCE_NUMBER_EXPIRE_TIME = 10;
 
     private final LectureRepository lectureRepository;
     private final EnrollmentInfoRepository enrollmentInfoRepository;
-    private final AuthenticationService authenticationService;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
     public void createLecture(LectureCreateRequest request) throws NoSuchObjectException {
@@ -50,9 +54,13 @@ public class LectureService {
             .collect(Collectors.toList());
     }
 
-    public List<Lecture> getOwnLectures() throws NoSuchObjectException {
+    public List<LectureDto> getOwnLectures() throws NoSuchObjectException {
         Member currentLecturer = AuthenticationService.getCurrentMember();
-        return lectureRepository.findAllByMemberId(currentLecturer.getId());
+        List<Lecture> lectures = lectureRepository.findAllByMemberId(currentLecturer.getId());
+        return lectures.stream().map(lecture ->
+            LectureDto.createLectureDtoWithEnrollmentInfo(lecture,
+                enrollmentInfoRepository.findAllByLecture(lecture))
+        ).collect(Collectors.toList());
     }
 
     @Transactional
@@ -62,10 +70,16 @@ public class LectureService {
 
         lecture.setLectureState(LectureState.OPEN);
 
-        int attendanceName = generateRandomNumber();
-        lecture.setAttendanceNumber(attendanceName);
+        Integer attendanceNumber = generateRandomNumber();
 
-        return attendanceName;
+        redisTemplate.opsForValue().set(
+            String.valueOf(lecture.getId()),
+            String.valueOf(attendanceNumber),
+            ATTENDANCE_NUMBER_EXPIRE_TIME,
+            TimeUnit.MINUTES
+        );
+
+        return attendanceNumber;
     }
 
     @Transactional
@@ -76,7 +90,7 @@ public class LectureService {
         lecture.setLectureState(LectureState.CLOSED);
     }
 
-    private int generateRandomNumber() {
+    private Integer generateRandomNumber() {
         int rangeSize = RANDOM_NUMBER_END - RANDOM_NUMBER_START + 1;
         return (int) (Math.random() * (rangeSize)) + RANDOM_NUMBER_START;
     }

@@ -1,17 +1,13 @@
 package gdsc.binaryho.imhere.api;
 
-import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
-import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
-import gdsc.binaryho.imhere.domain.lecture.LectureState;
+import gdsc.binaryho.imhere.mapper.dtos.LectureDto;
 import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
 import gdsc.binaryho.imhere.service.LectureService;
 import java.rmi.NoSuchObjectException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +23,7 @@ public class LectureApiController {
 
     private final LectureService lectureService;
 
-    public LectureApiController(LectureRepository lectureRepository, LectureService lectureService) {
+    public LectureApiController(LectureService lectureService) {
         this.lectureService = lectureService;
     }
 
@@ -48,8 +44,7 @@ public class LectureApiController {
     * */
     @GetMapping("/api/v1/lectures")
     public List<LectureDto> getLectures() throws NoSuchObjectException {
-        List<Lecture> lectures = lectureService.getOwnLectures();
-        return lectures.stream().map(LectureDto::createLectureDtoWithLectureStudents).collect(Collectors.toList());
+        return lectureService.getOwnLectures();
     }
 
     /*
@@ -91,33 +86,6 @@ public class LectureApiController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-
-    @Getter
-    private static class LectureDto {
-        private Long id;
-        private String lectureName;
-        private String lecturerName;
-        private LectureState lectureState;
-        private List<EnrollmentInfo> enrollmentInfos;
-
-        private LectureDto() {}
-
-        public static LectureDto createLectureDtoWithLectureStudents(Lecture lecture) {
-            LectureDto lectureDto = createLectureDto(lecture);
-            lectureDto.enrollmentInfos = List.copyOf(lecture.getEnrollmentInfos());
-            return lectureDto;
-        }
-
-        public static LectureDto createLectureDto(Lecture lecture) {
-            LectureDto lectureDto = new LectureDto();
-            lectureDto.id = lecture.getId();
-            lectureDto.lectureName = lecture.getLectureName();
-            lectureDto.lecturerName = lecture.getLecturerName();
-            lectureDto.lectureState = lecture.getLectureState();
-            lectureDto.enrollmentInfos = new ArrayList<>();
-            return lectureDto;
         }
     }
 }

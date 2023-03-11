@@ -11,8 +11,10 @@ import java.rmi.NoSuchObjectException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Objects;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 public class AttendanceService {
 
     private final EnrollmentInfoRepository enrollmentRepository;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
     public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) throws NoSuchObjectException {
@@ -33,7 +36,7 @@ public class AttendanceService {
 
         LocalDateTime localDateTime = getLocalDateTime(attendanceRequest.getMilliseconds());
 
-        Attendance.createAttendance(enrollmentInfo,
+        Attendance.createAttendance(enrollmentInfo.getMember(), enrollmentInfo.getLecture(),
             attendanceRequest.getDistance(), attendanceRequest.getAccuracy(), localDateTime);
     }
 
@@ -44,7 +47,12 @@ public class AttendanceService {
     }
 
     private void validateAttendanceNumber(EnrollmentInfo enrollmentInfo, int attendanceNumber) {
-        if (enrollmentInfo.getLecture().getAttendanceNumber() != attendanceNumber) {
+        String actualAttendanceNumber = Objects.requireNonNull(
+            redisTemplate.opsForValue()
+                .get(enrollmentInfo.getLecture().getId().toString())
+        );
+
+        if (Integer.parseInt(actualAttendanceNumber) != attendanceNumber) {
             throw new IllegalArgumentException("wrong attendanceNumber");
         }
     }

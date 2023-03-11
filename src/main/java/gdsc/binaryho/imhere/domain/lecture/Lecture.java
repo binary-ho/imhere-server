@@ -1,11 +1,7 @@
 package gdsc.binaryho.imhere.domain.lecture;
 
 
-import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.member.Member;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -41,13 +36,12 @@ public class Lecture {
 
     private String lectureName;
     private String lecturerName;
-    private Integer attendanceNumber;
 
     @Enumerated(EnumType.STRING)
     private LectureState lectureState;
 
-    @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL)
-    private List<EnrollmentInfo> enrollmentInfos = new ArrayList<>();
+//    @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL)
+//    private List<EnrollmentInfo> enrollmentInfos = new ArrayList<>();
 
     public static Lecture createLecture(Member lecturer, String lectureName) {
         Lecture lecture = new Lecture();
@@ -55,7 +49,6 @@ public class Lecture {
         lecture.setLectureName(lectureName);
         lecture.setLecturerName(lecturer.getName());
         lecture.setLectureState(LectureState.CLOSED);
-        lecture.setAttendanceNumber(0);
         return lecture;
     }
 }
