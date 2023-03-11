@@ -26,9 +26,9 @@ public class AttendanceApiController {
     * */
     @PostMapping("/api/v1/students/attendance/{lecture_id}")
     public ResponseEntity<String> takeAttendance(@RequestBody AttendanceRequest attendanceRequest,
-        @PathVariable("lecture_id") Long lecture_id) {
+        @PathVariable("lecture_id") Long lectureId) {
         try {
-            attendanceService.takeAttendance(attendanceRequest, lecture_id);
+            attendanceService.takeAttendance(attendanceRequest, lectureId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {
             e.printStackTrace();

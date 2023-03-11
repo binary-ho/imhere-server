@@ -10,7 +10,8 @@ import lombok.Getter;
 
 @Getter
 public class LectureDto {
-    private Long id;
+
+    private Long lectureId;
     private String lectureName;
     private String lecturerName;
     private LectureState lectureState;
@@ -34,7 +35,7 @@ public class LectureDto {
 
     public static LectureDto createLectureDto(Lecture lecture) {
         LectureDto lectureDto = new LectureDto();
-        lectureDto.id = lecture.getId();
+        lectureDto.lectureId = lecture.getId();
         lectureDto.lectureName = lecture.getLectureName();
         lectureDto.lecturerName = lecture.getLecturerName();
         lectureDto.lectureState = lecture.getLectureState();

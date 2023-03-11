@@ -16,7 +16,7 @@ public class AdminController {
 
     @PostMapping("/api/v1/admin/role/{member_id}")
     public void memberRoleChange(@RequestBody RoleChangeRequest roleChangeRequest,
-        @PathVariable Long member_id) {
-        memberService.memberRoleChange(roleChangeRequest, member_id);
+        @PathVariable("member_id") Long memberId) {
+        memberService.memberRoleChange(roleChangeRequest, memberId);
     }
 }

@@ -69,9 +69,9 @@ public class LectureApiController {
      * 강의 열고 출석 번호 반환
      * */
     @PostMapping("/api/v1/lectures/{lecture_id}/open")
-    public ResponseEntity<String> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lecture_id) {
+    public ResponseEntity<String> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lectureId) {
         try {
-            int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lecture_id);
+            int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lectureId);
             return ResponseEntity.ok(Map.of("attendanceNumber", attendanceNumber).toString());
         } catch (Exception e) {
             e.printStackTrace();

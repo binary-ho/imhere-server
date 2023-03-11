@@ -56,10 +56,10 @@ public class EnrollmentApiController {
     }
 
     @PostMapping("/api/v1/students/enrollment/{lecture_id}")
-    public HttpEntity<String> requestEnrollment(@PathVariable("lecture_id") Long lecture_id) {
+    public HttpEntity<String> requestEnrollment(@PathVariable("lecture_id") Long lectureId) {
 
         try {
-            enrollmentService.requestEnrollment(lecture_id);
+            enrollmentService.requestEnrollment(lectureId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {
             e.printStackTrace();
