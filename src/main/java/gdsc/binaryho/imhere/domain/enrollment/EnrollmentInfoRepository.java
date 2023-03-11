@@ -12,4 +12,5 @@ public interface EnrollmentInfoRepository extends JpaRepository<EnrollmentInfo, 
     List<EnrollmentInfo> findAllByMemberIdAndLecture_LectureStateAndEnrollmentState(Long memberId, LectureState lectureState, EnrollmentState enrollmentState);
     List<EnrollmentInfo> findAllByLecture(Lecture lecture);
     Optional<EnrollmentInfo> findByMemberIdAndLectureIdAndEnrollmentState(Long memberId, Long lectureId, EnrollmentState enrollmentState);
+    Optional<EnrollmentInfo> findByMemberIdAndLectureId(Long memberId, Long lectureId);
 }

@@ -68,17 +68,17 @@ public class EnrollmentService {
 
     @Transactional
     public void approveStudents(Long lectureId, Long studentId) throws NoSuchObjectException {
-        EnrollmentInfo enrollmentInfo = enrollmentInfoRepository.findByMemberIdAndLectureIdAndEnrollmentState(
-            studentId, lectureId, EnrollmentState.AWAIT).orElseThrow();
-        AuthenticationService.verifyRequestMemberLogInMember(enrollmentInfo.getLecture().getId());
+        EnrollmentInfo enrollmentInfo = enrollmentInfoRepository
+            .findByMemberIdAndLectureId(studentId, lectureId).orElseThrow();
 
+        AuthenticationService.verifyRequestMemberLogInMember(enrollmentInfo.getLecture().getId());
         enrollmentInfo.setEnrollmentState(EnrollmentState.APPROVAL);
     }
 
     @Transactional
     public void rejectStudents(Long lectureId, Long studentId) throws NoSuchObjectException {
-        EnrollmentInfo enrollmentInfoAwaited = enrollmentInfoRepository.findByMemberIdAndLectureIdAndEnrollmentState(
-            studentId, lectureId, EnrollmentState.AWAIT).orElseThrow();
+        EnrollmentInfo enrollmentInfoAwaited = enrollmentInfoRepository
+            .findByMemberIdAndLectureId(studentId, lectureId).orElseThrow();
 
         AuthenticationService.verifyRequestMemberLogInMember(enrollmentInfoAwaited.getLecture().getId());
         enrollmentInfoAwaited.setEnrollmentState(EnrollmentState.REJECTION);
