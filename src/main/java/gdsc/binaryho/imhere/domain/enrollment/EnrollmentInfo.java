@@ -4,6 +4,8 @@ import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.member.Member;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -34,10 +36,14 @@ public class EnrollmentInfo {
     @Column(columnDefinition = "integer default 0")
     private int attendanceCount;
 
-    public static EnrollmentInfo createEnrollmentInfo(Lecture lecture, Member member) {
+    @Enumerated(EnumType.STRING)
+    private EnrollmentState enrollmentState;
+
+    public static EnrollmentInfo createEnrollmentInfo(Lecture lecture, Member member, EnrollmentState enrollmentState) {
         EnrollmentInfo enrollmentInfo = new EnrollmentInfo();
         enrollmentInfo.setLecture(lecture);
         enrollmentInfo.setMember(member);
+        enrollmentInfo.setEnrollmentState(enrollmentState);
         return enrollmentInfo;
     }
 }
