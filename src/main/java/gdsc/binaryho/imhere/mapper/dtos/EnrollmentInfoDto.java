@@ -1,7 +1,5 @@
 package gdsc.binaryho.imhere.mapper.dtos;
 
-import static gdsc.binaryho.imhere.mapper.dtos.EnrollmentInfoDto.StudentInfo.createStudentInfo;
-
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.domain.member.Member;
@@ -33,7 +31,7 @@ public class EnrollmentInfoDto {
         enrollmentInfoDto.lecturerName = anyEnrollmentInfo.getLecture().getLecturerName();
         enrollmentInfoDto.studentInfos =
             enrollmentInfos.stream()
-                .map(enrollmentInfo -> createStudentInfo(enrollmentInfo.getMember(), enrollmentInfo.getEnrollmentState()))
+                .map(StudentInfo::createStudentInfo)
                 .collect(Collectors.toList());
 
         return enrollmentInfoDto;
@@ -57,10 +55,10 @@ public class EnrollmentInfoDto {
             this.enrollmentState = enrollmentState;
         }
 
-        public static StudentInfo createStudentInfo(Member member,
-            EnrollmentState enrollmentState) {
+        public static StudentInfo createStudentInfo(EnrollmentInfo enrollmentInfo) {
+            Member member = enrollmentInfo.getMember();
             return new StudentInfo(member.getId(), member.getUnivId(), member.getName(),
-                enrollmentState);
+                enrollmentInfo.getEnrollmentState());
         }
     }
 }
