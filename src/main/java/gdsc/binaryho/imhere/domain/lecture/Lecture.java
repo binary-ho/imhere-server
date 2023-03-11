@@ -21,7 +21,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "lectures")
 @Getter @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED) /* TODO */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lecture {
 
     @Id
@@ -29,7 +29,6 @@ public class Lecture {
     @Column(name = "lecture_id")
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "lecturer_id")
     private Member member;
@@ -39,9 +38,6 @@ public class Lecture {
 
     @Enumerated(EnumType.STRING)
     private LectureState lectureState;
-
-//    @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL)
-//    private List<EnrollmentInfo> enrollmentInfos = new ArrayList<>();
 
     public static Lecture createLecture(Member lecturer, String lectureName) {
         Lecture lecture = new Lecture();

@@ -21,9 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-//    @Value("${jwt.header-string}")
     private static final String HEADER_STRING = "Authorization";
-//    @Value("${jwt.access-token-prefix}")
     private static final String ACCESS_TOKEN_PREFIX = "Token ";
 
     private final AuthenticationManager authenticationManager;

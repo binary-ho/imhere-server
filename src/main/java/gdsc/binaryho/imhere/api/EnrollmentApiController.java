@@ -23,7 +23,6 @@ public class EnrollmentApiController {
     public HttpEntity<String> enrollStudents(@RequestBody EnrollRequest enrollRequest, @PathVariable("lecture_id") Long lecture_id) {
 
         try {
-            System.out.println("enrollRequest = " + enrollRequest.getUnivIds().toString());
             enrollmentService.enrollStudents(enrollRequest, lecture_id);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
         } catch (Exception e) {

@@ -17,9 +17,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    //    @Value("${jwt.header-string}")
     private static final String HEADER_STRING = "Authorization";
-    //    @Value("${jwt.access-token-prefix}")
     private static final String ACCESS_TOKEN_PREFIX = "Token ";
 
     private final TokenService tokenService;

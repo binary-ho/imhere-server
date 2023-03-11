@@ -21,7 +21,6 @@ public class CorsConfig {
     private CorsConfiguration getCorsConfiguration() {
         CorsConfiguration configuration =  new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        /* TODO: 도메인 생기면 업데이트 */
         configuration.addAllowedOrigin("*");
         configuration.addAllowedHeader("Authorization");
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT"));

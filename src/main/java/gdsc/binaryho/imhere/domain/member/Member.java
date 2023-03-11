@@ -34,9 +34,6 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-//    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
-//    private List<EnrollmentInfo> enrollmentInfos = new ArrayList<>();
-
     public String getRoleKey() {
         return role.getKey();
     }
