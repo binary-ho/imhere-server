@@ -32,6 +32,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
         try {
+            System.out.println("JwtAuthenticationFilter 진입");
             SignInRequest signInRequest = getSignInRequest(request.getInputStream());
 
             UsernamePasswordAuthenticationToken authenticationToken
