@@ -22,7 +22,7 @@ public class CorsConfig {
         CorsConfiguration configuration =  new CorsConfiguration();
         configuration.setAllowCredentials(true);
         configuration.addAllowedOrigin("http://localhost:3000");
-        configuration.addAllowedHeader("Authorization");
+        configuration.addAllowedHeader("*");
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT"));
 
         return configuration;

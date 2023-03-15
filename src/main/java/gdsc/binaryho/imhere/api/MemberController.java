@@ -25,6 +25,7 @@ public class MemberController {
     @PostMapping("/member/new")
     public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest) {
         try {
+            System.out.println("signUpRequest = " + signUpRequest.toString());
             memberService.signUp(signUpRequest.getUnivId(), signUpRequest.getName(),
                 signUpRequest.getPassword());
             return ResponseEntity.ok(HttpStatus.OK.toString());

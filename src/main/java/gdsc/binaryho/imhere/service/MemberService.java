@@ -29,6 +29,7 @@ public class MemberService {
         validatePasswordForm(password);
 
         Member newMember = Member.createMember(univId, name, bCryptPasswordEncoder.encode(password), Role.STUDENT);
+        System.out.println("newMember = " + newMember);
         memberRepository.save(newMember);
     }
 

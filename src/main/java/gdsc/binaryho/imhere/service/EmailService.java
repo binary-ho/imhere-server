@@ -29,7 +29,7 @@ public class EmailService {
         + "<br>";
     private final static int ATTENDANCE_NUMBER_EXPIRE_TIME = 10;
     private final static String EMAIL_REGEX = "^[a-zA-Z0-9]+@(?:(?:g\\.)?hongik\\.ac\\.kr)$";;
-    private final static String GMAIL_REGEX = "^[a-zA-Z0-9]+@gmail\\.com$";
+    private final static String GMAIL_REGEX = "^[a-zA-Z0-9]+@gmail\\.com$";    
 
     private final JavaMailSender emailSender;
     private final StringBuilder stringBuilder = new StringBuilder();
@@ -37,6 +37,7 @@ public class EmailService {
 
     public void sendMailAndGetVerificationCode(String recipient)
         throws MessagingException, UnsupportedEncodingException {
+        System.out.println("recipient = " + recipient);
         validateEmailForm(recipient);
 
         String verificationCode = UUID.randomUUID().toString();
