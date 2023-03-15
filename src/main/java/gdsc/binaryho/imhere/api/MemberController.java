@@ -3,9 +3,12 @@ package gdsc.binaryho.imhere.api;
 import gdsc.binaryho.imhere.mapper.requests.SignUpRequest;
 import gdsc.binaryho.imhere.service.EmailService;
 import gdsc.binaryho.imhere.service.MemberService;
+import java.io.UnsupportedEncodingException;
+import javax.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,10 +27,10 @@ public class MemberController {
         try {
             memberService.signUp(signUpRequest.getUnivId(), signUpRequest.getName(),
                 signUpRequest.getPassword());
-            return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.ok(HttpStatus.OK.toString());
+        } catch (RuntimeException error) {
+            error.printStackTrace();
+            return new ResponseEntity<>(error.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -35,10 +38,10 @@ public class MemberController {
     public ResponseEntity<String> generateVerificationNumber(@PathVariable("email") String email) {
         try {
             emailService.sendMailAndGetVerificationCode(email);
-            return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.ok(HttpStatus.OK.toString());
+        } catch (MailException | MessagingException | UnsupportedEncodingException error) {
+            error.printStackTrace();
+            return new ResponseEntity<>(error.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -47,8 +50,7 @@ public class MemberController {
         @PathVariable("verification-code") String verificationCode) {
         try {
             return emailService.verifyCode(email, verificationCode);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (RuntimeException e) {
             return false;
         }
     }

@@ -1,14 +1,15 @@
 package gdsc.binaryho.imhere.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.mail.Message.RecipientType;
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -34,22 +35,19 @@ public class EmailService {
     private final StringBuilder stringBuilder = new StringBuilder();
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void sendMailAndGetVerificationCode(String recipient) throws Exception {
+    public void sendMailAndGetVerificationCode(String recipient)
+        throws MessagingException, UnsupportedEncodingException {
         validateEmailForm(recipient);
 
         String verificationCode = UUID.randomUUID().toString();
-        MimeMessage message = writeMail(recipient, verificationCode);
 
-        try {
-            emailSender.send(message);
-            setVerificationCode(recipient, verificationCode);
-        } catch (MailException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException();
-        }
+        MimeMessage message = writeMail(recipient, verificationCode);
+        emailSender.send(message);
+        setVerificationCode(recipient, verificationCode);
     }
 
-    private MimeMessage writeMail(String recipient, String verificationCode) throws Exception {
+    private MimeMessage writeMail(String recipient, String verificationCode)
+        throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = emailSender.createMimeMessage();
 
         message.addRecipients(RecipientType.TO, recipient);
@@ -57,7 +55,6 @@ public class EmailService {
 
         message.setText(getMessage(verificationCode), "utf-8", "html");//내용
         message.setFrom(new InternetAddress("gdscimhere@gmail.com", "jinholee"));//보내는 사람
-
         return message;
     }
 
@@ -78,7 +75,7 @@ public class EmailService {
     }
 
     private void validateEmailForm(String recipient) {
-        if (!recipient.matches(EMAIL_REGEX) || !recipient.matches(GMAIL_REGEX)) {
+        if (!recipient.matches(EMAIL_REGEX) && !recipient.matches(GMAIL_REGEX)) {
             throw new IllegalArgumentException();
         }
     }

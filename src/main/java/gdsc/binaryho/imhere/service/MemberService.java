@@ -7,6 +7,8 @@ import gdsc.binaryho.imhere.domain.member.Role;
 import gdsc.binaryho.imhere.mapper.dtos.SignInResponseDto;
 import gdsc.binaryho.imhere.mapper.requests.RoleChangeRequest;
 import gdsc.binaryho.imhere.mapper.requests.SignInRequest;
+import java.security.InvalidParameterException;
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,6 +27,7 @@ public class MemberService {
     public void signUp(String univId, String name, String password) {
         validateDuplicateMember(univId);
         validatePasswordForm(password);
+
         Member newMember = Member.createMember(univId, name, bCryptPasswordEncoder.encode(password), Role.STUDENT);
         memberRepository.save(newMember);
     }
@@ -43,22 +46,24 @@ public class MemberService {
 
     @Transactional
     public SignInResponseDto login(SignInRequest signInRequest) {
-        Member member = memberRepository.findByUnivId(signInRequest.getUnivId()).orElseThrow();
+        Member member = memberRepository.findByUnivId(signInRequest.getUnivId())
+            .orElseThrow(EntityNotFoundException::new);
 
-        if (validateMatchesPassword(signInRequest.getPassword(), member.getPassword())) {
-            return new SignInResponseDto(member.getUnivId(), member.getRoleKey());
-        }
+        validateMatchesPassword(signInRequest.getPassword(), member.getPassword());
 
-        throw new IllegalArgumentException();
+        return new SignInResponseDto(member.getUnivId(), member.getRoleKey());
     }
 
-    private boolean validateMatchesPassword(String rawPassword, String encodedPassword) {
-        return bCryptPasswordEncoder.matches(rawPassword, encodedPassword);
+    private void validateMatchesPassword(String rawPassword, String encodedPassword) {
+        if (!bCryptPasswordEncoder.matches(rawPassword, encodedPassword)) {
+            throw new InvalidParameterException();
+        }
     }
 
     @Transactional
     public void memberRoleChange(RoleChangeRequest roleChangeRequest, Long memberId) {
-        Member targetMember = memberRepository.findById(memberId).orElseThrow();
+        Member targetMember = memberRepository.findById(memberId)
+            .orElseThrow(EntityNotFoundException::new);
 
         Role newRole = Role.valueOf(roleChangeRequest.getRole());
         targetMember.setRole(newRole);
