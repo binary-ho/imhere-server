@@ -3,7 +3,6 @@ package gdsc.binaryho.imhere.api;
 import gdsc.binaryho.imhere.mapper.dtos.AttendanceDto;
 import gdsc.binaryho.imhere.mapper.requests.AttendanceRequest;
 import gdsc.binaryho.imhere.service.AttendanceService;
-import java.rmi.NoSuchObjectException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,14 +36,13 @@ public class AttendanceApiController {
     }
 
     @GetMapping("/api/v1/lecturer/{lecture_id}/attendance")
-    public AttendanceDto getAttendance(@PathVariable("lecture_id") Long lectureId)
-        throws NoSuchObjectException {
+    public AttendanceDto getAttendance(@PathVariable("lecture_id") Long lectureId) {
         return attendanceService.getAttendances(lectureId);
     }
 
     @GetMapping("/api/v1/lecturer/{lecture_id}/attendance/{day_milliseconds}")
     public AttendanceDto getTodayAttendance(@PathVariable("lecture_id") Long lectureId,
-        @PathVariable("day_milliseconds") Long milliseconds) throws NoSuchObjectException {
+        @PathVariable("day_milliseconds") Long milliseconds) {
         return attendanceService.getDayAttendances(lectureId, milliseconds);
     }
 }

@@ -3,7 +3,6 @@ package gdsc.binaryho.imhere.api;
 import gdsc.binaryho.imhere.mapper.dtos.EnrollmentInfoDto;
 import gdsc.binaryho.imhere.mapper.requests.EnrollMentRequestForLecturer;
 import gdsc.binaryho.imhere.service.EnrollmentService;
-import java.rmi.NoSuchObjectException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,8 +34,7 @@ public class EnrollmentApiController {
     }
 
     @GetMapping("/api/v1/enrollment/{lecture_id}")
-    public EnrollmentInfoDto getLectureEnrollment(@PathVariable("lecture_id") Long lectureId)
-        throws NoSuchObjectException {
+    public EnrollmentInfoDto getLectureEnrollment(@PathVariable("lecture_id") Long lectureId) {
         return enrollmentService.getLectureEnrollment(lectureId);
     }
 

@@ -6,7 +6,6 @@ import gdsc.binaryho.imhere.domain.lecture.LectureState;
 import gdsc.binaryho.imhere.mapper.dtos.LectureDto;
 import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
 import gdsc.binaryho.imhere.service.LectureService;
-import java.rmi.NoSuchObjectException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,26 +28,32 @@ public class LectureApiController {
     @GetMapping("/api/v1/students/all-lectures")
     public List<LectureDto> getAllLectures() {
         List<Lecture> lectures = lectureRepository.findAllByLectureStateNot(LectureState.TERMINATED);
-        return lectures.stream().map(LectureDto::createLectureDto).collect(Collectors.toList());
+        return lectures.stream()
+            .map(LectureDto::createLectureDto)
+            .collect(Collectors.toList());
     }
 
     @GetMapping("/api/v1/students/lectures")
-    public List<LectureDto> getStudentLectures() throws NoSuchObjectException {
+    public List<LectureDto> getStudentLectures() {
         List<Lecture> lectures = lectureService.getStudentLectures();
-        return lectures.stream().map(LectureDto::createLectureDto).collect(Collectors.toList());
+        return lectures.stream()
+            .map(LectureDto::createLectureDto)
+            .collect(Collectors.toList());
     }
 
     @GetMapping("/api/v1/students/open-lectures")
-    public List<LectureDto> getStudentOpenLectures() throws NoSuchObjectException {
+    public List<LectureDto> getStudentOpenLectures() {
         List<Lecture> lectures = lectureService.getStudentOpenLectures();
-        return lectures.stream().map(LectureDto::createLectureDto).collect(Collectors.toList());
+        return lectures.stream()
+            .map(LectureDto::createLectureDto)
+            .collect(Collectors.toList());
     }
 
     /*
     * 강사 본인이 만든 강의들 가져오기
     * */
     @GetMapping("/api/v1/lectures")
-    public List<LectureDto> getLectures() throws NoSuchObjectException {
+    public List<LectureDto> getLectures() {
         return lectureService.getOwnLectures();
     }
     /*
@@ -58,10 +63,10 @@ public class LectureApiController {
     public ResponseEntity<String> createLecture(@RequestBody LectureCreateRequest request) {
         try {
             lectureService.createLecture(request);
-            return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.ok(HttpStatus.OK.toString());
+        } catch (RuntimeException error) {
+            error.printStackTrace();
+            return new ResponseEntity<>(error.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -86,10 +91,10 @@ public class LectureApiController {
     public ResponseEntity<String> changeLectureState(@PathVariable("lecture_id") Long lecture_id) {
         try {
             lectureService.closeLecture(lecture_id);
-            return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.ok(HttpStatus.OK.toString());
+        } catch (RuntimeException error) {
+            error.printStackTrace();
+            return new ResponseEntity<>(error.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }

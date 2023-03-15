@@ -9,7 +9,6 @@ import gdsc.binaryho.imhere.domain.lecture.LectureState;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.mapper.dtos.LectureDto;
 import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
-import java.rmi.NoSuchObjectException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -31,21 +30,25 @@ public class LectureService {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
-    public void createLecture(LectureCreateRequest request) throws NoSuchObjectException {
+    public void createLecture(LectureCreateRequest request) {
         Member lecturer = AuthenticationService.getCurrentMember();
         Lecture newLecture = Lecture.createLecture(lecturer, request.getLectureName());
         lectureRepository.save(newLecture);
     }
 
-    public List<Lecture> getStudentLectures() throws NoSuchObjectException {
+    public List<Lecture> getStudentLectures() {
         Member currentStudent = AuthenticationService.getCurrentMember();
-        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberIdAndEnrollmentState(currentStudent.getId(), EnrollmentState.APPROVAL);
+        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository
+            .findAllByMemberIdAndEnrollmentState(currentStudent.getId(), EnrollmentState.APPROVAL);
+
         return getLectures(enrollmentInfos);
     }
 
-    public List<Lecture> getStudentOpenLectures() throws NoSuchObjectException {
+    public List<Lecture> getStudentOpenLectures() {
         Member currentStudent = AuthenticationService.getCurrentMember();
-        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByMemberIdAndLecture_LectureStateAndEnrollmentState(currentStudent.getId(), LectureState.OPEN, EnrollmentState.APPROVAL);
+        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository
+            .findAllByMemberIdAndLecture_LectureStateAndEnrollmentState(currentStudent.getId(), LectureState.OPEN, EnrollmentState.APPROVAL);
+
         return getLectures(enrollmentInfos);
     }
 
@@ -55,7 +58,7 @@ public class LectureService {
             .collect(Collectors.toList());
     }
 
-    public List<LectureDto> getOwnLectures() throws NoSuchObjectException {
+    public List<LectureDto> getOwnLectures() {
         Member currentLecturer = AuthenticationService.getCurrentMember();
         List<Lecture> lectures = lectureRepository.findAllByMemberId(currentLecturer.getId());
         return lectures.stream().map(lecture ->
@@ -65,7 +68,7 @@ public class LectureService {
     }
 
     @Transactional
-    public int openLectureAndGetAttendanceNumber(Long lectureId) throws Exception {
+    public int openLectureAndGetAttendanceNumber(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
         AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
@@ -84,7 +87,7 @@ public class LectureService {
     }
 
     @Transactional
-    public void closeLecture(Long lectureId) throws Exception {
+    public void closeLecture(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
         AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
 

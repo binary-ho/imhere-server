@@ -9,7 +9,6 @@ import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.mapper.dtos.EnrollmentInfoDto;
 import gdsc.binaryho.imhere.mapper.requests.EnrollMentRequestForLecturer;
-import java.rmi.NoSuchObjectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +31,7 @@ public class EnrollmentService {
 
     @Transactional
     public void enrollStudents(EnrollMentRequestForLecturer enrollMentRequestForLecturer,
-        Long lectureId) throws Exception {
+        Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
         AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
@@ -60,7 +59,7 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public void requestEnrollment(Long lectureId) throws NoSuchObjectException {
+    public void requestEnrollment(Long lectureId) {
         Member student = AuthenticationService.getCurrentMember();
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
         EnrollmentInfo enrollmentInfo = EnrollmentInfo.createEnrollmentInfo(lecture, student, EnrollmentState.AWAIT);
@@ -68,7 +67,7 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public void approveStudents(Long lectureId, Long studentId) throws NoSuchObjectException {
+    public void approveStudents(Long lectureId, Long studentId) {
         EnrollmentInfo enrollmentInfo = enrollmentInfoRepository
             .findByMemberIdAndLectureId(studentId, lectureId).orElseThrow();
 
@@ -77,7 +76,7 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public void rejectStudents(Long lectureId, Long studentId) throws NoSuchObjectException {
+    public void rejectStudents(Long lectureId, Long studentId) {
         EnrollmentInfo enrollmentInfoAwaited = enrollmentInfoRepository
             .findByMemberIdAndLectureId(studentId, lectureId).orElseThrow();
 
@@ -85,7 +84,7 @@ public class EnrollmentService {
         enrollmentInfoAwaited.setEnrollmentState(EnrollmentState.REJECTION);
     }
 
-    public EnrollmentInfoDto getLectureEnrollment(Long lectureId) throws NoSuchObjectException {
+    public EnrollmentInfoDto getLectureEnrollment(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
         AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByLecture(lecture);
