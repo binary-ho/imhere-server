@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private static final String HEADER_STRING = "Authorization";
+    private static final String HEADER_STRING = "authorization";
     private static final String ACCESS_TOKEN_PREFIX = "Token ";
 
     private final AuthenticationManager authenticationManager;
@@ -30,7 +30,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(
         HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-
         try {
             System.out.println("JwtAuthenticationFilter 진입");
             SignInRequest signInRequest = getSignInRequest(request.getInputStream());
@@ -41,8 +40,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             return authenticationManager.authenticate(authenticationToken);
         } catch (IOException e) {
             e.printStackTrace();
+            return super.attemptAuthentication(request, response);
         }
-        return null;
     }
 
     private UsernamePasswordAuthenticationToken createUsernamePasswordAuthenticationToken(SignInRequest signInRequest) {
@@ -65,7 +64,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         Token jwtToken = tokenService.createToken(authResult.getPrincipal().toString(), grantedAuthority);
 
         System.out.println(authResult.getPrincipal().toString());
-
+        response.addHeader("Access-Control-Expose-Headers", "authorization");
         response.addHeader(HEADER_STRING, ACCESS_TOKEN_PREFIX + jwtToken.getAccessToken());
     }
 
