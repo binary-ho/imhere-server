@@ -11,6 +11,7 @@ import java.security.InvalidParameterException;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class MemberService {
         validatePasswordForm(password);
 
         Member newMember = Member.createMember(univId, name, bCryptPasswordEncoder.encode(password), Role.STUDENT);
-        System.out.println("newMember = " + newMember);
+        System.out.println("newMember = " + newMember.getName() + ", " + newMember.getUnivId());
         memberRepository.save(newMember);
     }
 
@@ -48,7 +49,9 @@ public class MemberService {
     @Transactional
     public SignInResponseDto login(SignInRequest signInRequest) {
         Member member = memberRepository.findByUnivId(signInRequest.getUnivId())
-            .orElseThrow(EntityNotFoundException::new);
+            .orElseThrow(() -> {
+                throw new AuthenticationException("There is no such user : " + signInRequest.getUnivId()) {};
+            });
 
         validateMatchesPassword(signInRequest.getPassword(), member.getPassword());
 

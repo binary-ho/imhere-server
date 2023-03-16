@@ -2,6 +2,7 @@ package gdsc.binaryho.imhere.config.auth;
 
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,10 @@ public class PrincipalDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String univId) {
-        /* TODO: 미가입 회원 오류 만들기 */
-        Member member = memberRepository.findByUnivId(univId).orElseThrow();
+        Member member = memberRepository.findByUnivId(univId)
+            .orElseThrow(() -> {
+                throw new AuthenticationException("There is no such user : " + univId) {};
+            });
         return new PrincipalDetails(member);
     }
 }
