@@ -63,7 +63,7 @@ public class LectureService {
         List<Lecture> lectures = lectureRepository.findAllByMemberId(currentLecturer.getId());
         return lectures.stream().map(lecture ->
             LectureDto.createLectureDtoWithEnrollmentInfo(lecture,
-                enrollmentInfoRepository.findAllByLecture(lecture))
+                enrollmentInfoRepository.findAllByLectureAndEnrollmentState(lecture, EnrollmentState.APPROVAL))
         ).collect(Collectors.toList());
     }
 
