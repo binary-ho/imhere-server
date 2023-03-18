@@ -16,6 +16,7 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 
@@ -61,6 +62,8 @@ public class EnrollmentService {
     @Transactional
     public void requestEnrollment(Long lectureId) {
         Member student = AuthenticationService.getCurrentMember();
+        validateDuplicated(student, lectureId);
+
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
         EnrollmentInfo enrollmentInfo = EnrollmentInfo.createEnrollmentInfo(lecture, student, EnrollmentState.AWAIT);
         enrollmentInfoRepository.save(enrollmentInfo);
@@ -89,5 +92,14 @@ public class EnrollmentService {
         AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByLecture(lecture);
         return EnrollmentInfoDto.createEnrollmentInfoDto(enrollmentInfos);
+    }
+
+    private void validateDuplicated(Member student, Long lectureId) {
+        Optional<EnrollmentInfo> enrollmentInfo = enrollmentInfoRepository
+            .findByMemberIdAndLectureId(student.getId(), lectureId);
+
+        if (enrollmentInfo.isPresent()) {
+            throw new DuplicateKeyException("Enrollment Already Exist");
+        }
     }
 }

@@ -56,6 +56,7 @@ public class LectureApiController {
     public List<LectureDto> getLectures() {
         return lectureService.getOwnLectures();
     }
+
     /*
      * 강의 생성
      * */

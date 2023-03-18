@@ -1,6 +1,5 @@
 package gdsc.binaryho.imhere.service;
 
-import com.sun.jdi.request.DuplicateRequestException;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.domain.member.Role;
@@ -11,6 +10,7 @@ import java.security.InvalidParameterException;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class MemberService {
 
     private void validateDuplicateMember(String univId) {
         if (memberRepository.findByUnivId(univId).isPresent()) {
-            throw new DuplicateRequestException();
+            throw new DuplicateKeyException("Member Already Exist");
         }
     }
 
