@@ -74,7 +74,7 @@ public class EnrollmentService {
         EnrollmentInfo enrollmentInfo = enrollmentInfoRepository
             .findByMemberIdAndLectureId(studentId, lectureId).orElseThrow();
 
-        AuthenticationService.verifyRequestMemberLogInMember(enrollmentInfo.getLecture().getId());
+        AuthenticationService.verifyRequestMemberLogInMember(enrollmentInfo.getLecture().getMember().getId());
         enrollmentInfo.setEnrollmentState(EnrollmentState.APPROVAL);
     }
 
@@ -82,8 +82,7 @@ public class EnrollmentService {
     public void rejectStudents(Long lectureId, Long studentId) {
         EnrollmentInfo enrollmentInfoAwaited = enrollmentInfoRepository
             .findByMemberIdAndLectureId(studentId, lectureId).orElseThrow();
-
-        AuthenticationService.verifyRequestMemberLogInMember(enrollmentInfoAwaited.getLecture().getId());
+        AuthenticationService.verifyRequestMemberLogInMember(enrollmentInfoAwaited.getLecture().getMember().getId());
         enrollmentInfoAwaited.setEnrollmentState(EnrollmentState.REJECTION);
     }
 
