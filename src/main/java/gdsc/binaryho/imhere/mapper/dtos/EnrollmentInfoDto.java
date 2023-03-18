@@ -12,6 +12,7 @@ import lombok.Setter;
 @Getter
 public class EnrollmentInfoDto {
 
+    private Long lectureId;
     private String lectureName;
     private String lecturerName;
     List<StudentInfo> studentInfos;
@@ -27,6 +28,7 @@ public class EnrollmentInfoDto {
 
         EnrollmentInfoDto enrollmentInfoDto = new EnrollmentInfoDto();
         EnrollmentInfo anyEnrollmentInfo = enrollmentInfos.get(0);
+        enrollmentInfoDto.lectureId = anyEnrollmentInfo.getLecture().getId();
         enrollmentInfoDto.lectureName = anyEnrollmentInfo.getLecture().getLectureName();
         enrollmentInfoDto.lecturerName = anyEnrollmentInfo.getLecture().getLecturerName();
         enrollmentInfoDto.studentInfos =
