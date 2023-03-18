@@ -7,9 +7,10 @@ import gdsc.binaryho.imhere.mapper.dtos.LectureDto;
 import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
 import gdsc.binaryho.imhere.service.LectureService;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -57,6 +58,7 @@ public class LectureApiController {
         return lectureService.getOwnLectures();
     }
 
+    // TODO : 생성
     /*
      * 강의 생성
      * */
@@ -75,13 +77,22 @@ public class LectureApiController {
      * 강의 열고 출석 번호 반환
      * */
     @PostMapping("/api/v1/lectures/{lecture_id}/open")
-    public ResponseEntity<String> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lectureId) {
+    public ResponseEntity<AttendanceNumberDto> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lectureId) {
         try {
             int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lectureId);
-            return ResponseEntity.ok(Map.of("attendanceNumber", attendanceNumber).toString());
+            return ResponseEntity.ok(new AttendanceNumberDto(attendanceNumber));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    @Getter @Setter
+    private class AttendanceNumberDto {
+        private int attendanceNumber;
+
+        public AttendanceNumberDto(int attendanceNumber) {
+            this.attendanceNumber = attendanceNumber;
         }
     }
 
