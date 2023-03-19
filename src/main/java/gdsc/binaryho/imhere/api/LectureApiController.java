@@ -3,14 +3,13 @@ package gdsc.binaryho.imhere.api;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
+import gdsc.binaryho.imhere.mapper.dtos.AttendanceNumberDto;
 import gdsc.binaryho.imhere.mapper.dtos.LectureDto;
 import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
 import gdsc.binaryho.imhere.service.LectureService;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -84,15 +83,6 @@ public class LectureApiController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-
-    @Getter @Setter
-    private class AttendanceNumberDto {
-        private int attendanceNumber;
-
-        public AttendanceNumberDto(int attendanceNumber) {
-            this.attendanceNumber = attendanceNumber;
         }
     }
 
