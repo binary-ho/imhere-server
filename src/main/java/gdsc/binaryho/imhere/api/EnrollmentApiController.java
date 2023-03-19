@@ -21,6 +21,7 @@ public class EnrollmentApiController {
         this.enrollmentService = enrollmentService;
     }
 
+    /* 추후 확인 필요 */
     @PostMapping("/api/v1/enrollment/{lecture_id}")
     public HttpEntity<String> enrollStudentsForLecturer(@RequestBody EnrollMentRequestForLecturer enrollMentRequestForLecturer, @PathVariable("lecture_id") Long lectureId) {
 

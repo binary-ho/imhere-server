@@ -57,7 +57,7 @@ public class SecurityConfig {
 
             .authorizeRequests()
 
-            .antMatchers("/login", "/member/**")
+            .antMatchers("/login", "/logout", "/member/**")
             .anonymous()
 
             .antMatchers("/api/v1/admin/**")
@@ -77,5 +77,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
 }
