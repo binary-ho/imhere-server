@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -59,10 +58,12 @@ public class AttendanceService {
     }
 
     private void validateAttendanceNumber(EnrollmentInfo enrollmentInfo, int attendanceNumber) {
-        String actualAttendanceNumber = Objects.requireNonNull(
-            redisTemplate.opsForValue()
-                .get(enrollmentInfo.getLecture().getId().toString())
-        );
+        String actualAttendanceNumber = redisTemplate.opsForValue()
+            .get(enrollmentInfo.getLecture().getId().toString());
+
+        if (actualAttendanceNumber == null) {
+            throw new IllegalArgumentException("attendance timeout");
+        }
 
         if (Integer.parseInt(actualAttendanceNumber) != attendanceNumber) {
             throw new IllegalArgumentException("wrong attendanceNumber");
