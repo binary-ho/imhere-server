@@ -40,6 +40,9 @@ public class AttendanceApiController {
         return attendanceService.getAttendances(lectureId);
     }
 
+    /*
+    * 특정 강의의 특정 날짜 출석 장부 가져오기
+    * */
     @GetMapping("/api/v1/lecturer/{lecture_id}/attendance/{day_milliseconds}")
     public AttendanceDto getTodayAttendance(@PathVariable("lecture_id") Long lectureId,
         @PathVariable("day_milliseconds") Long milliseconds) {

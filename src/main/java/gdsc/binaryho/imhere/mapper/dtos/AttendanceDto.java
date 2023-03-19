@@ -2,7 +2,9 @@ package gdsc.binaryho.imhere.mapper.dtos;
 
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import java.util.List;
+import lombok.Getter;
 
+@Getter
 public class AttendanceDto {
 
     private final String lectureName;

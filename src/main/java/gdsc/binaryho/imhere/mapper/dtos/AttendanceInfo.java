@@ -4,18 +4,20 @@ import gdsc.binaryho.imhere.domain.attendance.Attendance;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Getter;
 
+@Getter
 public class AttendanceInfo {
 
-    private final String studentUnivId;
-    private final String studentName;
+    private final String univId;
+    private final String name;
     private final String distance;
     private final String accuracy;
     private final LocalDateTime timestamp;
 
     private AttendanceInfo(Attendance attendance) {
-        this.studentUnivId = attendance.getMember().getUnivId();
-        this.studentName = attendance.getMember().getName();
+        this.univId = attendance.getMember().getUnivId();
+        this.name = attendance.getMember().getName();
         this.distance = attendance.getDistance();
         this.accuracy = attendance.getAccuracy();
         this.timestamp = attendance.getTimestamp();
