@@ -1,5 +1,6 @@
 package gdsc.binaryho.imhere.domain.attendance;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.member.Member;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 @Table(name = "attendances")
@@ -36,6 +38,10 @@ public class Attendance {
     private String distance;
     private String accuracy;
     private LocalDateTime timestamp;
+
+    @JsonIgnore
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     public static Attendance createAttendance(Member member, Lecture lecture, String distance,
         String accuracy, LocalDateTime timestamp) {

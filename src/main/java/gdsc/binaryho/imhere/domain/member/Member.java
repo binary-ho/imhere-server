@@ -1,5 +1,7 @@
 package gdsc.binaryho.imhere.domain.member;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 @Entity
 @Table(name = "members")
@@ -33,6 +36,10 @@ public class Member {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @JsonIgnore
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     public String getRoleKey() {
         return role.getKey();
