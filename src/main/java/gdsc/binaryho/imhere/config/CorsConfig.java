@@ -21,9 +21,9 @@ public class CorsConfig {
     private CorsConfiguration getCorsConfiguration() {
         CorsConfiguration configuration =  new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("https://imhere.im");
         configuration.addAllowedHeader("*");
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "OPTIONS"));
 
         return configuration;
     }
