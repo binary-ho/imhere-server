@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AttendanceService {
 
+    private final AuthenticationHelper authenticationHelper;
     private final AttendanceRepository attendanceRepository;
     private final EnrollmentInfoRepository enrollmentRepository;
     private final LectureRepository lectureRepository;
@@ -35,7 +36,7 @@ public class AttendanceService {
 
     @Transactional
     public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) throws NoSuchObjectException {
-        Member currentStudent = AuthenticationService.getCurrentMember();
+        Member currentStudent = authenticationHelper.getCurrentMember();
         EnrollmentInfo enrollmentInfo = enrollmentRepository
             .findByMemberIdAndLectureIdAndEnrollmentState(currentStudent.getId(), lectureId, EnrollmentState.APPROVAL)
             .orElseThrow(IllegalAccessError::new);
@@ -89,7 +90,7 @@ public class AttendanceService {
     }
 
     private void verifyRequestMemberLogInMember(Member lecturer) {
-        AuthenticationService.verifyRequestMemberLogInMember(lecturer.getId());
+        authenticationHelper.verifyRequestMemberLogInMember(lecturer.getId());
     }
 
     private AttendanceDto getAttendanceDto(Lecture lecture, List<Attendance> attendances) {

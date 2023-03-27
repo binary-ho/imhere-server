@@ -19,10 +19,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberService {
 
-    private static final String PASSWORD_REGEX = "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,20}$";
-
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final AuthenticationHelper authenticationHelper;
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private static final String PASSWORD_REGEX = "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,20}$";
 
     @Transactional
     public void signUp(String univId, String name, String password) {
@@ -66,7 +67,7 @@ public class MemberService {
 
     @Transactional
     public void memberRoleChange(RoleChangeRequest roleChangeRequest, String univId) {
-        AuthenticationService.verifyMemberHasAdminRole();
+        authenticationHelper.verifyMemberHasAdminRole();
 
         Member targetMember = memberRepository.findByUnivId(univId)
             .orElseThrow(EntityNotFoundException::new);

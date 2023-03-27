@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EnrollmentService {
 
+    private final AuthenticationHelper authenticationHelper;
     private final LectureRepository lectureRepository;
     private final MemberRepository memberRepository;
     private final EnrollmentInfoRepository enrollmentInfoRepository;
@@ -34,7 +35,7 @@ public class EnrollmentService {
     public void enrollStudents(EnrollMentRequestForLecturer enrollMentRequestForLecturer,
         Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
-        AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
+        authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         List<Member> students = getStudentsByUnivId(enrollMentRequestForLecturer.getUnivIds());
         students.forEach(student -> enrollStudent(lecture, student));
@@ -61,7 +62,7 @@ public class EnrollmentService {
 
     @Transactional
     public void requestEnrollment(Long lectureId) {
-        Member student = AuthenticationService.getCurrentMember();
+        Member student = authenticationHelper.getCurrentMember();
         validateDuplicated(student, lectureId);
 
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
@@ -74,7 +75,7 @@ public class EnrollmentService {
         EnrollmentInfo enrollmentInfo = enrollmentInfoRepository
             .findByMemberIdAndLectureId(studentId, lectureId).orElseThrow();
 
-        AuthenticationService.verifyRequestMemberLogInMember(enrollmentInfo.getLecture().getMember().getId());
+        authenticationHelper.verifyRequestMemberLogInMember(enrollmentInfo.getLecture().getMember().getId());
         enrollmentInfo.setEnrollmentState(EnrollmentState.APPROVAL);
     }
 
@@ -82,13 +83,13 @@ public class EnrollmentService {
     public void rejectStudents(Long lectureId, Long studentId) {
         EnrollmentInfo enrollmentInfoAwaited = enrollmentInfoRepository
             .findByMemberIdAndLectureId(studentId, lectureId).orElseThrow();
-        AuthenticationService.verifyRequestMemberLogInMember(enrollmentInfoAwaited.getLecture().getMember().getId());
+        authenticationHelper.verifyRequestMemberLogInMember(enrollmentInfoAwaited.getLecture().getMember().getId());
         enrollmentInfoAwaited.setEnrollmentState(EnrollmentState.REJECTION);
     }
 
     public EnrollmentInfoDto getLectureEnrollment(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
-        AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
+        authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByLecture(lecture);
         return EnrollmentInfoDto.createEnrollmentInfoDto(enrollmentInfos);
     }

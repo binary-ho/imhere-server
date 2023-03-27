@@ -25,19 +25,20 @@ public class LectureService {
     private final static Integer RANDOM_NUMBER_END = 1000;
     private final static Integer ATTENDANCE_NUMBER_EXPIRE_TIME = 10;
 
+    private final AuthenticationHelper authenticationHelper;
     private final LectureRepository lectureRepository;
     private final EnrollmentInfoRepository enrollmentInfoRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
     public void createLecture(LectureCreateRequest request) {
-        Member lecturer = AuthenticationService.getCurrentMember();
+        Member lecturer = authenticationHelper.getCurrentMember();
         Lecture newLecture = Lecture.createLecture(lecturer, request.getLectureName());
         lectureRepository.save(newLecture);
     }
 
     public List<Lecture> getStudentLectures() {
-        Member currentStudent = AuthenticationService.getCurrentMember();
+        Member currentStudent = authenticationHelper.getCurrentMember();
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository
             .findAllByMemberIdAndEnrollmentState(currentStudent.getId(), EnrollmentState.APPROVAL);
 
@@ -45,7 +46,7 @@ public class LectureService {
     }
 
     public List<Lecture> getStudentOpenLectures() {
-        Member currentStudent = AuthenticationService.getCurrentMember();
+        Member currentStudent = authenticationHelper.getCurrentMember();
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository
             .findAllByMemberIdAndLecture_LectureStateAndEnrollmentState(currentStudent.getId(), LectureState.OPEN, EnrollmentState.APPROVAL);
 
@@ -59,7 +60,7 @@ public class LectureService {
     }
 
     public List<LectureDto> getOwnLectures() {
-        Member currentLecturer = AuthenticationService.getCurrentMember();
+        Member currentLecturer = authenticationHelper.getCurrentMember();
         List<Lecture> lectures = lectureRepository.findAllByMemberId(currentLecturer.getId());
         return lectures.stream().map(lecture ->
             LectureDto.createLectureDtoWithEnrollmentInfo(lecture,
@@ -70,7 +71,7 @@ public class LectureService {
     @Transactional
     public int openLectureAndGetAttendanceNumber(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
-        AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
+        authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         lecture.setLectureState(LectureState.OPEN);
 
@@ -89,7 +90,7 @@ public class LectureService {
     @Transactional
     public void closeLecture(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
-        AuthenticationService.verifyRequestMemberLogInMember(lecture.getMember().getId());
+        authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         lecture.setLectureState(LectureState.CLOSED);
     }
