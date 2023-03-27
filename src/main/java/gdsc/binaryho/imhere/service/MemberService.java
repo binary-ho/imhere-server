@@ -65,8 +65,8 @@ public class MemberService {
     }
 
     @Transactional
-    public void memberRoleChange(RoleChangeRequest roleChangeRequest, Long memberId) {
-        Member targetMember = memberRepository.findById(memberId)
+    public void memberRoleChange(RoleChangeRequest roleChangeRequest, String univId) {
+        Member targetMember = memberRepository.findByUnivId(univId)
             .orElseThrow(EntityNotFoundException::new);
 
         Role newRole = Role.valueOf(roleChangeRequest.getRole());
