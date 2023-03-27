@@ -14,13 +14,8 @@ public class AuthenticationService {
     public static Member getCurrentMember() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null) {
-            throw new IllegalStateException("No Authentication Member");
-        }
-
-        if (!authentication.isAuthenticated()) {
-            throw new AccessDeniedException("UnAuthentication Exception");
-        }
+        validateAuthenticationNotNull(authentication);
+        validateAuthenticated(authentication);
 
         return ((PrincipalDetails) authentication.getPrincipal()).getMember();
     }
@@ -37,9 +32,15 @@ public class AuthenticationService {
         }
     }
 
-    public static void verifyRequestMemberLogInMember(String univId)  {
-        if (!univId.equals(getCurrentMember().getUnivId())) {
-            throw new AccessDeniedException("Access Denied univId : " + univId);
+    private static void validateAuthenticationNotNull(Authentication authentication) {
+        if (authentication == null) {
+            throw new IllegalStateException("No Authentication Member");
+        }
+    }
+
+    private static void validateAuthenticated(Authentication authentication) {
+        if (!authentication.isAuthenticated()) {
+            throw new AccessDeniedException("UnAuthentication Exception");
         }
     }
 }
