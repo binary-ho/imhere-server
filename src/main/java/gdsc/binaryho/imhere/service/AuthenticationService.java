@@ -2,6 +2,7 @@ package gdsc.binaryho.imhere.service;
 
 import gdsc.binaryho.imhere.config.auth.PrincipalDetails;
 import gdsc.binaryho.imhere.domain.member.Member;
+import gdsc.binaryho.imhere.domain.member.Role;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +28,12 @@ public class AuthenticationService {
     public static void verifyRequestMemberLogInMember(Long requestId) {
         if (!requestId.equals(getCurrentMember().getId())) {
             throw new AccessDeniedException("Access Denied requestId : " + requestId);
+        }
+    }
+
+    public static void verifyMemberHasAdminRole() {
+        if (!getCurrentMember().getRole().equals(Role.ADMIN)) {
+            throw new AccessDeniedException("Access Denied : User has not role");
         }
     }
 

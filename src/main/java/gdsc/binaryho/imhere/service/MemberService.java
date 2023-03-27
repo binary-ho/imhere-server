@@ -66,6 +66,8 @@ public class MemberService {
 
     @Transactional
     public void memberRoleChange(RoleChangeRequest roleChangeRequest, String univId) {
+        AuthenticationService.verifyMemberHasAdminRole();
+
         Member targetMember = memberRepository.findByUnivId(univId)
             .orElseThrow(EntityNotFoundException::new);
 
