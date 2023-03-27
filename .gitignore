@@ -35,5 +35,8 @@ out/
 
 ### VS Code ###
 .vscode/
-
 /src/**/application.yml
+
+### Project ###
+/src/main/java/gdsc/binaryho/imhere/initDB.java
+/docker-compose.yml
