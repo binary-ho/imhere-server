@@ -36,6 +36,7 @@ out/
 ### VS Code ###
 .vscode/
 /src/**/application.yml
+/src/**/application-dev.yml
 
 ### Project ###
 /src/main/java/gdsc/binaryho/imhere/initDB.java
