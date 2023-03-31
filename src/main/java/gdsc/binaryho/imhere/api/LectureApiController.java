@@ -7,6 +7,8 @@ import gdsc.binaryho.imhere.mapper.dtos.AttendanceNumberDto;
 import gdsc.binaryho.imhere.mapper.dtos.LectureDto;
 import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
 import gdsc.binaryho.imhere.service.LectureService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Lecture", description = "강의 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
 public class LectureApiController {
@@ -25,6 +28,7 @@ public class LectureApiController {
     private final LectureService lectureService;
     private final LectureRepository lectureRepository;
 
+    @Operation(summary = "학생이 수강신청을 위해 개설된 모든 강의 리스트를 가져오는 API")
     @GetMapping("/api/v1/students/all-lectures")
     public List<LectureDto> getAllLectures() {
         List<Lecture> lectures = lectureRepository.findAllByLectureStateNot(LectureState.TERMINATED);
@@ -33,6 +37,7 @@ public class LectureApiController {
             .collect(Collectors.toList());
     }
 
+    @Operation(summary = "로그인한 학생이 수강중인 강의 리스트를 가져오는 API")
     @GetMapping("/api/v1/students/lectures")
     public List<LectureDto> getStudentLectures() {
         List<Lecture> lectures = lectureService.getStudentLectures();
@@ -41,6 +46,7 @@ public class LectureApiController {
             .collect(Collectors.toList());
     }
 
+    @Operation(summary = "로그인한 학생이 출석 가능한 OPEN 상태 강의를 가져오는 API")
     @GetMapping("/api/v1/students/open-lectures")
     public List<LectureDto> getStudentOpenLectures() {
         List<Lecture> lectures = lectureService.getStudentOpenLectures();
@@ -49,18 +55,13 @@ public class LectureApiController {
             .collect(Collectors.toList());
     }
 
-    /*
-    * 강사 본인이 만든 강의들 가져오기
-    * */
+    @Operation(summary = "로그인한 강사가 만든 강의를 가져오는 API")
     @GetMapping("/api/v1/lectures")
     public List<LectureDto> getLectures() {
         return lectureService.getOwnLectures();
     }
 
-    // TODO : 생성
-    /*
-     * 강의 생성
-     * */
+    @Operation(summary = "로그인한 강사가 강의를 생성하는 API")
     @PostMapping("/api/v1/lectures")
     public ResponseEntity<String> createLecture(@RequestBody LectureCreateRequest request) {
         try {
@@ -75,6 +76,7 @@ public class LectureApiController {
     /*
      * 강의 열고 출석 번호 반환
      * */
+    @Operation(summary = "로그인한 강사가 강의를 OPEN하고 출석 번호를 발급 받는 API")
     @PostMapping("/api/v1/lectures/{lecture_id}/open")
     public ResponseEntity<AttendanceNumberDto> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lectureId) {
         try {
@@ -86,9 +88,7 @@ public class LectureApiController {
         }
     }
 
-    /*
-     * 강의 닫기
-     * */
+    @Operation(summary = "로그인한 강사가 강의를 CLOSED 상태로 바꾸는 API")
     @PostMapping("/api/v1/lectures/{lecture_id}/close")
     public ResponseEntity<String> changeLectureState(@PathVariable("lecture_id") Long lecture_id) {
         try {
