@@ -1,10 +1,12 @@
 package gdsc.binaryho.imhere.mapper.requests;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 @Getter
 public class SignUpRequest {
 
+    @Schema(description = "회원가입 email에서 @와 도메인을 포함한 부분을 제외한 앞 부분")
     private final String univId;
     private final String name;
     private final String password;
