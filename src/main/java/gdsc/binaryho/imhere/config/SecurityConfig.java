@@ -57,7 +57,7 @@ public class SecurityConfig {
 
             .authorizeRequests()
 
-            .antMatchers("/login", "/logout", "/member/**", "/swagger-ui", "/swagger-ui.html")
+            .antMatchers("/login", "/logout", "/member/**", "/swagger*/**", "/v3/api-docs/**")
             .anonymous()
 
             .antMatchers("/api/v1/admin/**")
@@ -69,9 +69,7 @@ public class SecurityConfig {
             .antMatchers("/api/v1/students/**")
             .access("hasAnyRole('ROLE_ADMIN', 'ROLE_LECTURER', 'ROLE_STUDENT')")
 
-            .anyRequest()
-            .permitAll();
-//            .authenticated();
+            .anyRequest().authenticated();
 
         http.addFilterBefore(new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration), tokenService), UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(new JwtAuthorizationFilter(authenticationManager(authenticationConfiguration), tokenService, memberRepository), BasicAuthenticationFilter.class);
