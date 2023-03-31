@@ -3,6 +3,8 @@ package gdsc.binaryho.imhere.mapper.dtos;
 import gdsc.binaryho.imhere.domain.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,12 +13,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
+@Tag(name = "LectureDto", description = "수업 정보")
 public class LectureDto {
 
     private Long lectureId;
     private String lectureName;
     private String lecturerName;
     private LectureState lectureState;
+    @Schema(description = "강사의 경우 본인 수업 학생 리스트 받아볼 수 있음")
     private List<StudentInfo> studentInfos;
 
     public LectureDto() {}
@@ -47,6 +51,7 @@ public class LectureDto {
 
     @Getter @Setter
     @NoArgsConstructor
+    @Tag(name = "StudentInfo", description = "학생 정보")
     public static class StudentInfo {
 
         private Long id;
