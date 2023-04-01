@@ -57,7 +57,7 @@ public class SecurityConfig {
 
             .authorizeRequests()
 
-            .antMatchers("/login", "/logout", "/member/**")
+            .antMatchers("/login", "/logout", "/member/**", "/swagger*/**", "/v3/api-docs/**")
             .anonymous()
 
             .antMatchers("/api/v1/admin/**")
@@ -68,7 +68,6 @@ public class SecurityConfig {
 
             .antMatchers("/api/v1/students/**")
             .access("hasAnyRole('ROLE_ADMIN', 'ROLE_LECTURER', 'ROLE_STUDENT')")
-
 
             .anyRequest().authenticated();
 

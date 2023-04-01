@@ -3,6 +3,9 @@ package gdsc.binaryho.imhere.api;
 import gdsc.binaryho.imhere.mapper.dtos.AttendanceDto;
 import gdsc.binaryho.imhere.mapper.requests.AttendanceRequest;
 import gdsc.binaryho.imhere.service.AttendanceService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Attendance", description = "출석 기능 관련 API입니다.")
 @RestController
 public class AttendanceApiController {
 
@@ -20,9 +24,7 @@ public class AttendanceApiController {
         this.attendanceService = attendanceService;
     }
 
-    /*
-    *  학생들의 출석 시도 메서드
-    * */
+    @Operation(summary = "학생 출석 시도 API")
     @PostMapping("/api/v1/students/attendance/{lecture_id}")
     public ResponseEntity<String> takeAttendance(@RequestBody AttendanceRequest attendanceRequest,
         @PathVariable("lecture_id") Long lectureId) {
@@ -35,17 +37,16 @@ public class AttendanceApiController {
         }
     }
 
+    @Operation(summary = "특정 강의의 출석 정보 전체를 가져오는 API")
     @GetMapping("/api/v1/lecturer/{lecture_id}/attendance")
     public AttendanceDto getAttendance(@PathVariable("lecture_id") Long lectureId) {
         return attendanceService.getAttendances(lectureId);
     }
 
-    /*
-    * 특정 강의의 특정 날짜 출석 장부 가져오기
-    * */
+    @Operation(summary = "특정 강의의 지정 날짜 출석 리스트를 가져오는 API")
     @GetMapping("/api/v1/lecturer/{lecture_id}/attendance/{day_milliseconds}")
     public AttendanceDto getTodayAttendance(@PathVariable("lecture_id") Long lectureId,
-        @PathVariable("day_milliseconds") Long milliseconds) {
+        @Parameter(description = "js Date 객체의 getTime 메서드로 만든 milliseconds 현재 시각") @PathVariable("day_milliseconds") Long milliseconds) {
         return attendanceService.getDayAttendances(lectureId, milliseconds);
     }
 }

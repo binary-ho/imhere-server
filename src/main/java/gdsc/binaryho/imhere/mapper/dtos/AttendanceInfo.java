@@ -1,12 +1,14 @@
 package gdsc.binaryho.imhere.mapper.dtos;
 
 import gdsc.binaryho.imhere.domain.attendance.Attendance;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
 
 @Getter
+@Tag(name = "AttendanceInfo", description = "한 학생의 출석 정보")
 public class AttendanceInfo {
 
     private final String univId;

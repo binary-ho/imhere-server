@@ -3,6 +3,8 @@ package gdsc.binaryho.imhere.api;
 import gdsc.binaryho.imhere.mapper.requests.SignUpRequest;
 import gdsc.binaryho.imhere.service.EmailService;
 import gdsc.binaryho.imhere.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.UnsupportedEncodingException;
 import javax.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "Member", description = "유저 계정 관련 API입니다.")
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
@@ -22,6 +25,7 @@ public class MemberController {
     private final MemberService memberService;
     private final EmailService emailService;
 
+    @Operation(summary = "회원가입 API")
     @PostMapping("/member/new")
     public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest) {
         try {
@@ -35,6 +39,7 @@ public class MemberController {
         }
     }
 
+    @Operation(summary = "특정 이메일로 회원가입 코드를 발급하여 발송하는 API")
     @PostMapping("/member/verification/{email}")
     public ResponseEntity<String> generateVerificationNumber(@PathVariable("email") String email) {
         try {
@@ -46,6 +51,7 @@ public class MemberController {
         }
     }
 
+    @Operation(summary = "특정 이메일에 발급된 회원가입 코드와 입력된 코드의 일치여부를 확인하는 API")
     @GetMapping("/member/verification/{email}/{verification-code}")
     public boolean verifyCode(@PathVariable("email") String email,
         @PathVariable("verification-code") String verificationCode) {
