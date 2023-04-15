@@ -11,8 +11,13 @@ public class MockSecurityContextFactory implements WithSecurityContextFactory<Mo
 
     @Override
     public SecurityContext createSecurityContext(MockMember annotation) {
-        PrincipalDetails principalDetails = new PrincipalDetails(Member.createMember(annotation.univId(), annotation.name(), annotation.password(), annotation.role()));
-        UsernamePasswordAuthenticationToken token = new	UsernamePasswordAuthenticationToken(principalDetails, "", principalDetails.getAuthorities());
+        Member mockMember = Member.createMember(annotation.univId(), annotation.name(),
+            annotation.password(), annotation.role());
+        mockMember.setId(annotation.id());
+
+        PrincipalDetails principalDetails = new PrincipalDetails(mockMember);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+            principalDetails, "", principalDetails.getAuthorities());
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(token);
         return context;
