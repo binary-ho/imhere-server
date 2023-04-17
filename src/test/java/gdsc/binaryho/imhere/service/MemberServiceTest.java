@@ -5,9 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import gdsc.binaryho.imhere.MockMember;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
+import gdsc.binaryho.imhere.domain.member.Role;
 import gdsc.binaryho.imhere.mapper.dtos.SignInRequestValidationResult;
+import gdsc.binaryho.imhere.mapper.requests.RoleChangeRequest;
 import gdsc.binaryho.imhere.mapper.requests.SignInRequest;
 import java.security.InvalidParameterException;
 import javax.transaction.Transactional;
@@ -105,5 +108,20 @@ class MemberServiceTest {
             memberService.validateSignInRequest(new SignInRequest(UNIV_ID, PASSWORD));
 
         assertThat(signInRequestValidationResult.getRoleKey()).isEqualTo(DEFAULT_MEMBER_ROLE);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"STUDENT", "LECTURER", "ADMIN"})
+    @MockMember(role = Role.ADMIN)
+    @Transactional
+    void test(String roleKey) {
+        memberService.signUp(UNIV_ID, NAME, PASSWORD);
+        RoleChangeRequest roleChangeRequest = new RoleChangeRequest();
+        roleChangeRequest.setRole(roleKey);
+
+        memberService.memberRoleChange(roleChangeRequest, UNIV_ID);
+        Member member = memberRepository.findByUnivId(UNIV_ID)
+            .orElseThrow();
+        assertThat(member.getRole()).isEqualTo(Role.valueOf(roleKey));
     }
 }
