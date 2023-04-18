@@ -81,7 +81,7 @@ public class LectureApiController {
      * 강의 열고 출석 번호 반환
      * */
     @Operation(summary = "로그인한 강사가 강의를 OPEN하고 출석 번호를 발급 받는 API")
-    @PostMapping("{lecture_id}/open")
+    @PostMapping("/{lecture_id}/open")
     public ResponseEntity<AttendanceNumberDto> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lectureId) {
         try {
             int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lectureId);
@@ -93,7 +93,7 @@ public class LectureApiController {
     }
 
     @Operation(summary = "로그인한 강사가 강의를 CLOSED 상태로 바꾸는 API")
-    @PostMapping("{lecture_id}/close")
+    @PostMapping("/{lecture_id}/close")
     public ResponseEntity<String> changeLectureState(@PathVariable("lecture_id") Long lecture_id) {
         try {
             lectureService.closeLecture(lecture_id);
