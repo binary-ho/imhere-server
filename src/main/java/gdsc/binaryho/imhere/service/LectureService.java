@@ -59,7 +59,7 @@ public class LectureService {
             .collect(Collectors.toList());
     }
 
-    public List<LectureDto> getOwnLectures() {
+    public List<LectureDto> getOwnedLectures() {
         Member currentLecturer = authenticationHelper.getCurrentMember();
         List<Lecture> lectures = lectureRepository.findAllByMemberId(currentLecturer.getId());
         return lectures.stream().map(lecture ->

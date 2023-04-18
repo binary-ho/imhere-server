@@ -3,7 +3,7 @@ package gdsc.binaryho.imhere.service;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.domain.member.Role;
-import gdsc.binaryho.imhere.mapper.dtos.SignInResponseDto;
+import gdsc.binaryho.imhere.mapper.dtos.SignInRequestValidationResult;
 import gdsc.binaryho.imhere.mapper.requests.RoleChangeRequest;
 import gdsc.binaryho.imhere.mapper.requests.SignInRequest;
 import java.security.InvalidParameterException;
@@ -48,7 +48,7 @@ public class MemberService {
     }
 
     @Transactional
-    public SignInResponseDto login(SignInRequest signInRequest) {
+    public SignInRequestValidationResult validateSignInRequest(SignInRequest signInRequest) {
         Member member = memberRepository.findByUnivId(signInRequest.getUnivId())
             .orElseThrow(() -> {
                 throw new AuthenticationException("There is no such user : " + signInRequest.getUnivId()) {};
@@ -56,7 +56,7 @@ public class MemberService {
 
         validateMatchesPassword(signInRequest.getPassword(), member.getPassword());
 
-        return new SignInResponseDto(member.getUnivId(), member.getRoleKey());
+        return new SignInRequestValidationResult(member.getRoleKey());
     }
 
     private void validateMatchesPassword(String rawPassword, String encodedPassword) {

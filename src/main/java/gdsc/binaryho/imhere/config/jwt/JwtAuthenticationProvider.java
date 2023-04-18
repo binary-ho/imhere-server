@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.config.jwt;
 
-import gdsc.binaryho.imhere.mapper.dtos.SignInResponseDto;
+import gdsc.binaryho.imhere.mapper.dtos.SignInRequestValidationResult;
 import gdsc.binaryho.imhere.mapper.requests.SignInRequest;
 import gdsc.binaryho.imhere.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +27,11 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             String principal = (String) authenticationToken.getPrincipal();
             String credential = (String) authenticationToken.getCredentials();
 
-            SignInResponseDto signInResponseDto = memberService.login(new SignInRequest(principal, credential));
+            SignInRequestValidationResult signInRequestValidationResult = memberService.validateSignInRequest(new SignInRequest(principal, credential));
 
             return new UsernamePasswordAuthenticationToken(
-                signInResponseDto.getUnivId(), null,
-                AuthorityUtils.createAuthorityList(signInResponseDto.getRoleKey())
+                principal, null,
+                AuthorityUtils.createAuthorityList(signInRequestValidationResult.getRoleKey())
             );
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
