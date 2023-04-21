@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private static final String HEADER_STRING = "authorization";
@@ -31,7 +33,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(
         HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         try {
-            System.out.println("JwtAuthenticationFilter 진입");
             SignInRequest signInRequest = getSignInRequest(request.getInputStream());
 
             UsernamePasswordAuthenticationToken authenticationToken
@@ -49,7 +50,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             signInRequest.getUnivId(), signInRequest.getPassword());
     }
 
-    /* TODO: 입력 오류 대체 필요 */
     private SignInRequest getSignInRequest(ServletInputStream inputStream) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         return objectMapper.readValue(inputStream, SignInRequest.class);
@@ -58,12 +58,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public void successfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        System.out.println("successfulAuthentication 진입");
 
         String grantedAuthority = authResult.getAuthorities().stream().findAny().orElseThrow().toString();
         Token jwtToken = tokenService.createToken(authResult.getPrincipal().toString(), grantedAuthority);
 
-        System.out.println(authResult.getPrincipal().toString());
         response.addHeader("Access-Control-Expose-Headers", "authorization");
         response.addHeader(HEADER_STRING, ACCESS_TOKEN_PREFIX + jwtToken.getAccessToken());
     }
@@ -72,7 +70,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void unsuccessfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, AuthenticationException failed)
         throws IOException, ServletException {
-        System.out.println("unsuccessfulAuthentication request: " + request.toString());
         super.unsuccessfulAuthentication(request, response, failed);
     }
 

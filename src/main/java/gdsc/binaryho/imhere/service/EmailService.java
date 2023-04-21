@@ -37,7 +37,6 @@ public class EmailService {
 
     public void sendMailAndGetVerificationCode(String recipient)
         throws MessagingException, UnsupportedEncodingException {
-        System.out.println("recipient = " + recipient);
         validateEmailForm(recipient);
 
         String verificationCode = UUID.randomUUID().toString();
