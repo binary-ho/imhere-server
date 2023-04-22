@@ -9,10 +9,12 @@ import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -37,7 +39,6 @@ public class EmailService {
 
     public void sendMailAndGetVerificationCode(String recipient)
         throws MessagingException, UnsupportedEncodingException {
-        System.out.println("recipient = " + recipient);
         validateEmailForm(recipient);
 
         String verificationCode = UUID.randomUUID().toString();
@@ -45,6 +46,8 @@ public class EmailService {
         MimeMessage message = writeMail(recipient, verificationCode);
         emailSender.send(message);
         setVerificationCode(recipient, verificationCode);
+
+        log.info("[인증 이메일 발송] " + recipient + ", 인증 번호 : " + verificationCode);
     }
 
     private MimeMessage writeMail(String recipient, String verificationCode)
@@ -54,8 +57,8 @@ public class EmailService {
         message.addRecipients(RecipientType.TO, recipient);
         message.setSubject("Hello There! GDSC Hongik i'm here 회원가입 인증 코드입니다.");
 
-        message.setText(getMessage(verificationCode), "utf-8", "html");//내용
-        message.setFrom(new InternetAddress("gdscimhere@gmail.com", "jinholee"));//보내는 사람
+        message.setText(getMessage(verificationCode), "utf-8", "html");
+        message.setFrom(new InternetAddress("gdscimhere@gmail.com", "jinholee"));
         return message;
     }
 

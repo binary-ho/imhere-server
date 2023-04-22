@@ -14,22 +14,20 @@ import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EnrollmentService {
 
     private final AuthenticationHelper authenticationHelper;
     private final LectureRepository lectureRepository;
     private final MemberRepository memberRepository;
     private final EnrollmentInfoRepository enrollmentInfoRepository;
-
-    private final Logger logger = LogManager.getLogger(EnrollmentService.class);
 
     @Transactional
     public void enrollStudents(EnrollMentRequestForLecturer enrollMentRequestForLecturer,
@@ -51,7 +49,7 @@ public class EnrollmentService {
         for (String univId : univIds) {
             Optional<Member> member = memberRepository.findByUnivId(univId);
             if (member.isEmpty()) {
-                logger.error("Enrollment Error : there is no such member '" + univId + "' in database");
+                log.info("[수강신청 승인 실패] 회원 없음 : " + univId);
                 continue;
             }
             members.add(member.get());
@@ -75,16 +73,27 @@ public class EnrollmentService {
         EnrollmentInfo enrollmentInfo = enrollmentInfoRepository
             .findByMemberIdAndLectureId(studentId, lectureId).orElseThrow();
 
-        authenticationHelper.verifyRequestMemberLogInMember(enrollmentInfo.getLecture().getMember().getId());
+        authenticationHelper.verifyRequestMemberLogInMember(
+            enrollmentInfo.getLecture()
+                .getMember()
+                .getId()
+        );
         enrollmentInfo.setEnrollmentState(EnrollmentState.APPROVAL);
+
+        log.info("[수강신청 승인] 강의 : " + enrollmentInfo.getLecture().getLectureName() +
+            " (" + enrollmentInfo.getLecture().getLecturerName() + ") 학생 : "
+            + enrollmentInfo.getMember().getUnivId() + " (" + enrollmentInfo.getMember().getName() + ")");
     }
 
     @Transactional
     public void rejectStudents(Long lectureId, Long studentId) {
-        EnrollmentInfo enrollmentInfoAwaited = enrollmentInfoRepository
+        EnrollmentInfo enrollmentInfo = enrollmentInfoRepository
             .findByMemberIdAndLectureId(studentId, lectureId).orElseThrow();
-        authenticationHelper.verifyRequestMemberLogInMember(enrollmentInfoAwaited.getLecture().getMember().getId());
-        enrollmentInfoAwaited.setEnrollmentState(EnrollmentState.REJECTION);
+        authenticationHelper.verifyRequestMemberLogInMember(enrollmentInfo.getLecture().getMember().getId());
+        enrollmentInfo.setEnrollmentState(EnrollmentState.REJECTION);
+        log.info("[수강신청 거절] 강의 : " + enrollmentInfo.getLecture().getLectureName() +
+            " (" + enrollmentInfo.getLecture().getLecturerName() + ") 학생 : "
+            + enrollmentInfo.getMember().getUnivId() + " (" + enrollmentInfo.getMember().getName() + ")");
     }
 
     public EnrollmentInfoDto getLectureEnrollment(Long lectureId) {
@@ -99,6 +108,9 @@ public class EnrollmentService {
             .findByMemberIdAndLectureId(student.getId(), lectureId);
 
         if (enrollmentInfo.isPresent()) {
+            EnrollmentInfo enrollment = enrollmentInfo.get();
+            log.info("[수강신청 중복] 학생 : " + enrollment.getMember().getUnivId()
+                + ", 강의 : " + enrollment.getLecture().getLectureName() + " (" + enrollment.getLecture().getId() + ")");
             throw new DuplicateKeyException("Enrollment Already Exist");
         }
     }

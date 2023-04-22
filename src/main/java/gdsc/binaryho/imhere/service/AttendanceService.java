@@ -19,11 +19,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AttendanceService {
@@ -50,6 +53,9 @@ public class AttendanceService {
             getLocalDateTime(attendanceRequest.getMilliseconds()));
 
         attendanceRepository.save(attendance);
+        log.info("[출석 완료] " + attendance.getLecture().getLectureName()
+            + "(" + attendance.getLecture().getId() + ") , "
+            + " 학생 : " +  currentStudent.getUnivId() + "(" + currentStudent.getName() + ")");
     }
 
     private void validateLectureOpen(EnrollmentInfo enrollmentInfo) throws NoSuchObjectException {
@@ -62,10 +68,17 @@ public class AttendanceService {
         String actualAttendanceNumber = redisTemplate.opsForValue()
             .get(enrollmentInfo.getLecture().getId().toString());
 
-        if (actualAttendanceNumber == null) {
+        validateAttendanceNumberNotTimeOut(actualAttendanceNumber);
+        validateAttendanceNumberMatching(actualAttendanceNumber, attendanceNumber);
+    }
+
+    private void validateAttendanceNumberNotTimeOut(String attendanceNumber) {
+        if (Objects.isNull(attendanceNumber)) {
             throw new IllegalArgumentException("attendance timeout");
         }
+    }
 
+    private void validateAttendanceNumberMatching(String actualAttendanceNumber, int attendanceNumber) {
         if (Integer.parseInt(actualAttendanceNumber) != attendanceNumber) {
             throw new IllegalArgumentException("wrong attendanceNumber");
         }

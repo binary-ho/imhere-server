@@ -14,11 +14,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LectureService {
 
     private final static Integer RANDOM_NUMBER_START = 100;
@@ -84,6 +86,8 @@ public class LectureService {
             TimeUnit.MINUTES
         );
 
+        log.info("[강의 OPEN] " + lecture.getLectureName() + " (" + lecture.getId()
+            + ") 출석 번호 : " + attendanceNumber);
         return attendanceNumber;
     }
 
@@ -93,6 +97,8 @@ public class LectureService {
         authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         lecture.setLectureState(LectureState.CLOSED);
+
+        log.info("[강의 CLOSE] " + lecture.getLectureName() + " (" + lecture.getId() + ")");
     }
 
     private Integer generateRandomNumber() {
