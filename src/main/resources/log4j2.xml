@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration status="info">
+  <Appenders>
+    <Routing name="RoutingAppender">
+      <Routes pattern="$${level}">
+
+        <Route key="INFO">
+          <RollingFile name="RollingFile-Info" fileName="/var/log/imhere-server/info/info-${date:yyyy-MM-dd}.log"
+            filePattern="./backup/info/info-%d{yyyy-MM-dd}-%i.log">
+            <LevelRangeFilter minLevel="INFO" maxLevel="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+              <SizeBasedTriggeringPolicy size="10MB" />
+              <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy>
+              <Delete basePath="./logs/info" maxDepth="1">
+                <IfLastModified age="60d" />
+              </Delete>
+            </DefaultRolloverStrategy>
+          </RollingFile>
+        </Route>
+
+        <Route key="WARN">
+          <RollingFile name="RollingFile-Warn" fileName="/var/log/imhere-server/warn/warn-${date:yyyy-MM-dd}.log"
+            filePattern="./backup/warn/warn-%d{yyyy-MM-dd}-%i.log">
+            <LevelRangeFilter minLevel="WARN" maxLevel="WARN" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+              <SizeBasedTriggeringPolicy size="10MB" />
+              <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy>
+              <Delete basePath="./logs/warn" maxDepth="1">
+                <IfLastModified age="60d" />
+              </Delete>
+            </DefaultRolloverStrategy>
+          </RollingFile>
+        </Route>
+
+        <Route key="ERROR">
+          <RollingFile name="RollingFile-Error" fileName="/var/log/imhere-server/error/error-${date:yyyy-MM-dd}.log"
+            filePattern="./backup/error/error-%d{yyyy-MM-dd}-%i.log">
+            <LevelRangeFilter minLevel="ERROR" maxLevel="OFF" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+              <SizeBasedTriggeringPolicy size="10MB" />
+              <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy>
+              <Delete basePath="./logs/error" maxDepth="1">
+                <IfLastModified age="60d" />
+              </Delete>
+            </DefaultRolloverStrategy>
+          </RollingFile>
+        </Route>
+      </Routes>
+    </Routing>
+  </Appenders>
+
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="RoutingAppender"/>
+    </Root>
+    <Logger>
+
+    </Logger>
+  </Loggers>
+
+</Configuration>
