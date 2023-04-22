@@ -39,6 +39,7 @@ public class MemberService {
 
     private void validateDuplicateMember(String univId) {
         if (memberRepository.findByUnivId(univId).isPresent()) {
+            log.info("[회원가입 실패] univId 중복 회원가입 시도 univId : " + univId);
             throw new DuplicateKeyException("Member Already Exist");
         }
     }
@@ -76,5 +77,8 @@ public class MemberService {
 
         Role newRole = Role.valueOf(roleChangeRequest.getRole());
         targetMember.setRole(newRole);
+
+        log.info("[권한 변경] " + univId + "의 권한이 " + roleChangeRequest.getRole() + "로 변경. ("
+            + authenticationHelper.getCurrentMember().getUnivId() + ")");
     }
 }
