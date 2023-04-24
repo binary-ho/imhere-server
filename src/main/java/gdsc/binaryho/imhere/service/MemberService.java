@@ -10,15 +10,15 @@ import java.security.InvalidParameterException;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class MemberService {
 
     private final AuthenticationHelper authenticationHelper;
@@ -33,7 +33,9 @@ public class MemberService {
         validatePasswordForm(password);
 
         Member newMember = Member.createMember(univId, name, bCryptPasswordEncoder.encode(password), Role.STUDENT);
-        log.info("[회원가입] univId : " + newMember.getUnivId() + ", name : " +  newMember.getName() + ", role : " + newMember.getRoleKey());
+//        log.info("[회원가입] univId : " + newMember.getUnivId() + ", name : " +  newMember.getName() + ", role : " + newMember.getRoleKey());
+        log.info("[회원가입] univId : {}, name : {}, role : {}"
+            , () -> newMember.getUnivId(), () -> newMember.getName(), () -> newMember.getRoleKey());
         memberRepository.save(newMember);
     }
 
@@ -78,7 +80,7 @@ public class MemberService {
         Role newRole = Role.valueOf(roleChangeRequest.getRole());
         targetMember.setRole(newRole);
 
-        log.info("[권한 변경] " + univId + "의 권한이 " + roleChangeRequest.getRole() + "로 변경. ("
-            + authenticationHelper.getCurrentMember().getUnivId() + ")");
+        log.info("[권한 변경] " + univId + "의 권한이 {} 로 변경. ({})",
+            () -> roleChangeRequest.getRole(), () -> authenticationHelper.getCurrentMember().getUnivId());
     }
 }
