@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.Objects;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-@Slf4j
+@Log4j2
 @Service
 @RequiredArgsConstructor
 public class AttendanceService {
@@ -53,9 +53,9 @@ public class AttendanceService {
             getLocalDateTime(attendanceRequest.getMilliseconds()));
 
         attendanceRepository.save(attendance);
-        log.info("[출석 완료] " + attendance.getLecture().getLectureName()
-            + "(" + attendance.getLecture().getId() + ") , "
-            + " 학생 : " +  currentStudent.getUnivId() + "(" + currentStudent.getName() + ")");
+        log.info("[출석 완료] {}({}) , 학생 : {} ({})",
+            () -> attendance.getLecture().getLectureName(), () -> attendance.getLecture().getId(),
+            () -> currentStudent.getUnivId(), () -> currentStudent.getName());
     }
 
     private void validateLectureOpen(EnrollmentInfo enrollmentInfo) throws NoSuchObjectException {
@@ -125,7 +125,6 @@ public class AttendanceService {
 
         Lecture lecture = attendances.get(0).getLecture();
         verifyRequestMemberLogInMember(lecture.getMember());
-
         return getAttendanceDto(lecture, attendances);
     }
 }
