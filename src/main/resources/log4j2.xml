@@ -63,9 +63,6 @@
     <Root level="info">
       <AppenderRef ref="RoutingAppender"/>
     </Root>
-    <Logger>
-
-    </Logger>
   </Loggers>
 
 </Configuration>
