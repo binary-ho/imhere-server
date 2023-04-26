@@ -63,10 +63,7 @@ public class SecurityConfig {
             .antMatchers("/api/v1/admin/**")
             .access("hasRole('ROLE_ADMIN')")
 
-            .antMatchers("/api/v1/lectures/**", "/api/v1/enrollment/**")
-            .access("hasAnyRole('ROLE_ADMIN', 'ROLE_LECTURER')")
-
-            .antMatchers("/api/v1/students/**")
+            .antMatchers("/api/v1/lectures/**", "/api/v1/enrollment/**", "/api/v1/attendance/**")
             .access("hasAnyRole('ROLE_ADMIN', 'ROLE_LECTURER', 'ROLE_STUDENT')")
 
             .anyRequest().authenticated();
