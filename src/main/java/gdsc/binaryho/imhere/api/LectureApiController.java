@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Lecture", description = "강의 관련 API입니다.")
 @RestController
-@RequestMapping("/api/v1/lectures")
+@RequestMapping("/api/lectures")
 @RequiredArgsConstructor
 public class LectureApiController {
 
@@ -77,9 +77,6 @@ public class LectureApiController {
         }
     }
 
-    /*
-     * 강의 열고 출석 번호 반환
-     * */
     @Operation(summary = "로그인한 강사가 강의를 OPEN하고 출석 번호를 발급 받는 API")
     @PostMapping("/{lecture_id}/open")
     public ResponseEntity<AttendanceNumberDto> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lectureId) {
