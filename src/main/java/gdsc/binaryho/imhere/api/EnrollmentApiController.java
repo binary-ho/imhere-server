@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Enrollment", description = "수강 신청 관련 API입니다.")
 @RestController
-@RequestMapping("/api/v1/enrollment")
+@RequestMapping("/api/enrollment")
 public class EnrollmentApiController {
 
     private final EnrollmentService enrollmentService;
