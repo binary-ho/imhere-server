@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.mapper.response;
+package gdsc.binaryho.imhere.exception;
 
 import lombok.Getter;
 
@@ -24,7 +24,12 @@ public enum ErrorCode {
     ENROLLMENT_NOT_APPROVED(463, "수강신청 승인되지 않음"),
 
     ATTENDANCE_NUMBER_INCORRECT(470, "출석 번호 불일치"),
-    ATTENDANCE_TIME_EXCEEDED(471, "출석 가능 시간 초과");
+    ATTENDANCE_TIME_EXCEEDED(471, "출석 가능 시간 초과"),
+
+    REQUEST_MEMBER_ID_MISMATCH(490, "실제로 요청을 보낸 유저의 id와 Request에 기재된 id가 다릅니다. (악의적 요청)"),
+    PERMISSION_DENIED(491, "유저가 권한 이상의 Request를 보냈습니다. (악의적 요청)"),
+
+    ;
 
     private int code;
     private String message;
