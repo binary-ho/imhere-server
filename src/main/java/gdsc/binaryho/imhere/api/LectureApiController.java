@@ -3,6 +3,7 @@ package gdsc.binaryho.imhere.api;
 import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
+import gdsc.binaryho.imhere.exception.ImhereException;
 import gdsc.binaryho.imhere.mapper.dtos.AttendanceNumberDto;
 import gdsc.binaryho.imhere.mapper.dtos.LectureDto;
 import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
@@ -71,9 +72,9 @@ public class LectureApiController {
         try {
             lectureService.createLecture(request);
             return ResponseEntity.ok(HttpStatus.OK.toString());
-        } catch (RuntimeException error) {
+        } catch (ImhereException error) {
             error.printStackTrace();
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(error.getErrorCode().getCode()).build();
         }
     }
 
@@ -83,9 +84,9 @@ public class LectureApiController {
         try {
             int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lectureId);
             return ResponseEntity.ok(new AttendanceNumberDto(attendanceNumber));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ImhereException error) {
+            error.printStackTrace();
+            return ResponseEntity.status(error.getErrorCode().getCode()).build();
         }
     }
 
@@ -95,9 +96,9 @@ public class LectureApiController {
         try {
             lectureService.closeLecture(lecture_id);
             return ResponseEntity.ok(HttpStatus.OK.toString());
-        } catch (RuntimeException error) {
+        } catch (ImhereException error) {
             error.printStackTrace();
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(error.getErrorCode().getCode()).build();
         }
     }
 }

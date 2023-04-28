@@ -1,5 +1,6 @@
 package gdsc.binaryho.imhere.api;
 
+import gdsc.binaryho.imhere.exception.ImhereException;
 import gdsc.binaryho.imhere.mapper.dtos.EnrollmentInfoDto;
 import gdsc.binaryho.imhere.service.EnrollmentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,9 +38,9 @@ public class EnrollmentApiController {
         try {
             enrollmentService.approveStudents(lectureId, studentId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-        } catch (Exception e) {
+        } catch (ImhereException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(e.getErrorCode().getCode()).build();
         }
     }
 
@@ -50,9 +51,9 @@ public class EnrollmentApiController {
         try {
             enrollmentService.rejectStudents(lectureId, studentId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-        } catch (Exception e) {
+        } catch (ImhereException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(e.getErrorCode().getCode()).build();
         }
     }
 
@@ -63,9 +64,9 @@ public class EnrollmentApiController {
         try {
             enrollmentService.requestEnrollment(lectureId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-        } catch (Exception e) {
+        } catch (ImhereException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(e.getErrorCode().getCode()).build();
         }
     }
 }

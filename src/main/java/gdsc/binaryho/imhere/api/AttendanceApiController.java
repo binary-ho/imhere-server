@@ -1,5 +1,6 @@
 package gdsc.binaryho.imhere.api;
 
+import gdsc.binaryho.imhere.exception.ImhereException;
 import gdsc.binaryho.imhere.mapper.dtos.AttendanceDto;
 import gdsc.binaryho.imhere.mapper.requests.AttendanceRequest;
 import gdsc.binaryho.imhere.service.AttendanceService;
@@ -33,9 +34,9 @@ public class AttendanceApiController {
         try {
             attendanceService.takeAttendance(attendanceRequest, lectureId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-        } catch (Exception e) {
+        } catch (ImhereException e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(e.getErrorCode().getCode()).build();
         }
     }
 

@@ -1,5 +1,6 @@
 package gdsc.binaryho.imhere.api;
 
+import gdsc.binaryho.imhere.exception.ImhereException;
 import gdsc.binaryho.imhere.mapper.requests.SignUpRequest;
 import gdsc.binaryho.imhere.service.EmailService;
 import gdsc.binaryho.imhere.service.MemberService;
@@ -34,9 +35,9 @@ public class MemberApiController {
             memberService.signUp(signUpRequest.getUnivId(), signUpRequest.getName(),
                 signUpRequest.getPassword());
             return ResponseEntity.ok(HttpStatus.OK.toString());
-        } catch (RuntimeException error) {
-            error.printStackTrace();
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (ImhereException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(e.getErrorCode().getCode()).build();
         }
     }
 

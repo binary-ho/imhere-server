@@ -3,16 +3,16 @@ package gdsc.binaryho.imhere.service;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
 import gdsc.binaryho.imhere.domain.member.Role;
+import gdsc.binaryho.imhere.exception.member.EmailDuplicatedException;
+import gdsc.binaryho.imhere.exception.member.MemberNotFoundException;
+import gdsc.binaryho.imhere.exception.member.PasswordFormatMismatchException;
+import gdsc.binaryho.imhere.exception.member.PasswordIncorrectException;
 import gdsc.binaryho.imhere.mapper.dtos.SignInRequestValidationResult;
 import gdsc.binaryho.imhere.mapper.requests.RoleChangeRequest;
 import gdsc.binaryho.imhere.mapper.requests.SignInRequest;
-import java.security.InvalidParameterException;
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,22 +41,21 @@ public class MemberService {
     private void validateDuplicateMember(String univId) {
         if (memberRepository.findByUnivId(univId).isPresent()) {
             log.info("[회원가입 실패] univId 중복 회원가입 시도 univId : " + univId);
-            throw new DuplicateKeyException("Member Already Exist");
+            throw EmailDuplicatedException.EXCEPTION;
         }
     }
 
     private void validatePasswordForm(String password) {
         if (!password.matches(PASSWORD_REGEX)) {
-            throw new IllegalArgumentException();
+            throw PasswordFormatMismatchException.EXCEPTION;
         }
     }
 
     @Transactional
     public SignInRequestValidationResult validateSignInRequest(SignInRequest signInRequest) {
+        // 분리합시다.
         Member member = memberRepository.findByUnivId(signInRequest.getUnivId())
-            .orElseThrow(() -> {
-                throw new AuthenticationException("There is no such user : " + signInRequest.getUnivId()) {};
-            });
+            .orElseThrow(() -> MemberNotFoundException.EXCEPTION);
 
         validateMatchesPassword(signInRequest.getPassword(), member.getPassword());
 
@@ -65,7 +64,7 @@ public class MemberService {
 
     private void validateMatchesPassword(String rawPassword, String encodedPassword) {
         if (!bCryptPasswordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new InvalidParameterException();
+            throw PasswordIncorrectException.EXCEPTION;
         }
     }
 
@@ -74,7 +73,7 @@ public class MemberService {
         authenticationHelper.verifyMemberHasAdminRole();
 
         Member targetMember = memberRepository.findByUnivId(univId)
-            .orElseThrow(EntityNotFoundException::new);
+            .orElseThrow(() -> MemberNotFoundException.EXCEPTION);
 
         Role newRole = Role.valueOf(roleChangeRequest.getRole());
         targetMember.setRole(newRole);

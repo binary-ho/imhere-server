@@ -7,6 +7,9 @@ import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.member.Member;
 import gdsc.binaryho.imhere.domain.member.MemberRepository;
+import gdsc.binaryho.imhere.exception.enrollment.EnrollmentDuplicatedException;
+import gdsc.binaryho.imhere.exception.enrollment.EnrollmentNotFoundException;
+import gdsc.binaryho.imhere.exception.lecture.LectureNotFoundException;
 import gdsc.binaryho.imhere.mapper.dtos.EnrollmentInfoDto;
 import gdsc.binaryho.imhere.mapper.requests.EnrollMentRequestForLecturer;
 import java.util.ArrayList;
@@ -15,7 +18,6 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 
@@ -32,7 +34,8 @@ public class EnrollmentService {
     @Transactional
     public void enrollStudents(EnrollMentRequestForLecturer enrollMentRequestForLecturer,
         Long lectureId) {
-        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        Lecture lecture = lectureRepository.findById(lectureId)
+            .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
         authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         List<Member> students = getStudentsByUnivId(enrollMentRequestForLecturer.getUnivIds());
@@ -63,7 +66,8 @@ public class EnrollmentService {
         Member student = authenticationHelper.getCurrentMember();
         validateDuplicated(student, lectureId);
 
-        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        Lecture lecture = lectureRepository.findById(lectureId)
+            .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
         EnrollmentInfo enrollmentInfo = EnrollmentInfo.createEnrollmentInfo(lecture, student, EnrollmentState.AWAIT);
         enrollmentInfoRepository.save(enrollmentInfo);
     }
@@ -71,7 +75,8 @@ public class EnrollmentService {
     @Transactional
     public void approveStudents(Long lectureId, Long studentId) {
         EnrollmentInfo enrollmentInfo = enrollmentInfoRepository
-            .findByMemberIdAndLectureId(studentId, lectureId).orElseThrow();
+            .findByMemberIdAndLectureId(studentId, lectureId)
+            .orElseThrow(() -> EnrollmentNotFoundException.EXCEPTION);
 
         authenticationHelper.verifyRequestMemberLogInMember(
             enrollmentInfo.getLecture()
@@ -88,8 +93,13 @@ public class EnrollmentService {
     @Transactional
     public void rejectStudents(Long lectureId, Long studentId) {
         EnrollmentInfo enrollmentInfo = enrollmentInfoRepository
-            .findByMemberIdAndLectureId(studentId, lectureId).orElseThrow();
-        authenticationHelper.verifyRequestMemberLogInMember(enrollmentInfo.getLecture().getMember().getId());
+            .findByMemberIdAndLectureId(studentId, lectureId)
+            .orElseThrow(() -> EnrollmentNotFoundException.EXCEPTION);
+        authenticationHelper.verifyRequestMemberLogInMember(
+            enrollmentInfo.getLecture()
+                .getMember()
+                .getId()
+        );
         enrollmentInfo.setEnrollmentState(EnrollmentState.REJECTION);
 
         log.info("[수강신청 거절] 강의 : {} ({}) 학생 : {} ({})"
@@ -98,7 +108,8 @@ public class EnrollmentService {
     }
 
     public EnrollmentInfoDto getLectureEnrollment(Long lectureId) {
-        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        Lecture lecture = lectureRepository.findById(lectureId)
+            .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
         authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByLecture(lecture);
         return EnrollmentInfoDto.createEnrollmentInfoDto(enrollmentInfos);
@@ -115,7 +126,7 @@ public class EnrollmentService {
                 , () -> enrollment.getMember().getUnivId()
                 , () -> enrollment.getLecture().getLectureName()
                 , () -> enrollment.getLecture().getId());
-            throw new DuplicateKeyException("Enrollment Already Exist");
+            throw EnrollmentDuplicatedException.EXCEPTION;
         }
     }
 }

@@ -1,5 +1,6 @@
 package gdsc.binaryho.imhere.service;
 
+import gdsc.binaryho.imhere.exception.member.EmailFormatMismatchException;
 import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 import java.util.UUID;
@@ -80,7 +81,7 @@ public class EmailService {
 
     private void validateEmailForm(String recipient) {
         if (!recipient.matches(EMAIL_REGEX) && !recipient.matches(GMAIL_REGEX)) {
-            throw new IllegalArgumentException();
+            throw EmailFormatMismatchException.EXCEPTION;
         }
     }
 
