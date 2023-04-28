@@ -10,10 +10,13 @@ import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
 import gdsc.binaryho.imhere.domain.member.Member;
+import gdsc.binaryho.imhere.exception.attendance.AttendanceNumberIncorrectException;
+import gdsc.binaryho.imhere.exception.attendance.AttendanceTimeExceededException;
+import gdsc.binaryho.imhere.exception.enrollment.EnrollmentNotApprovedException;
+import gdsc.binaryho.imhere.exception.lecture.LectureNotOpenException;
 import gdsc.binaryho.imhere.mapper.dtos.AttendanceDto;
 import gdsc.binaryho.imhere.mapper.dtos.AttendanceInfo;
 import gdsc.binaryho.imhere.mapper.requests.AttendanceRequest;
-import java.rmi.NoSuchObjectException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -38,11 +41,11 @@ public class AttendanceService {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
-    public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) throws NoSuchObjectException {
+    public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) {
         Member currentStudent = authenticationHelper.getCurrentMember();
         EnrollmentInfo enrollmentInfo = enrollmentRepository
             .findByMemberIdAndLectureIdAndEnrollmentState(currentStudent.getId(), lectureId, EnrollmentState.APPROVAL)
-            .orElseThrow(IllegalAccessError::new);
+            .orElseThrow(() -> EnrollmentNotApprovedException.EXCEPTION);
 
         validateLectureOpen(enrollmentInfo);
         validateAttendanceNumber(enrollmentInfo, attendanceRequest.getAttendanceNumber());
@@ -58,9 +61,9 @@ public class AttendanceService {
             () -> currentStudent.getUnivId(), () -> currentStudent.getName());
     }
 
-    private void validateLectureOpen(EnrollmentInfo enrollmentInfo) throws NoSuchObjectException {
+    private void validateLectureOpen(EnrollmentInfo enrollmentInfo) {
         if (enrollmentInfo.getLecture().getLectureState() != LectureState.OPEN) {
-            throw new NoSuchObjectException("lecture is not opened");
+            throw LectureNotOpenException.EXCEPTION;
         }
     }
 
@@ -69,18 +72,18 @@ public class AttendanceService {
             .get(enrollmentInfo.getLecture().getId().toString());
 
         validateAttendanceNumberNotTimeOut(actualAttendanceNumber);
-        validateAttendanceNumberMatching(actualAttendanceNumber, attendanceNumber);
+        validateAttendanceNumberCorrect(actualAttendanceNumber, attendanceNumber);
     }
 
     private void validateAttendanceNumberNotTimeOut(String attendanceNumber) {
         if (Objects.isNull(attendanceNumber)) {
-            throw new IllegalArgumentException("attendance timeout");
+            throw AttendanceTimeExceededException.EXCEPTION;
         }
     }
 
-    private void validateAttendanceNumberMatching(String actualAttendanceNumber, int attendanceNumber) {
+    private void validateAttendanceNumberCorrect(String actualAttendanceNumber, int attendanceNumber) {
         if (Integer.parseInt(actualAttendanceNumber) != attendanceNumber) {
-            throw new IllegalArgumentException("wrong attendanceNumber");
+            throw AttendanceNumberIncorrectException.EXCEPTION;
         }
     }
 

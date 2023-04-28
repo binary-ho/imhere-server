@@ -1,9 +1,11 @@
 package gdsc.binaryho.imhere.api;
 
+import gdsc.binaryho.imhere.exception.ImhereException;
 import gdsc.binaryho.imhere.mapper.dtos.EnrollmentInfoDto;
 import gdsc.binaryho.imhere.service.EnrollmentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Log4j2
 @Tag(name = "Enrollment", description = "수강 신청 관련 API입니다.")
 @RestController
 @RequestMapping("/api/enrollment")
@@ -37,9 +40,9 @@ public class EnrollmentApiController {
         try {
             enrollmentService.approveStudents(lectureId, studentId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ImhereException e) {
+            log.info("[수강신청 승인 ERROR] : " + e);
+            return ResponseEntity.status(e.getErrorCode().getCode()).build();
         }
     }
 
@@ -50,9 +53,8 @@ public class EnrollmentApiController {
         try {
             enrollmentService.rejectStudents(lectureId, studentId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ImhereException e) {
+            return ResponseEntity.status(e.getErrorCode().getCode()).build();
         }
     }
 
@@ -63,9 +65,8 @@ public class EnrollmentApiController {
         try {
             enrollmentService.requestEnrollment(lectureId);
             return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (ImhereException e) {
+            return ResponseEntity.status(e.getErrorCode().getCode()).build();
         }
     }
 }

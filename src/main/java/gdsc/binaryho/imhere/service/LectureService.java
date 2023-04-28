@@ -7,9 +7,11 @@ import gdsc.binaryho.imhere.domain.lecture.Lecture;
 import gdsc.binaryho.imhere.domain.lecture.LectureRepository;
 import gdsc.binaryho.imhere.domain.lecture.LectureState;
 import gdsc.binaryho.imhere.domain.member.Member;
+import gdsc.binaryho.imhere.exception.lecture.LectureNotFoundException;
 import gdsc.binaryho.imhere.mapper.dtos.LectureDto;
 import gdsc.binaryho.imhere.mapper.requests.LectureCreateRequest;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
@@ -42,7 +44,8 @@ public class LectureService {
     public List<Lecture> getStudentLectures() {
         Member currentStudent = authenticationHelper.getCurrentMember();
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository
-            .findAllByMemberIdAndEnrollmentState(currentStudent.getId(), EnrollmentState.APPROVAL);
+            .findAllByMemberIdAndEnrollmentState(
+                currentStudent.getId(), EnrollmentState.APPROVAL);
 
         return getLectures(enrollmentInfos);
     }
@@ -50,7 +53,8 @@ public class LectureService {
     public List<Lecture> getStudentOpenLectures() {
         Member currentStudent = authenticationHelper.getCurrentMember();
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository
-            .findAllByMemberIdAndLecture_LectureStateAndEnrollmentState(currentStudent.getId(), LectureState.OPEN, EnrollmentState.APPROVAL);
+            .findAllByMemberIdAndLecture_LectureStateAndEnrollmentState(
+                currentStudent.getId(), LectureState.OPEN, EnrollmentState.APPROVAL);
 
         return getLectures(enrollmentInfos);
     }
@@ -64,15 +68,21 @@ public class LectureService {
     public List<LectureDto> getOwnedLectures() {
         Member currentLecturer = authenticationHelper.getCurrentMember();
         List<Lecture> lectures = lectureRepository.findAllByMemberId(currentLecturer.getId());
-        return lectures.stream().map(lecture ->
-            LectureDto.createLectureDtoWithEnrollmentInfo(lecture,
-                enrollmentInfoRepository.findAllByLectureAndEnrollmentState(lecture, EnrollmentState.APPROVAL))
+        return lectures.stream()
+            .map(lecture ->
+                LectureDto.createLectureDtoWithEnrollmentInfo(lecture,
+                    enrollmentInfoRepository
+                        .findAllByLectureAndEnrollmentState(lecture, EnrollmentState.APPROVAL))
         ).collect(Collectors.toList());
     }
 
     @Transactional
     public int openLectureAndGetAttendanceNumber(Long lectureId) {
-        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        Optional<Lecture> findLecture = lectureRepository.findById(lectureId);
+
+        validateLectureNonNull(findLecture);
+
+        Lecture lecture = findLecture.get();
         authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         lecture.setLectureState(LectureState.OPEN);
@@ -93,7 +103,11 @@ public class LectureService {
 
     @Transactional
     public void closeLecture(Long lectureId) {
-        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        Optional<Lecture> findLecture = lectureRepository.findById(lectureId);
+
+        validateLectureNonNull(findLecture);
+
+        Lecture lecture = findLecture.get();
         authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         lecture.setLectureState(LectureState.CLOSED);
@@ -105,5 +119,11 @@ public class LectureService {
     private Integer generateRandomNumber() {
         int rangeSize = RANDOM_NUMBER_END - RANDOM_NUMBER_START + 1;
         return (int) (Math.random() * (rangeSize)) + RANDOM_NUMBER_START;
+    }
+
+    private void validateLectureNonNull(Optional<Lecture> findLecture) {
+        if (findLecture.isEmpty()) {
+            throw LectureNotFoundException.EXCEPTION;
+        }
     }
 }
