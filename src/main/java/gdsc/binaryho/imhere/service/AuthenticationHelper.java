@@ -6,10 +6,12 @@ import gdsc.binaryho.imhere.domain.member.Role;
 import gdsc.binaryho.imhere.exception.member.MemberNotFoundException;
 import gdsc.binaryho.imhere.exception.member.PermissionDeniedException;
 import gdsc.binaryho.imhere.exception.member.RequestMemberIdMismatchException;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+@Log4j2
 @Component
 public class AuthenticationHelper {
 

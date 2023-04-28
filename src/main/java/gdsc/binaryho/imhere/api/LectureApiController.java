@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Log4j2
 @Tag(name = "Lecture", description = "강의 관련 API입니다.")
 @RestController
 @RequestMapping("/api/lectures")
@@ -73,7 +75,6 @@ public class LectureApiController {
             lectureService.createLecture(request);
             return ResponseEntity.ok(HttpStatus.OK.toString());
         } catch (ImhereException error) {
-            error.printStackTrace();
             return ResponseEntity.status(error.getErrorCode().getCode()).build();
         }
     }
@@ -84,9 +85,9 @@ public class LectureApiController {
         try {
             int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lectureId);
             return ResponseEntity.ok(new AttendanceNumberDto(attendanceNumber));
-        } catch (ImhereException error) {
-            error.printStackTrace();
-            return ResponseEntity.status(error.getErrorCode().getCode()).build();
+        } catch (ImhereException e) {
+            log.error("[강의 OPEN ERROR] : " + e);
+            return ResponseEntity.status(e.getErrorCode().getCode()).build();
         }
     }
 
@@ -96,9 +97,8 @@ public class LectureApiController {
         try {
             lectureService.closeLecture(lecture_id);
             return ResponseEntity.ok(HttpStatus.OK.toString());
-        } catch (ImhereException error) {
-            error.printStackTrace();
-            return ResponseEntity.status(error.getErrorCode().getCode()).build();
+        } catch (ImhereException e) {
+            return ResponseEntity.status(e.getErrorCode().getCode()).build();
         }
     }
 }
