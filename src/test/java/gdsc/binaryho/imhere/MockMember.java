@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere;
 
-import gdsc.binaryho.imhere.domain.member.Role;
+import gdsc.binaryho.imhere.core.member.Role;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import org.springframework.security.test.context.support.WithSecurityContext;
