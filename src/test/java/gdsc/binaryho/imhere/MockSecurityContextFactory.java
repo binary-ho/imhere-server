@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere;
 
-import gdsc.binaryho.imhere.config.auth.PrincipalDetails;
-import gdsc.binaryho.imhere.domain.member.Member;
+import gdsc.binaryho.imhere.core.auth.PrincipalDetails;
+import gdsc.binaryho.imhere.core.member.Member;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
