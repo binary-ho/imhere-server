@@ -1,6 +1,7 @@
-package gdsc.binaryho.imhere.util;
+package gdsc.binaryho.imhere.core.auth.util;
 
 import gdsc.binaryho.imhere.core.auth.exception.EmailFormatMismatchException;
+import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
 import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public class EmailSender {
         + "<br>";
     private final static int ATTENDANCE_NUMBER_EXPIRE_TIME = 10;
     private final static String EMAIL_REGEX = "^[a-zA-Z0-9]+@(?:(?:g\\.)?hongik\\.ac\\.kr)$";;
-    private final static String GMAIL_REGEX = "^[a-zA-Z0-9]+@gmail\\.com$";    
+    private final static String GMAIL_REGEX = "^[a-zA-Z0-9]+@gmail\\.com$";
 
     private final JavaMailSender emailSender;
     private final StringBuilder stringBuilder = new StringBuilder();
@@ -85,9 +86,11 @@ public class EmailSender {
         }
     }
 
-    public boolean verifyCode(String email, String verificationCode) {
+    public void verifyCode(String email, String verificationCode) {
         String nonNullEmail = Objects.requireNonNull(email);
         String nonNullVerificationCode = Objects.requireNonNull(verificationCode);
-        return Objects.equals(redisTemplate.opsForValue().get(nonNullEmail), nonNullVerificationCode);
+        if (!Objects.equals(redisTemplate.opsForValue().get(nonNullEmail), nonNullVerificationCode)) {
+            throw EmailVerificationCodeIncorrectException.EXCEPTION;
+        }
     }
 }

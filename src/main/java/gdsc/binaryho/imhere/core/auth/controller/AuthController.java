@@ -2,8 +2,8 @@ package gdsc.binaryho.imhere.core.auth.controller;
 
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.auth.application.request.SignUpRequest;
+import gdsc.binaryho.imhere.core.auth.util.EmailSender;
 import gdsc.binaryho.imhere.exception.ImhereException;
-import gdsc.binaryho.imhere.util.EmailSender;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.UnsupportedEncodingException;
