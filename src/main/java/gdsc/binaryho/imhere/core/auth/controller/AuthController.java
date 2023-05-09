@@ -42,9 +42,9 @@ public class AuthController {
                 () -> signUpRequest.getUnivId(),
                 () -> signUpRequest.getName(),
                 () -> signUpRequest.getPassword(),
-                () -> error.getErrorCode().getMessage());
+                () -> error.getErrorInfo().getMessage());
             return ResponseEntity
-                .status(error.getErrorCode().getHttpStatus())
+                .status(error.getErrorInfo().getHttpStatus())
                 .build();
         }
     }
@@ -73,7 +73,7 @@ public class AuthController {
         } catch (ImhereException error) {
             log.info("[이메일 인증 번호 불일치] email : {}, 제출 코드 {}", email, verificationCode);
             return ResponseEntity
-                .status(error.getErrorCode().getHttpStatus())
+                .status(error.getErrorInfo().getHttpStatus())
                 .build();
         }
     }

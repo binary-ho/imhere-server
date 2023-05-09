@@ -5,6 +5,6 @@ public class RequestFormatMismatchException extends ImhereException {
     public static final ImhereException EXCEPTION = new RequestFormatMismatchException();
 
     private RequestFormatMismatchException() {
-        super(ErrorCode.REQUEST_FORMAT_MISMATCH);
+        super(ErrorInfo.REQUEST_FORMAT_MISMATCH);
     }
 }

@@ -30,7 +30,7 @@ public class AdminController {
             return ResponseEntity.ok().build();
         } catch (ImhereException error) {
             return ResponseEntity
-                .status(error.getErrorCode().getHttpStatus())
+                .status(error.getErrorInfo().getHttpStatus())
                 .build();
         }
     }

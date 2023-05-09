@@ -38,7 +38,7 @@ public class AttendanceController {
         } catch (ImhereException error) {
             log.info("[출석 시도 예외 발생] : ", error);
             return ResponseEntity
-                .status(error.getErrorCode().getHttpStatus())
+                .status(error.getErrorInfo().getHttpStatus())
                 .build();
         }
     }

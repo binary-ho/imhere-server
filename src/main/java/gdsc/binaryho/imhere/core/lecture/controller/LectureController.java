@@ -81,7 +81,7 @@ public class LectureController {
             return ResponseEntity.ok().build();
         } catch (ImhereException error) {
             return ResponseEntity
-                .status(error.getErrorCode().getCode())
+                .status(error.getErrorInfo().getCode())
                 .build();
         }
     }
@@ -96,7 +96,7 @@ public class LectureController {
         } catch (ImhereException e) {
             log.error("[강의 OPEN ERROR] : " + e);
             return ResponseEntity
-                .status(e.getErrorCode().getCode())
+                .status(e.getErrorInfo().getCode())
                 .build();
         }
     }
@@ -109,7 +109,7 @@ public class LectureController {
             return ResponseEntity.ok().build();
         } catch (ImhereException e) {
             return ResponseEntity
-                .status(e.getErrorCode().getCode())
+                .status(e.getErrorInfo().getCode())
                 .build();
         }
     }

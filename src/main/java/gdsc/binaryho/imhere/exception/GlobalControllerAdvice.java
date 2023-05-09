@@ -16,10 +16,10 @@ public class GlobalControllerAdvice {
 
         log.info("[ImhereException] Method : {}, RequestURI : {}, Exception : {}, Message : {}",
             () -> request.getMethod(), () -> request.getRequestURI(),
-            () -> error.getClass().getSimpleName(), () -> error.getErrorCode().getMessage());
+            () -> error.getClass().getSimpleName(), () -> error.getErrorInfo().getMessage());
         return ResponseEntity
-            .status(error.getErrorCode().getHttpStatus())
-            .body(new ErrorResponse(error.getErrorCode().getCode(), error.getErrorCode().getMessage()));
+            .status(error.getErrorInfo().getHttpStatus())
+            .body(new ErrorResponse(error.getErrorInfo().getCode(), error.getErrorInfo().getMessage()));
     }
 
     @ExceptionHandler(RuntimeException.class)

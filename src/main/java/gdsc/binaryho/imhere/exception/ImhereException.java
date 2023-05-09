@@ -7,5 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ImhereException extends RuntimeException {
 
-    private ErrorCode errorCode;
+    private ErrorInfo errorInfo;
 }

@@ -25,7 +25,7 @@ public class EnrollmentController {
         this.enrollmentService = enrollmentService;
     }
 
-    @Operation(summary = "특정 수업의 출석 정보를 가져오는 API")
+    @Operation(summary = "특정 수업의 수강 신청 정보를 가져오는 API")
     @GetMapping("/{lecture_id}")
     public ResponseEntity<EnrollmentInfoDto> getLectureEnrollment(@PathVariable("lecture_id") Long lectureId) {
         return ResponseEntity.ok(enrollmentService.getLectureEnrollment(lectureId));
@@ -41,7 +41,7 @@ public class EnrollmentController {
         } catch (ImhereException error) {
             log.info("[수강신청 승인 ERROR] : " + error);
             return ResponseEntity
-                .status(error.getErrorCode().getCode())
+                .status(error.getErrorInfo().getCode())
                 .build();
         }
     }
@@ -55,7 +55,7 @@ public class EnrollmentController {
             return ResponseEntity.ok().build();
         } catch (ImhereException error) {
             return ResponseEntity
-                .status(error.getErrorCode().getCode())
+                .status(error.getErrorInfo().getCode())
                 .build();
         }
     }
@@ -69,7 +69,7 @@ public class EnrollmentController {
             return ResponseEntity.ok().build();
         } catch (ImhereException error) {
             return ResponseEntity
-                .status(error.getErrorCode().getCode())
+                .status(error.getErrorInfo().getCode())
                 .build();
         }
     }
