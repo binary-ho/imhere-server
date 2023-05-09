@@ -2,9 +2,11 @@ package gdsc.binaryho.imhere.core.member.controller;
 
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.member.application.request.RoleChangeRequest;
+import gdsc.binaryho.imhere.exception.ImhereException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,8 +23,15 @@ public class AdminController {
 
     @Operation(summary = "유저 권한변경 API")
     @PostMapping("/role/{univ_id}")
-    public void memberRoleChange(@RequestBody RoleChangeRequest roleChangeRequest,
+    public ResponseEntity<Void> memberRoleChange(@RequestBody RoleChangeRequest roleChangeRequest,
         @PathVariable("univ_id") String univId) {
-        authService.memberRoleChange(roleChangeRequest, univId);
+        try {
+            authService.memberRoleChange(roleChangeRequest, univId);
+            return ResponseEntity.ok().build();
+        } catch (ImhereException error) {
+            return ResponseEntity
+                .status(error.getErrorCode().getHttpStatus())
+                .build();
+        }
     }
 }

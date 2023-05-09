@@ -32,42 +32,49 @@ public class AuthController {
 
     @Operation(summary = "회원가입 API")
     @PostMapping("/new")
-    public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<Void> signUp(@RequestBody SignUpRequest signUpRequest) {
         try {
             authService.signUp(signUpRequest.getUnivId(), signUpRequest.getName(),
                 signUpRequest.getPassword());
-            return ResponseEntity.ok(HttpStatus.OK.toString());
-        } catch (ImhereException e) {
+            return ResponseEntity.ok().build();
+        } catch (ImhereException error) {
             log.info("[회원가입 에러] 제출 email : {}, name : {}, password : {}\n -> 사유 {}",
                 () -> signUpRequest.getUnivId(),
                 () -> signUpRequest.getName(),
                 () -> signUpRequest.getPassword(),
-                () -> e.getErrorCode().getMessage());
-            return ResponseEntity.status(e.getErrorCode().getCode()).build();
+                () -> error.getErrorCode().getMessage());
+            return ResponseEntity
+                .status(error.getErrorCode().getHttpStatus())
+                .build();
         }
     }
 
     @Operation(summary = "특정 이메일로 회원가입 코드를 발급하여 발송하는 API")
     @PostMapping("/verification/{email}")
-    public ResponseEntity<String> generateVerificationNumber(@PathVariable("email") String email) {
+    public ResponseEntity<Void> generateVerificationNumber(@PathVariable("email") String email) {
         try {
             emailSender.sendMailAndGetVerificationCode(email);
-            return ResponseEntity.ok(HttpStatus.OK.toString());
+            return ResponseEntity.ok().build();
         } catch (MailException | MessagingException | UnsupportedEncodingException error) {
             log.info("[이메일 인증 번호 전송 에러] email : {}", email);
-            return new ResponseEntity<>(error.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .build();
         }
     }
 
     @Operation(summary = "특정 이메일에 발급된 회원가입 코드와 입력된 코드의 일치여부를 확인하는 API")
     @GetMapping("/verification/{email}/{verification-code}")
-    public boolean verifyCode(@PathVariable("email") String email,
+    public ResponseEntity<Void> verifyCode(@PathVariable("email") String email,
         @PathVariable("verification-code") String verificationCode) {
         try {
-            return emailSender.verifyCode(email, verificationCode);
-        } catch (RuntimeException e) {
+            emailSender.verifyCode(email, verificationCode);
+            return ResponseEntity.ok().build();
+        } catch (ImhereException error) {
             log.info("[이메일 인증 번호 불일치] email : {}, 제출 코드 {}", email, verificationCode);
-            return false;
+            return ResponseEntity
+                .status(error.getErrorCode().getHttpStatus())
+                .build();
         }
     }
 }

@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,28 +30,32 @@ public class AttendanceController {
 
     @Operation(summary = "학생 출석 시도 API")
     @PostMapping("/{lecture_id}")
-    public ResponseEntity<String> takeAttendance(@RequestBody AttendanceRequest attendanceRequest,
+    public ResponseEntity<Void> takeAttendance(@RequestBody AttendanceRequest attendanceRequest,
         @PathVariable("lecture_id") Long lectureId) {
         try {
             attendanceService.takeAttendance(attendanceRequest, lectureId);
-            return ResponseEntity.ok(HttpStatus.OK.getReasonPhrase());
-        } catch (ImhereException e) {
-            log.info("[출석 시도 예외 발생] : ", e);
-            return ResponseEntity.status(e.getErrorCode().getCode()).build();
+            return ResponseEntity.ok().build();
+        } catch (ImhereException error) {
+            log.info("[출석 시도 예외 발생] : ", error);
+            return ResponseEntity
+                .status(error.getErrorCode().getHttpStatus())
+                .build();
         }
     }
 
     @Operation(summary = "특정 강의의 출석 정보 전체를 가져오는 API")
     @GetMapping("/{lecture_id}")
-    public AttendanceDto getAttendance(@PathVariable("lecture_id") Long lectureId) {
-        return attendanceService.getAttendances(lectureId);
+    public ResponseEntity<AttendanceDto> getAttendance(@PathVariable("lecture_id") Long lectureId) {
+        return ResponseEntity
+            .ok(attendanceService.getAttendances(lectureId));
     }
 
     @Operation(summary = "특정 강의의 지정 날짜 출석 리스트를 가져오는 API")
     @GetMapping("/{lecture_id}/{day_milliseconds}")
-    public AttendanceDto getTodayAttendance(@PathVariable("lecture_id") Long lectureId,
+    public ResponseEntity<AttendanceDto> getTodayAttendance(@PathVariable("lecture_id") Long lectureId,
         @Parameter(description = "js Date 객체의 getTime 메서드로 만든 milliseconds 현재 시각")
         @PathVariable("day_milliseconds") Long milliseconds) {
-        return attendanceService.getDayAttendances(lectureId, milliseconds);
+        return ResponseEntity
+            .ok(attendanceService.getDayAttendances(lectureId, milliseconds));
     }
 }
