@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.core.auth.exception;
 
-import gdsc.binaryho.imhere.exception.ErrorCode;
+import gdsc.binaryho.imhere.exception.ErrorInfo;
 import gdsc.binaryho.imhere.exception.ImhereException;
 
 public class EmailFormatMismatchException extends ImhereException {
@@ -8,6 +8,6 @@ public class EmailFormatMismatchException extends ImhereException {
     public static final ImhereException EXCEPTION = new EmailFormatMismatchException();
 
     private EmailFormatMismatchException() {
-        super(ErrorCode.EMAIL_FORMAT_MISMATCH);
+        super(ErrorInfo.EMAIL_FORMAT_MISMATCH);
     }
 }

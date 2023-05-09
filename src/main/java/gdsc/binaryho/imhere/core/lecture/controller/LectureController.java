@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,45 +36,53 @@ public class LectureController {
 
     @Operation(summary = "학생이 수강신청을 위해 개설된 모든 강의 리스트를 가져오는 API")
     @GetMapping
-    public List<LectureDto> getAllLectures() {
+    public ResponseEntity<List<LectureDto>> getAllLectures() {
         List<Lecture> lectures = lectureRepository.findAllByLectureStateNot(LectureState.TERMINATED);
-        return lectures.stream()
-            .map(LectureDto::createLectureDto)
-            .collect(Collectors.toList());
+        return ResponseEntity.ok(
+            lectures.stream()
+                .map(LectureDto::createLectureDto)
+                .collect(Collectors.toList())
+        );
     }
 
     @Operation(summary = "로그인한 학생이 수강중인 강의 리스트를 가져오는 API")
     @GetMapping(params = STATUS + "enrolled")
-    public List<LectureDto> getStudentLectures() {
+    public ResponseEntity<List<LectureDto>> getStudentLectures() {
         List<Lecture> lectures = lectureService.getStudentLectures();
-        return lectures.stream()
-            .map(LectureDto::createLectureDto)
-            .collect(Collectors.toList());
+        return ResponseEntity.ok(
+            lectures.stream()
+                .map(LectureDto::createLectureDto)
+                .collect(Collectors.toList())
+        );
     }
 
     @Operation(summary = "로그인한 학생이 출석 가능한 OPEN 상태 강의를 가져오는 API")
     @GetMapping(params = STATUS + "opened")
-    public List<LectureDto> getStudentOpenLectures() {
+    public ResponseEntity<List<LectureDto>> getStudentOpenLectures() {
         List<Lecture> lectures = lectureService.getStudentOpenLectures();
-        return lectures.stream()
-            .map(LectureDto::createLectureDto)
-            .collect(Collectors.toList());
+        return ResponseEntity.ok(
+            lectures.stream()
+                .map(LectureDto::createLectureDto)
+                .collect(Collectors.toList())
+        );
     }
 
     @Operation(summary = "로그인한 강사가 만든 강의를 가져오는 API")
     @GetMapping(params = STATUS + "owned")
-    public List<LectureDto> getOwnedLectures() {
-        return lectureService.getOwnedLectures();
+    public ResponseEntity<List<LectureDto>> getOwnedLectures() {
+        return ResponseEntity.ok(lectureService.getOwnedLectures());
     }
 
     @Operation(summary = "로그인한 강사가 강의를 생성하는 API")
     @PostMapping
-    public ResponseEntity<String> createLecture(@RequestBody LectureCreateRequest request) {
+    public ResponseEntity<Void> createLecture(@RequestBody LectureCreateRequest request) {
         try {
             lectureService.createLecture(request);
-            return ResponseEntity.ok(HttpStatus.OK.toString());
+            return ResponseEntity.ok().build();
         } catch (ImhereException error) {
-            return ResponseEntity.status(error.getErrorCode().getCode()).build();
+            return ResponseEntity
+                .status(error.getErrorInfo().getCode())
+                .build();
         }
     }
 
@@ -84,21 +91,26 @@ public class LectureController {
     public ResponseEntity<AttendanceNumberDto> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lectureId) {
         try {
             int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lectureId);
-            return ResponseEntity.ok(new AttendanceNumberDto(attendanceNumber));
+            return ResponseEntity
+                .ok(new AttendanceNumberDto(attendanceNumber));
         } catch (ImhereException e) {
             log.error("[강의 OPEN ERROR] : " + e);
-            return ResponseEntity.status(e.getErrorCode().getCode()).build();
+            return ResponseEntity
+                .status(e.getErrorInfo().getCode())
+                .build();
         }
     }
 
     @Operation(summary = "로그인한 강사가 강의를 CLOSED 상태로 바꾸는 API")
     @PostMapping("/{lecture_id}/close")
-    public ResponseEntity<String> changeLectureState(@PathVariable("lecture_id") Long lecture_id) {
+    public ResponseEntity<Void> changeLectureState(@PathVariable("lecture_id") Long lecture_id) {
         try {
             lectureService.closeLecture(lecture_id);
-            return ResponseEntity.ok(HttpStatus.OK.toString());
+            return ResponseEntity.ok().build();
         } catch (ImhereException e) {
-            return ResponseEntity.status(e.getErrorCode().getCode()).build();
+            return ResponseEntity
+                .status(e.getErrorInfo().getCode())
+                .build();
         }
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum ErrorCode {
+public enum ErrorInfo {
 
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 1001, "로그인 회원 정보가 없습니다."),
     PASSWORD_INCORRECT(HttpStatus.UNAUTHORIZED, 1002, "로그인 회원 비밀번호가 불일치합니다."),
