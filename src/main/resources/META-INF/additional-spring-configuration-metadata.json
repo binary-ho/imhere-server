@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "jwt.token.access-token-expire-time",
+      "type": "java.lang.String",
+      "description": "Description for jwt.token.access-token-expire-time."
+    },
+    {
+      "name": "spring.jpa.hibernate.dialect",
+      "type": "java.lang.String",
+      "description": "Description for spring.jpa.hibernate.dialect."
+    }
+  ] }
