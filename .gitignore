@@ -40,8 +40,11 @@ out/
 
 ### Project ###
 /src/main/java/gdsc/binaryho/imhere/initDB.java
-/docker-compose.yml
+/docker-compose**
 
 ### logs ###
 /log
 /logs
+
+### test ###
+/src/main/java/gdsc/binaryho/imhere/test/
