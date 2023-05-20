@@ -15,7 +15,6 @@ import gdsc.binaryho.imhere.core.member.MemberRepository;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.core.member.application.request.RoleChangeRequest;
 import java.security.InvalidParameterException;
-import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -24,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 class AuthServiceTest {

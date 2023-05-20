@@ -22,11 +22,11 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
@@ -91,6 +91,7 @@ public class AttendanceService {
             .ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("Asia/Seoul"));
     }
 
+    @Transactional(readOnly = true)
     public AttendanceDto getAttendances(Long lectureId) {
         List<Attendance> attendances = attendanceRepository.findAllByLectureId(lectureId);
 
@@ -117,6 +118,7 @@ public class AttendanceService {
         return new AttendanceDto(lecture, new ArrayList<>());
     }
 
+    @Transactional(readOnly = true)
     public AttendanceDto getDayAttendances(Long lectureId, Long milliseconds) {
         LocalDateTime timestamp = getLocalDateTime(milliseconds).withHour(0).withMinute(0).withSecond(0);
         List<Attendance> attendances = attendanceRepository.findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
