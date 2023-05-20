@@ -51,7 +51,7 @@ public class AuthService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public SignInRequestValidationResult validateSignInRequest(SignInRequest signInRequest) {
         Member member = memberRepository.findByUnivId(signInRequest.getUnivId())
             .orElseThrow(() -> MemberNotFoundException.EXCEPTION);

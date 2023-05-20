@@ -107,6 +107,7 @@ public class EnrollmentService {
             , () -> enrollmentInfo.getMember().getUnivId(), () -> enrollmentInfo.getMember().getName());
     }
 
+    @Transactional(readOnly = true)
     public EnrollmentInfoDto getLectureEnrollment(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId)
             .orElseThrow(() -> LectureNotFoundException.EXCEPTION);

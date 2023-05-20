@@ -41,6 +41,7 @@ public class LectureService {
         lectureRepository.save(newLecture);
     }
 
+    @Transactional(readOnly = true)
     public List<Lecture> getStudentLectures() {
         Member currentStudent = authenticationHelper.getCurrentMember();
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository
@@ -50,6 +51,7 @@ public class LectureService {
         return getLectures(enrollmentInfos);
     }
 
+    @Transactional(readOnly = true)
     public List<Lecture> getStudentOpenLectures() {
         Member currentStudent = authenticationHelper.getCurrentMember();
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository
@@ -65,6 +67,7 @@ public class LectureService {
             .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<LectureDto> getOwnedLectures() {
         Member currentLecturer = authenticationHelper.getCurrentMember();
         List<Lecture> lectures = lectureRepository.findAllByMemberId(currentLecturer.getId());

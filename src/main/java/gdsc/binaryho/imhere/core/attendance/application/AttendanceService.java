@@ -118,6 +118,7 @@ public class AttendanceService {
         return new AttendanceDto(lecture, new ArrayList<>());
     }
 
+    @Transactional(readOnly = true)
     public AttendanceDto getDayAttendances(Long lectureId, Long milliseconds) {
         LocalDateTime timestamp = getLocalDateTime(milliseconds).withHour(0).withMinute(0).withSecond(0);
         List<Attendance> attendances = attendanceRepository.findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
