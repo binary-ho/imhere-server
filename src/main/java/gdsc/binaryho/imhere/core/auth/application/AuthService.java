@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.auth.application;
 
 import gdsc.binaryho.imhere.core.auth.application.request.SignInRequest;
-import gdsc.binaryho.imhere.core.auth.exception.EmailDuplicatedException;
+import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordIncorrectException;
@@ -41,7 +41,7 @@ public class AuthService {
     private void validateDuplicateMember(String univId) {
         if (memberRepository.findByUnivId(univId).isPresent()) {
             log.info("[회원가입 실패] univId 중복 회원가입 시도 univId : " + univId);
-            throw EmailDuplicatedException.EXCEPTION;
+            throw DuplicateEmailException.EXCEPTION;
         }
     }
 

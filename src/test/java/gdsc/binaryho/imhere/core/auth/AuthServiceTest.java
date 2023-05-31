@@ -9,20 +9,20 @@ import gdsc.binaryho.imhere.MockMember;
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.auth.application.SignInRequestValidationResult;
 import gdsc.binaryho.imhere.core.auth.application.request.SignInRequest;
-import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
+import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
+import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
+import gdsc.binaryho.imhere.core.auth.exception.PasswordFormatMismatchException;
+import gdsc.binaryho.imhere.core.auth.exception.PasswordIncorrectException;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.MemberRepository;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.core.member.application.request.RoleChangeRequest;
-import java.security.InvalidParameterException;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootTest
@@ -33,8 +33,6 @@ class AuthServiceTest {
     private MemberRepository memberRepository;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Autowired
-    private AuthenticationHelper authenticationHelper;
 
     String UNIV_ID = "UNIV_ID";
     String NAME = "이진호";
@@ -69,7 +67,7 @@ class AuthServiceTest {
         authService.signUp(UNIV_ID, NAME, PASSWORD);
 
         assertThatThrownBy(() -> authService.signUp(UNIV_ID, NAME + "2", PASSWORD + "2"))
-            .isInstanceOf(DuplicateKeyException.class);
+            .isInstanceOf(DuplicateEmailException.class);
     }
 
     @ParameterizedTest
@@ -78,7 +76,7 @@ class AuthServiceTest {
     void 회원가입시_비밀번호_형식이_잘못되면_예외를_던진다(String password) {
 
         assertThatThrownBy(() -> authService.signUp(UNIV_ID, NAME, password))
-            .isInstanceOf(IllegalArgumentException.class);
+            .isInstanceOf(PasswordFormatMismatchException.class);
     }
 
     @Test
@@ -86,7 +84,7 @@ class AuthServiceTest {
 
         assertThatThrownBy(
             () -> authService.validateSignInRequest(new SignInRequest(UNIV_ID, PASSWORD))
-        ).isInstanceOf(AuthenticationException.class);
+        ).isInstanceOf(MemberNotFoundException.class);
     }
 
     @Test
@@ -97,7 +95,7 @@ class AuthServiceTest {
 
         assertThatThrownBy(
             () -> authService.validateSignInRequest(new SignInRequest(UNIV_ID, PASSWORD + PASSWORD))
-        ).isInstanceOf(InvalidParameterException.class);
+        ).isInstanceOf(PasswordIncorrectException.class);
     }
 
     @Test

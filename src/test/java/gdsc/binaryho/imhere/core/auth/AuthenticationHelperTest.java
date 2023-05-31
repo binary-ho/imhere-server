@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import gdsc.binaryho.imhere.MockMember;
+import gdsc.binaryho.imhere.core.auth.exception.PermissionDeniedException;
+import gdsc.binaryho.imhere.core.auth.exception.RequestMemberIdMismatchException;
 import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.Role;
@@ -11,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.access.AccessDeniedException;
 
 @SpringBootTest
 class AuthenticationHelperTest {
@@ -36,7 +37,7 @@ class AuthenticationHelperTest {
         try {
             Member loginMember = authenticationHelper.getCurrentMember();
             authenticationHelper.verifyRequestMemberLogInMember(loginMember.getId());
-        } catch (AccessDeniedException e) {
+        } catch (RequestMemberIdMismatchException e) {
             fail();
         }
     }
@@ -46,7 +47,7 @@ class AuthenticationHelperTest {
     void 현재_로그인된_유저가_Admin인지_확인할_수_있다() {
         try {
             authenticationHelper.verifyMemberHasAdminRole();
-        } catch (AccessDeniedException e) {
+        } catch (PermissionDeniedException e) {
             fail();
         }
     }
