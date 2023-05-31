@@ -1,6 +1,7 @@
 package gdsc.binaryho.imhere.core.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import gdsc.binaryho.imhere.MockMember;
@@ -16,6 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class AuthenticationHelperTest {
+
+    private static Long WRONG_ID = 0L;
 
     @Autowired
     private AuthenticationHelper authenticationHelper;
@@ -43,6 +46,15 @@ class AuthenticationHelperTest {
     }
 
     @Test
+    @MockMember
+    void 현재_로그인된_유저와_입력된_아이디가_다른_경우_예외를_던진다() {
+
+        assertThatThrownBy(
+            () -> authenticationHelper.verifyRequestMemberLogInMember(WRONG_ID)
+        ).isInstanceOf(RequestMemberIdMismatchException.class);
+    }
+
+    @Test
     @MockMember(role = Role.ADMIN)
     void 현재_로그인된_유저가_Admin인지_확인할_수_있다() {
         try {
@@ -50,5 +62,13 @@ class AuthenticationHelperTest {
         } catch (PermissionDeniedException e) {
             fail();
         }
+    }
+
+    @Test
+    @MockMember(role = Role.LECTURER)
+    void 현재_로그인된_유저가_Admin이_아닌_경우_예외를_던진다() {
+        assertThatThrownBy(
+            () -> authenticationHelper.verifyMemberHasAdminRole()
+        ).isInstanceOf(PermissionDeniedException.class);
     }
 }
