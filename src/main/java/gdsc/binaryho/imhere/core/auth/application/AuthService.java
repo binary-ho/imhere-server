@@ -10,11 +10,11 @@ import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.MemberRepository;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.core.member.application.request.RoleChangeRequest;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
@@ -51,7 +51,7 @@ public class AuthService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public SignInRequestValidationResult validateSignInRequest(SignInRequest signInRequest) {
         Member member = memberRepository.findByUnivId(signInRequest.getUnivId())
             .orElseThrow(() -> MemberNotFoundException.EXCEPTION);
