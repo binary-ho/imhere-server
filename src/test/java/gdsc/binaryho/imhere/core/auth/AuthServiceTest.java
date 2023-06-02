@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import gdsc.binaryho.imhere.MockMember;
+import gdsc.binaryho.imhere.MockSecurityContextMember;
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.auth.application.SignInRequestValidationResult;
 import gdsc.binaryho.imhere.core.auth.application.request.SignInRequest;
@@ -112,7 +112,7 @@ class AuthServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"STUDENT", "LECTURER", "ADMIN"})
-    @MockMember(role = Role.ADMIN)
+    @MockSecurityContextMember(role = Role.ADMIN)
     @Transactional
     void test(String roleKey) {
         authService.signUp(UNIV_ID, NAME, PASSWORD);

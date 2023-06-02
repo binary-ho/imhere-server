@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import gdsc.binaryho.imhere.MockMember;
+import gdsc.binaryho.imhere.MockSecurityContextMember;
 import gdsc.binaryho.imhere.core.auth.application.PrincipalDetailsService;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.MemberRepository;
@@ -31,7 +31,7 @@ class PrincipalDetailsServiceTest {
     private MemberRepository memberRepository;
 
     @Test
-    @MockMember(univId = UNIV_ID)
+    @MockSecurityContextMember(univId = UNIV_ID)
     @Transactional
     void UnivId가_일치하는_유저의_PrincipalDetails을_생성할_수_있다() {
 

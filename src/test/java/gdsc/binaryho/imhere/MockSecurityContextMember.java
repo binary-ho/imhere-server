@@ -7,7 +7,7 @@ import org.springframework.security.test.context.support.WithSecurityContext;
 
 @Retention(RetentionPolicy.RUNTIME)
 @WithSecurityContext(factory = MockSecurityContextFactory.class)
-public @interface MockMember {
+public @interface MockSecurityContextMember {
 
     long id() default 1L;
     String univId() default "mockMember";
