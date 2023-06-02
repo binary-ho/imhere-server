@@ -1,0 +1,56 @@
+package gdsc.binaryho.imhere.core.auth;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import gdsc.binaryho.imhere.MockMember;
+import gdsc.binaryho.imhere.core.auth.application.PrincipalDetailsService;
+import gdsc.binaryho.imhere.core.member.Member;
+import gdsc.binaryho.imhere.core.member.MemberRepository;
+import gdsc.binaryho.imhere.core.member.Role;
+import javax.transaction.Transactional;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
+
+@SpringBootTest
+class PrincipalDetailsServiceTest {
+
+    private static final String UNIV_ID = "univId";
+    private static final String NAME = "이진호";
+    private static final String PASSWORD = "abcd1234";
+    private static final Role ROLE = Role.STUDENT;
+
+    @Autowired
+    private PrincipalDetailsService principalDetailsService;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Test
+    @MockMember(univId = UNIV_ID)
+    @Transactional
+    void UnivId가_일치하는_유저의_PrincipalDetails을_생성할_수_있다() {
+
+        Member member = Member.createMember(UNIV_ID, NAME, PASSWORD, ROLE);
+        memberRepository.save(member);
+
+        UserDetails userDetails = principalDetailsService.loadUserByUsername(UNIV_ID);
+        UserDetails principalDetails = new PrincipalDetails(member);
+
+        assertAll(
+            () -> assertThat(userDetails.getUsername()).isEqualTo(principalDetails.getUsername()),
+            () -> assertThat(userDetails.getPassword()).isEqualTo(principalDetails.getPassword())
+        );
+    }
+
+    @Test
+    void loadUserByUsername호출시_UnivId가_일치하는_유저가_없다면_예외를_던진다() {
+        assertThatThrownBy(
+            () -> principalDetailsService.loadUserByUsername("WRONG" + UNIV_ID)
+        ).isInstanceOf(AuthenticationException.class);
+    }
+}
