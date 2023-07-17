@@ -1,6 +1,7 @@
 package gdsc.binaryho.imhere;
 
 import gdsc.binaryho.imhere.core.member.Role;
+import gdsc.binaryho.imhere.fixture.MemberFixture;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import org.springframework.security.test.context.support.WithSecurityContext;
@@ -10,8 +11,8 @@ import org.springframework.security.test.context.support.WithSecurityContext;
 public @interface MockSecurityContextMember {
 
     long id() default 1L;
-    String univId() default "mockMember";
-    String name() default "member";
-    String password() default "password";
+    String univId() default MemberFixture.UNIV_ID;
+    String name() default MemberFixture.NAME;
+    String password() default MemberFixture.RAW_PASSWORD;
     Role role() default Role.STUDENT;
 }

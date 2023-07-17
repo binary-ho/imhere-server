@@ -9,6 +9,7 @@ import gdsc.binaryho.imhere.core.auth.application.PrincipalDetailsService;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.MemberRepository;
 import gdsc.binaryho.imhere.core.member.Role;
+import gdsc.binaryho.imhere.fixture.MemberFixture;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 @SpringBootTest
 class PrincipalDetailsServiceTest {
 
-    private static final String UNIV_ID = "univId";
-    private static final String NAME = "이진호";
-    private static final String PASSWORD = "abcd1234";
-    private static final Role ROLE = Role.STUDENT;
+    private static final String UNIV_ID = MemberFixture.UNIV_ID;
+    private static final String NAME = MemberFixture.NAME;
+    private static final String RAW_PASSWORD = MemberFixture.RAW_PASSWORD;
+    private static final Role ROLE = MemberFixture.ROLE;
 
     @Autowired
     private PrincipalDetailsService principalDetailsService;
@@ -35,7 +36,7 @@ class PrincipalDetailsServiceTest {
     @Transactional
     void UnivId가_일치하는_유저의_PrincipalDetails을_생성할_수_있다() {
 
-        Member member = Member.createMember(UNIV_ID, NAME, PASSWORD, ROLE);
+        Member member = Member.createMember(UNIV_ID, NAME, RAW_PASSWORD, ROLE);
         memberRepository.save(member);
 
         UserDetails userDetails = principalDetailsService.loadUserByUsername(UNIV_ID);
