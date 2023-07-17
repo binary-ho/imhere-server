@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.member.application.request;
+package gdsc.binaryho.imhere.core.member.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

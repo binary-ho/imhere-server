@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.lecture.application;
+package gdsc.binaryho.imhere.core.lecture.model.response;
 
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
@@ -14,7 +14,7 @@ import lombok.Setter;
 
 @Getter
 @Tag(name = "LectureDto", description = "수업 정보")
-public class LectureDto {
+public class LectureResponse {
 
     private Long lectureId;
     private String lectureName;
@@ -23,15 +23,15 @@ public class LectureDto {
     @Schema(description = "강사의 경우 본인 수업 학생 리스트 받아볼 수 있음")
     private List<StudentInfo> studentInfos;
 
-    public LectureDto() {}
+    public LectureResponse() {}
 
-    public static LectureDto createLectureDtoWithEnrollmentInfo(Lecture lecture, List<EnrollmentInfo> enrollmentInfos) {
-        LectureDto lectureDto = createLectureDto(lecture);
-        lectureDto.studentInfos = enrollmentInfos.stream()
-            .map(LectureDto::createStudentInfo)
+    public static LectureResponse createLectureDtoWithEnrollmentInfo(Lecture lecture, List<EnrollmentInfo> enrollmentInfos) {
+        LectureResponse lectureResponse = createLectureDto(lecture);
+        lectureResponse.studentInfos = enrollmentInfos.stream()
+            .map(LectureResponse::createStudentInfo)
             .collect(Collectors.toList());
 
-        return lectureDto;
+        return lectureResponse;
     }
 
     private static StudentInfo createStudentInfo(EnrollmentInfo enrollmentInfo) {
@@ -39,14 +39,14 @@ public class LectureDto {
             enrollmentInfo.getMember().getUnivId(), enrollmentInfo.getMember().getName());
     }
 
-    public static LectureDto createLectureDto(Lecture lecture) {
-        LectureDto lectureDto = new LectureDto();
-        lectureDto.lectureId = lecture.getId();
-        lectureDto.lectureName = lecture.getLectureName();
-        lectureDto.lecturerName = lecture.getLecturerName();
-        lectureDto.lectureState = lecture.getLectureState();
-        lectureDto.studentInfos = new ArrayList<>();
-        return lectureDto;
+    public static LectureResponse createLectureDto(Lecture lecture) {
+        LectureResponse lectureResponse = new LectureResponse();
+        lectureResponse.lectureId = lecture.getId();
+        lectureResponse.lectureName = lecture.getLectureName();
+        lectureResponse.lecturerName = lecture.getLecturerName();
+        lectureResponse.lectureState = lecture.getLectureState();
+        lectureResponse.studentInfos = new ArrayList<>();
+        return lectureResponse;
     }
 
     @Getter @Setter

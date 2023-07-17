@@ -1,12 +1,12 @@
 package gdsc.binaryho.imhere.core.lecture.controller;
 
-import gdsc.binaryho.imhere.core.attendance.application.AttendanceNumberDto;
+import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceNumberResponse;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
-import gdsc.binaryho.imhere.core.lecture.application.LectureDto;
+import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.core.lecture.application.LectureService;
-import gdsc.binaryho.imhere.core.lecture.application.request.LectureCreateRequest;
+import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
 import gdsc.binaryho.imhere.exception.ImhereException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,40 +36,40 @@ public class LectureController {
 
     @Operation(summary = "학생이 수강신청을 위해 개설된 모든 강의 리스트를 가져오는 API")
     @GetMapping
-    public ResponseEntity<List<LectureDto>> getAllLectures() {
+    public ResponseEntity<List<LectureResponse>> getAllLectures() {
         List<Lecture> lectures = lectureRepository.findAllByLectureStateNot(LectureState.TERMINATED);
         return ResponseEntity.ok(
             lectures.stream()
-                .map(LectureDto::createLectureDto)
+                .map(LectureResponse::createLectureDto)
                 .collect(Collectors.toList())
         );
     }
 
     @Operation(summary = "로그인한 학생이 수강중인 강의 리스트를 가져오는 API")
     @GetMapping(params = STATUS + "enrolled")
-    public ResponseEntity<List<LectureDto>> getStudentLectures() {
+    public ResponseEntity<List<LectureResponse>> getStudentLectures() {
         List<Lecture> lectures = lectureService.getStudentLectures();
         return ResponseEntity.ok(
             lectures.stream()
-                .map(LectureDto::createLectureDto)
+                .map(LectureResponse::createLectureDto)
                 .collect(Collectors.toList())
         );
     }
 
     @Operation(summary = "로그인한 학생이 출석 가능한 OPEN 상태 강의를 가져오는 API")
     @GetMapping(params = STATUS + "opened")
-    public ResponseEntity<List<LectureDto>> getStudentOpenLectures() {
+    public ResponseEntity<List<LectureResponse>> getStudentOpenLectures() {
         List<Lecture> lectures = lectureService.getStudentOpenLectures();
         return ResponseEntity.ok(
             lectures.stream()
-                .map(LectureDto::createLectureDto)
+                .map(LectureResponse::createLectureDto)
                 .collect(Collectors.toList())
         );
     }
 
     @Operation(summary = "로그인한 강사가 만든 강의를 가져오는 API")
     @GetMapping(params = STATUS + "owned")
-    public ResponseEntity<List<LectureDto>> getOwnedLectures() {
+    public ResponseEntity<List<LectureResponse>> getOwnedLectures() {
         return ResponseEntity.ok(lectureService.getOwnedLectures());
     }
 
@@ -88,11 +88,11 @@ public class LectureController {
 
     @Operation(summary = "로그인한 강사가 강의를 OPEN하고 출석 번호를 발급 받는 API")
     @PostMapping("/{lecture_id}/open")
-    public ResponseEntity<AttendanceNumberDto> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lectureId) {
+    public ResponseEntity<AttendanceNumberResponse> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lectureId) {
         try {
             int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lectureId);
             return ResponseEntity
-                .ok(new AttendanceNumberDto(attendanceNumber));
+                .ok(new AttendanceNumberResponse(attendanceNumber));
         } catch (ImhereException e) {
             log.error("[강의 OPEN ERROR] : " + e);
             return ResponseEntity

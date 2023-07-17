@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.attendance.application.request;
+package gdsc.binaryho.imhere.core.attendance.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

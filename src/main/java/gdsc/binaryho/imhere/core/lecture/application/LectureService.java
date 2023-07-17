@@ -7,7 +7,8 @@ import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
-import gdsc.binaryho.imhere.core.lecture.application.request.LectureCreateRequest;
+import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
+import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.member.Member;
 import java.util.List;
@@ -68,12 +69,12 @@ public class LectureService {
     }
 
     @Transactional(readOnly = true)
-    public List<LectureDto> getOwnedLectures() {
+    public List<LectureResponse> getOwnedLectures() {
         Member currentLecturer = authenticationHelper.getCurrentMember();
         List<Lecture> lectures = lectureRepository.findAllByMemberId(currentLecturer.getId());
         return lectures.stream()
             .map(lecture ->
-                LectureDto.createLectureDtoWithEnrollmentInfo(lecture,
+                LectureResponse.createLectureDtoWithEnrollmentInfo(lecture,
                     enrollmentInfoRepository
                         .findAllByLectureAndEnrollmentState(lecture, EnrollmentState.APPROVAL))
         ).collect(Collectors.toList());

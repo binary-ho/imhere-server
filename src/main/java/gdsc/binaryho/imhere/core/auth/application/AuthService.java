@@ -1,6 +1,7 @@
 package gdsc.binaryho.imhere.core.auth.application;
 
-import gdsc.binaryho.imhere.core.auth.application.request.SignInRequest;
+import gdsc.binaryho.imhere.core.auth.model.response.SignInRequestValidationResult;
+import gdsc.binaryho.imhere.core.auth.model.request.SignInRequest;
 import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordFormatMismatchException;
@@ -9,7 +10,7 @@ import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.MemberRepository;
 import gdsc.binaryho.imhere.core.member.Role;
-import gdsc.binaryho.imhere.core.member.application.request.RoleChangeRequest;
+import gdsc.binaryho.imhere.core.member.model.request.RoleChangeRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

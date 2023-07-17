@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.enrollment.application.request;
+package gdsc.binaryho.imhere.core.enrollment.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;

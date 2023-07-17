@@ -4,7 +4,8 @@ import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
-import gdsc.binaryho.imhere.core.enrollment.application.request.EnrollMentRequestForLecturer;
+import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoResponse;
+import gdsc.binaryho.imhere.core.enrollment.model.request.EnrollMentRequestForLecturer;
 import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentDuplicatedException;
 import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
@@ -108,12 +109,12 @@ public class EnrollmentService {
     }
 
     @Transactional(readOnly = true)
-    public EnrollmentInfoDto getLectureEnrollment(Long lectureId) {
+    public EnrollmentInfoResponse getLectureEnrollment(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId)
             .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
         authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByLecture(lecture);
-        return EnrollmentInfoDto.createEnrollmentInfoDto(enrollmentInfos);
+        return EnrollmentInfoResponse.createEnrollmentInfoDto(enrollmentInfos);
     }
 
     private void validateDuplicated(Member student, Long lectureId) {

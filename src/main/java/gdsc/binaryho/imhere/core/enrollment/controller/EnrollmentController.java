@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.core.enrollment.controller;
 
-import gdsc.binaryho.imhere.core.enrollment.application.EnrollmentInfoDto;
+import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoResponse;
 import gdsc.binaryho.imhere.core.enrollment.application.EnrollmentService;
 import gdsc.binaryho.imhere.exception.ImhereException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +27,7 @@ public class EnrollmentController {
 
     @Operation(summary = "특정 수업의 수강 신청 정보를 가져오는 API")
     @GetMapping("/{lecture_id}")
-    public ResponseEntity<EnrollmentInfoDto> getLectureEnrollment(@PathVariable("lecture_id") Long lectureId) {
+    public ResponseEntity<EnrollmentInfoResponse> getLectureEnrollment(@PathVariable("lecture_id") Long lectureId) {
         return ResponseEntity.ok(enrollmentService.getLectureEnrollment(lectureId));
     }
 

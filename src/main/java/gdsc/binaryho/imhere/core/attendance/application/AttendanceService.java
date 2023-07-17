@@ -3,7 +3,9 @@ package gdsc.binaryho.imhere.core.attendance.application;
 
 import gdsc.binaryho.imhere.core.attendance.Attendance;
 import gdsc.binaryho.imhere.core.attendance.AttendanceRepository;
-import gdsc.binaryho.imhere.core.attendance.application.request.AttendanceRequest;
+import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceResponse;
+import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceInfo;
+import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectException;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
 import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
@@ -92,7 +94,7 @@ public class AttendanceService {
     }
 
     @Transactional(readOnly = true)
-    public AttendanceDto getAttendances(Long lectureId) {
+    public AttendanceResponse getAttendances(Long lectureId) {
         List<Attendance> attendances = attendanceRepository.findAllByLectureId(lectureId);
 
         if (attendances.isEmpty()) {
@@ -109,17 +111,17 @@ public class AttendanceService {
         authenticationHelper.verifyRequestMemberLogInMember(lecturer.getId());
     }
 
-    private AttendanceDto getAttendanceDto(Lecture lecture, List<Attendance> attendances) {
-        return new AttendanceDto(lecture, AttendanceInfo.getAttendanceInfos(attendances));
+    private AttendanceResponse getAttendanceDto(Lecture lecture, List<Attendance> attendances) {
+        return new AttendanceResponse(lecture, AttendanceInfo.getAttendanceInfos(attendances));
     }
 
-    private AttendanceDto getNullAttendanceDto(Long lectureId) {
+    private AttendanceResponse getNullAttendanceDto(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
-        return new AttendanceDto(lecture, new ArrayList<>());
+        return new AttendanceResponse(lecture, new ArrayList<>());
     }
 
     @Transactional(readOnly = true)
-    public AttendanceDto getDayAttendances(Long lectureId, Long milliseconds) {
+    public AttendanceResponse getDayAttendances(Long lectureId, Long milliseconds) {
         LocalDateTime timestamp = getLocalDateTime(milliseconds).withHour(0).withMinute(0).withSecond(0);
         List<Attendance> attendances = attendanceRepository.findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
 
