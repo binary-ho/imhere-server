@@ -3,11 +3,11 @@ package gdsc.binaryho.imhere.core.attendance.application;
 
 import gdsc.binaryho.imhere.core.attendance.Attendance;
 import gdsc.binaryho.imhere.core.attendance.AttendanceRepository;
-import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceResponse;
-import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceInfo;
-import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectException;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
+import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
+import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceInfo;
+import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceResponse;
 import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfoRepository;

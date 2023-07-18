@@ -1,8 +1,8 @@
 package gdsc.binaryho.imhere.core.attendance.controller;
 
-import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceResponse;
 import gdsc.binaryho.imhere.core.attendance.application.AttendanceService;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
+import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceResponse;
 import gdsc.binaryho.imhere.exception.ImhereException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
