@@ -9,59 +9,79 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Tag(name = "LectureDto", description = "수업 정보")
 public class LectureResponse {
 
-    private Long lectureId;
-    private String lectureName;
-    private String lecturerName;
-    private LectureState lectureState;
-    @Schema(description = "강사의 경우 본인 수업 학생 리스트 받아볼 수 있음")
-    private List<StudentInfo> studentInfos;
+    private final List<LectureInfo> lectureInfos;
 
-    public LectureResponse() {}
+    private LectureResponse(List<LectureInfo> lectureInfos) {
+        this.lectureInfos = lectureInfos;
+    }
 
-    public static LectureResponse createLectureDtoWithEnrollmentInfo(Lecture lecture, List<EnrollmentInfo> enrollmentInfos) {
-        LectureResponse lectureResponse = createLectureDto(lecture);
-        lectureResponse.studentInfos = enrollmentInfos.stream()
-            .map(LectureResponse::createStudentInfo)
+    public static LectureResponse createLectureResponseFromLectures(List<Lecture> lectures) {
+        List<LectureInfo> lectureInfos = lectures.stream()
+            .map(LectureInfo::new)
             .collect(Collectors.toList());
-
-        return lectureResponse;
+        return new LectureResponse(lectureInfos);
     }
 
-    private static StudentInfo createStudentInfo(EnrollmentInfo enrollmentInfo) {
-        return new StudentInfo(enrollmentInfo.getMember().getId(),
-            enrollmentInfo.getMember().getUnivId(), enrollmentInfo.getMember().getName());
+    public static LectureResponse createLectureResponseFromEnrollmentInfos(
+        List<List<EnrollmentInfo>> lecturerEnrollmentInfos) {
+        List<LectureInfo> lectureInfos = lecturerEnrollmentInfos.stream()
+            .map(LectureInfo::new)
+            .collect(Collectors.toList());
+        return new LectureResponse(lectureInfos);
     }
 
-    public static LectureResponse createLectureDto(Lecture lecture) {
-        LectureResponse lectureResponse = new LectureResponse();
-        lectureResponse.lectureId = lecture.getId();
-        lectureResponse.lectureName = lecture.getLectureName();
-        lectureResponse.lecturerName = lecture.getLecturerName();
-        lectureResponse.lectureState = lecture.getLectureState();
-        lectureResponse.studentInfos = new ArrayList<>();
-        return lectureResponse;
-    }
+    @Getter
+    @Tag(name = "LectureDto", description = "수업 정보")
+    public static class LectureInfo {
 
-    @Getter @Setter
-    @NoArgsConstructor
-    @Tag(name = "StudentInfo", description = "학생 정보")
-    public static class StudentInfo {
+        private final Long lectureId;
+        private final String lectureName;
+        private final String lecturerName;
+        private final LectureState lectureState;
+        @Schema(description = "강사의 경우 본인 수업 학생 리스트 받아볼 수 있음")
+        private final List<StudentInfo> studentInfos;
 
-        private Long id;
-        private String univId;
-        private String name;
+        private LectureInfo(Lecture lecture) {
+            this.lectureId = lecture.getId();
+            this.lectureName = lecture.getLectureName();
+            this.lecturerName = lecture.getLecturerName();
+            this.lectureState = lecture.getLectureState();
+            this.studentInfos = new ArrayList<>();
+        }
 
-        public StudentInfo(Long id, String univId, String name) {
-            this.id = id;
-            this.univId = univId;
-            this.name = name;
+        private LectureInfo(List<EnrollmentInfo> enrollmentInfos) {
+            Lecture anyLecture = enrollmentInfos.get(0).getLecture();
+            this.lectureId = anyLecture.getId();
+            this.lectureName = anyLecture.getLectureName();
+            this.lecturerName = anyLecture.getLecturerName();
+            this.lectureState = anyLecture.getLectureState();
+            this.studentInfos = enrollmentInfos.stream()
+                .map(LectureInfo::createStudentInfo)
+                .collect(Collectors.toList());
+        }
+
+        private static StudentInfo createStudentInfo(EnrollmentInfo enrollmentInfo) {
+            return new StudentInfo(enrollmentInfo.getMember().getId(),
+                enrollmentInfo.getMember().getUnivId(), enrollmentInfo.getMember().getName());
+        }
+
+        @Getter
+        @Tag(name = "StudentInfo", description = "학생 정보")
+        public static class StudentInfo {
+
+            private Long id;
+            private String univId;
+            private String name;
+
+            private StudentInfo(Long id, String univId, String name) {
+                this.id = id;
+                this.univId = univId;
+                this.name = name;
+            }
         }
     }
 }

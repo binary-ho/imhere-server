@@ -7,9 +7,9 @@ import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
-import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
-import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
+import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
+import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.core.member.Member;
 import java.util.List;
 import java.util.Optional;
@@ -43,41 +43,48 @@ public class LectureService {
     }
 
     @Transactional(readOnly = true)
-    public List<Lecture> getStudentLectures() {
+    public LectureResponse getStudentLectures() {
         Member currentStudent = authenticationHelper.getCurrentMember();
+        List<Lecture> studentLectures = findStudentLectures(currentStudent);
+        return LectureResponse.createLectureResponseFromLectures(studentLectures);
+    }
+
+    private List<Lecture> findStudentLectures(Member currentStudent) {
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository
             .findAllByMemberIdAndEnrollmentState(
                 currentStudent.getId(), EnrollmentState.APPROVAL);
-
-        return getLectures(enrollmentInfos);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Lecture> getStudentOpenLectures() {
-        Member currentStudent = authenticationHelper.getCurrentMember();
-        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository
-            .findAllByMemberIdAndLecture_LectureStateAndEnrollmentState(
-                currentStudent.getId(), LectureState.OPEN, EnrollmentState.APPROVAL);
-
-        return getLectures(enrollmentInfos);
-    }
-
-    private List<Lecture> getLectures(List<EnrollmentInfo> enrollmentInfos) {
         return enrollmentInfos.stream()
             .map(EnrollmentInfo::getLecture)
             .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<LectureResponse> getOwnedLectures() {
+    public LectureResponse getStudentOpenLectures() {
+        Member currentStudent = authenticationHelper.getCurrentMember();
+        List<Lecture> studentOpenLectures = findStudentOpenLectures(currentStudent);
+
+        return LectureResponse.createLectureResponseFromLectures(studentOpenLectures);
+    }
+
+    private List<Lecture> findStudentOpenLectures(Member currentStudent) {
+        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository
+            .findAllByMemberIdAndLecture_LectureStateAndEnrollmentState(
+                currentStudent.getId(), LectureState.OPEN, EnrollmentState.APPROVAL);
+
+        return enrollmentInfos.stream()
+            .map(EnrollmentInfo::getLecture)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public LectureResponse getOwnedLectures() {
         Member currentLecturer = authenticationHelper.getCurrentMember();
         List<Lecture> lectures = lectureRepository.findAllByMemberId(currentLecturer.getId());
-        return lectures.stream()
+        List<List<EnrollmentInfo>> lecturerEnrollmentInfos = lectures.stream()
             .map(lecture ->
-                LectureResponse.createLectureDtoWithEnrollmentInfo(lecture,
-                    enrollmentInfoRepository
-                        .findAllByLectureAndEnrollmentState(lecture, EnrollmentState.APPROVAL))
-        ).collect(Collectors.toList());
+                enrollmentInfoRepository.findAllByLectureAndEnrollmentState(lecture, EnrollmentState.APPROVAL))
+            .collect(Collectors.toList());
+        return LectureResponse.createLectureResponseFromEnrollmentInfos(lecturerEnrollmentInfos);
     }
 
     @Transactional

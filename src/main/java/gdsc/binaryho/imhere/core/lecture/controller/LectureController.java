@@ -4,14 +4,13 @@ import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceNumberRespo
 import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
-import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.core.lecture.application.LectureService;
 import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
+import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.exception.ImhereException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -36,40 +35,29 @@ public class LectureController {
 
     @Operation(summary = "학생이 수강신청을 위해 개설된 모든 강의 리스트를 가져오는 API")
     @GetMapping
-    public ResponseEntity<List<LectureResponse>> getAllLectures() {
+    public ResponseEntity<LectureResponse> getAllLectures() {
         List<Lecture> lectures = lectureRepository.findAllByLectureStateNot(LectureState.TERMINATED);
         return ResponseEntity.ok(
-            lectures.stream()
-                .map(LectureResponse::createLectureDto)
-                .collect(Collectors.toList())
-        );
+            LectureResponse.createLectureResponseFromLectures(lectures));
     }
 
     @Operation(summary = "로그인한 학생이 수강중인 강의 리스트를 가져오는 API")
     @GetMapping(params = STATUS + "enrolled")
-    public ResponseEntity<List<LectureResponse>> getStudentLectures() {
-        List<Lecture> lectures = lectureService.getStudentLectures();
+    public ResponseEntity<LectureResponse> getStudentLectures() {
         return ResponseEntity.ok(
-            lectures.stream()
-                .map(LectureResponse::createLectureDto)
-                .collect(Collectors.toList())
-        );
+            lectureService.getStudentLectures());
     }
 
     @Operation(summary = "로그인한 학생이 출석 가능한 OPEN 상태 강의를 가져오는 API")
     @GetMapping(params = STATUS + "opened")
-    public ResponseEntity<List<LectureResponse>> getStudentOpenLectures() {
-        List<Lecture> lectures = lectureService.getStudentOpenLectures();
-        return ResponseEntity.ok(
-            lectures.stream()
-                .map(LectureResponse::createLectureDto)
-                .collect(Collectors.toList())
-        );
+    public ResponseEntity<LectureResponse> getStudentOpenLectures() {
+        return ResponseEntity
+            .ok(lectureService.getStudentOpenLectures());
     }
 
     @Operation(summary = "로그인한 강사가 만든 강의를 가져오는 API")
     @GetMapping(params = STATUS + "owned")
-    public ResponseEntity<List<LectureResponse>> getOwnedLectures() {
+    public ResponseEntity<LectureResponse> getOwnedLectures() {
         return ResponseEntity.ok(lectureService.getOwnedLectures());
     }
 
