@@ -22,7 +22,7 @@ public class EnrollmentInfoResponse {
     @Schema(description = "학생 정보와 수강신청 승인 상태 리스트")
     List<StudentInfo> studentInfos;
 
-    public EnrollmentInfoResponse() {
+    private EnrollmentInfoResponse() {
     }
 
     public static EnrollmentInfoResponse createEnrollmentInfoDto(List<EnrollmentInfo> enrollmentInfos) {
@@ -49,7 +49,7 @@ public class EnrollmentInfoResponse {
     @Setter
     @NoArgsConstructor
     @Tag(name = "StudentInfo", description = "학생 정보와 수강신청 승인 상태")
-    public static class StudentInfo {
+    private static class StudentInfo {
 
         private Long id;
         private String univId;

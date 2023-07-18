@@ -6,7 +6,6 @@ import gdsc.binaryho.imhere.core.attendance.AttendanceRepository;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectException;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
-import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceInfo;
 import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceResponse;
 import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
@@ -112,7 +111,7 @@ public class AttendanceService {
     }
 
     private AttendanceResponse getAttendanceDto(Lecture lecture, List<Attendance> attendances) {
-        return new AttendanceResponse(lecture, AttendanceInfo.getAttendanceInfos(attendances));
+        return new AttendanceResponse(lecture, attendances);
     }
 
     private AttendanceResponse getNullAttendanceDto(Long lectureId) {
