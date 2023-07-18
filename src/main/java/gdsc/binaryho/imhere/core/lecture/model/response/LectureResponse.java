@@ -73,9 +73,9 @@ public class LectureResponse {
         @Tag(name = "StudentInfo", description = "학생 정보")
         public static class StudentInfo {
 
-            private Long id;
-            private String univId;
-            private String name;
+            private final Long id;
+            private final String univId;
+            private final String name;
 
             private StudentInfo(Long id, String univId, String name) {
                 this.id = id;
