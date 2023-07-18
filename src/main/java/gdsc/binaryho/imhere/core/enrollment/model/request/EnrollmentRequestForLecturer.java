@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class EnrollMentRequestForLecturer {
+public class EnrollmentRequestForLecturer {
 
     @Schema(description = "학생 id 리스트")
     private List<String> univIds;

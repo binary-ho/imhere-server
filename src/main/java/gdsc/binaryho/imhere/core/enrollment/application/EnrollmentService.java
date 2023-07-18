@@ -4,10 +4,10 @@ import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
-import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoResponse;
-import gdsc.binaryho.imhere.core.enrollment.model.request.EnrollMentRequestForLecturer;
 import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentDuplicatedException;
 import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentNotFoundException;
+import gdsc.binaryho.imhere.core.enrollment.model.request.EnrollmentRequestForLecturer;
+import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoResponse;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
@@ -33,7 +33,7 @@ public class EnrollmentService {
     private final EnrollmentInfoRepository enrollmentInfoRepository;
 
     @Transactional
-    public void enrollStudents(EnrollMentRequestForLecturer enrollMentRequestForLecturer,
+    public void enrollStudents(EnrollmentRequestForLecturer enrollMentRequestForLecturer,
         Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId)
             .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
