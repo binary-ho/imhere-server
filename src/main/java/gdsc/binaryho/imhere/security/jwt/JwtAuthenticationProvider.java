@@ -1,8 +1,8 @@
 package gdsc.binaryho.imhere.security.jwt;
 
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
-import gdsc.binaryho.imhere.core.auth.application.SignInRequestValidationResult;
-import gdsc.binaryho.imhere.core.auth.application.request.SignInRequest;
+import gdsc.binaryho.imhere.core.auth.model.response.SignInRequestValidationResult;
+import gdsc.binaryho.imhere.core.auth.model.request.SignInRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.auth.controller;
 
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
-import gdsc.binaryho.imhere.core.auth.application.request.SignUpRequest;
+import gdsc.binaryho.imhere.core.auth.model.request.SignUpRequest;
 import gdsc.binaryho.imhere.core.auth.util.EmailSender;
 import gdsc.binaryho.imhere.exception.ImhereException;
 import io.swagger.v3.oas.annotations.Operation;
