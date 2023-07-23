@@ -2,7 +2,7 @@ package gdsc.binaryho.imhere.core.member;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import gdsc.binaryho.imhere.MockMember;
+import gdsc.binaryho.imhere.MockSecurityContextMember;
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.member.application.MemberService;
 import gdsc.binaryho.imhere.core.member.model.request.RoleChangeRequest;
@@ -28,7 +28,7 @@ class MemberServiceTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"STUDENT", "LECTURER", "ADMIN"})
-    @MockMember(role = Role.ADMIN)
+    @MockSecurityContextMember(role = Role.ADMIN)
     @Transactional
     void test(String roleKey) {
         authService.signUp(UNIV_ID, NAME, PASSWORD);
