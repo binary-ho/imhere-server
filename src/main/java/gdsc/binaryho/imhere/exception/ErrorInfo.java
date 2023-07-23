@@ -15,6 +15,7 @@ public enum ErrorInfo {
     PASSWORD_FORMAT_MISMATCH(HttpStatus.BAD_REQUEST, 1005, "형식에 맞는 비밀번호를 입력하세요."),
     REQUEST_FORMAT_MISMATCH(HttpStatus.BAD_REQUEST, 1006, "요청 형식이 맞지 않습니다."),
     EMAIL_VERIFICATION_CODE_INCORRECT(HttpStatus.BAD_REQUEST, 1007, "Email 인증 번호가 불일치합니다."),
+    MESSAGING_SERVER_EXCEPTION(HttpStatus.NOT_FOUND, 1008, "Messaging Server 에 연결할 수 없습니다."),
 
     LECTURE_NOT_FOUND(HttpStatus.NOT_FOUND, 2001, "강의 정보가 없습니다."),
     LECTURE_NOT_OPEN(HttpStatus.FORBIDDEN, 2002, "강의에 출석 가능한 상태가 아닙니다. (Lecture Not OPEN)"),

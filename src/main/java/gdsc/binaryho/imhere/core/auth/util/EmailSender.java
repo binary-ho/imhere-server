@@ -2,6 +2,7 @@ package gdsc.binaryho.imhere.core.auth.util;
 
 import gdsc.binaryho.imhere.core.auth.exception.EmailFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
+import gdsc.binaryho.imhere.core.auth.exception.MessagingServerException;
 import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 import java.util.UUID;
@@ -21,6 +22,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EmailSender {
 
+    private static final String SENDER_PERSONAL = "jinholee";
+    private static final String SENDER_ADDRESS = "gdscimhere@gmail.com";
+    private static final String MESSAGE_SUBJECT = "Hello There! GDSC Hongik i'm here 회원가입 인증 코드입니다.";
     private final static String MESSAGE_PREFIX = ""
         + "<div style='margin:20px;'>"
         + "<div style='margin:20px;'>"
@@ -39,28 +43,31 @@ public class EmailSender {
     private final StringBuilder stringBuilder = new StringBuilder();
     private final RedisTemplate<String, String> redisTemplate;
 
-    public void sendMailAndGetVerificationCode(String recipient)
-        throws MessagingException, UnsupportedEncodingException {
+    public void sendMailAndGetVerificationCode(String recipient) {
         validateEmailForm(recipient);
 
         String verificationCode = UUID.randomUUID().toString();
 
-        MimeMessage message = writeMail(recipient, verificationCode);
-        emailSender.send(message);
+        try {
+            MimeMessage message = writeMessage(recipient, verificationCode);
+            emailSender.send(message);
+        } catch (MessagingException e) {
+            throw MessagingServerException.EXCEPTION;
+        }
+
         setVerificationCode(recipient, verificationCode);
 
         log.info("[인증 이메일 발송] " + recipient + ", 인증 번호 : " + verificationCode);
     }
 
-    private MimeMessage writeMail(String recipient, String verificationCode)
-        throws MessagingException, UnsupportedEncodingException {
+    private MimeMessage writeMessage(String recipient, String verificationCode)
+        throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
 
         message.addRecipients(RecipientType.TO, recipient);
-        message.setSubject("Hello There! GDSC Hongik i'm here 회원가입 인증 코드입니다.");
-
+        message.setSubject(MESSAGE_SUBJECT);
         message.setText(getMessage(verificationCode), "utf-8", "html");
-        message.setFrom(new InternetAddress("gdscimhere@gmail.com", "jinholee"));
+        message.setFrom(getInternetAddress());
         return message;
     }
 
@@ -69,6 +76,16 @@ public class EmailSender {
         return String.valueOf(stringBuilder.append(MESSAGE_PREFIX)
             .append(verificationCode)
             .append(MESSAGE_SUFFIX));
+    }
+
+    private InternetAddress getInternetAddress() {
+        try {
+            return new InternetAddress(SENDER_ADDRESS, SENDER_PERSONAL);
+        } catch (UnsupportedEncodingException unsupportedEncodingException) {
+            log.error("[UnsupportedEncodingException] address : {}, personal : {}",
+                SENDER_ADDRESS, SENDER_PERSONAL);
+            return new InternetAddress();
+        }
     }
 
     private void setVerificationCode(String recipient, String verificationCode) {

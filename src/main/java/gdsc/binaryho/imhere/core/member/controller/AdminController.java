@@ -1,8 +1,7 @@
 package gdsc.binaryho.imhere.core.member.controller;
 
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
-import gdsc.binaryho.imhere.core.member.application.request.RoleChangeRequest;
-import gdsc.binaryho.imhere.exception.ImhereException;
+import gdsc.binaryho.imhere.core.member.model.request.RoleChangeRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +24,7 @@ public class AdminController {
     @PostMapping("/role/{univ_id}")
     public ResponseEntity<Void> memberRoleChange(@RequestBody RoleChangeRequest roleChangeRequest,
         @PathVariable("univ_id") String univId) {
-        try {
-            authService.memberRoleChange(roleChangeRequest, univId);
-            return ResponseEntity.ok().build();
-        } catch (ImhereException error) {
-            return ResponseEntity
-                .status(error.getErrorInfo().getHttpStatus())
-                .build();
-        }
+        authService.memberRoleChange(roleChangeRequest, univId);
+        return ResponseEntity.ok().build();
     }
 }
