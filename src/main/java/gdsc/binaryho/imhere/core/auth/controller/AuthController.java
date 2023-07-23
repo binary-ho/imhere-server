@@ -3,7 +3,6 @@ package gdsc.binaryho.imhere.core.auth.controller;
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.auth.model.request.SignUpRequest;
 import gdsc.binaryho.imhere.core.auth.util.EmailSender;
-import gdsc.binaryho.imhere.exception.ImhereException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,20 +28,9 @@ public class AuthController {
     @Operation(summary = "회원가입 API")
     @PostMapping("/new")
     public ResponseEntity<Void> signUp(@RequestBody SignUpRequest signUpRequest) {
-        try {
-            authService.signUp(signUpRequest.getUnivId(), signUpRequest.getName(),
-                signUpRequest.getPassword());
-            return ResponseEntity.ok().build();
-        } catch (ImhereException error) {
-            log.info("[회원가입 에러] 제출 email : {}, name : {}, password : {}\n -> 사유 {}",
-                () -> signUpRequest.getUnivId(),
-                () -> signUpRequest.getName(),
-                () -> signUpRequest.getPassword(),
-                () -> error.getErrorInfo().getMessage());
-            return ResponseEntity
-                .status(error.getErrorInfo().getHttpStatus())
-                .build();
-        }
+        authService.signUp(signUpRequest.getUnivId(), signUpRequest.getName(),
+            signUpRequest.getPassword());
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "특정 이메일로 회원가입 코드를 발급하여 발송하는 API")
@@ -56,14 +44,7 @@ public class AuthController {
     @GetMapping("/verification/{email}/{verification-code}")
     public ResponseEntity<Void> verifyCode(@PathVariable("email") String email,
         @PathVariable("verification-code") String verificationCode) {
-        try {
-            emailSender.verifyCode(email, verificationCode);
-            return ResponseEntity.ok().build();
-        } catch (ImhereException error) {
-            log.info("[이메일 인증 번호 불일치] email : {}, 제출 코드 {}", email, verificationCode);
-            return ResponseEntity
-                .status(error.getErrorInfo().getHttpStatus())
-                .build();
-        }
+        emailSender.verifyCode(email, verificationCode);
+        return ResponseEntity.ok().build();
     }
 }
