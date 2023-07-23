@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.core.member.controller;
 
-import gdsc.binaryho.imhere.core.auth.application.AuthService;
+import gdsc.binaryho.imhere.core.member.application.MemberService;
 import gdsc.binaryho.imhere.core.member.model.request.RoleChangeRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AdminController {
 
-    private final AuthService authService;
+    private final MemberService memberService;
 
     @Operation(summary = "유저 권한변경 API")
     @PostMapping("/role/{univ_id}")
     public ResponseEntity<Void> memberRoleChange(@RequestBody RoleChangeRequest roleChangeRequest,
         @PathVariable("univ_id") String univId) {
-        authService.memberRoleChange(roleChangeRequest, univId);
+        memberService.memberRoleChange(roleChangeRequest, univId);
         return ResponseEntity.ok().build();
     }
 }

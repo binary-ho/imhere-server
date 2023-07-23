@@ -5,18 +5,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import gdsc.binaryho.imhere.MockSecurityContextMember;
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
-import gdsc.binaryho.imhere.core.auth.model.response.SignInRequestValidationResult;
-import gdsc.binaryho.imhere.core.auth.model.request.SignInRequest;
 import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordIncorrectException;
+import gdsc.binaryho.imhere.core.auth.model.request.SignInRequest;
+import gdsc.binaryho.imhere.core.auth.model.response.SignInRequestValidationResult;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.MemberRepository;
-import gdsc.binaryho.imhere.core.member.Role;
-import gdsc.binaryho.imhere.core.member.model.request.RoleChangeRequest;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,6 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootTest
 class AuthServiceTest {
+
     @Autowired
     private AuthService authService;
     @Autowired
@@ -108,20 +106,5 @@ class AuthServiceTest {
             authService.validateSignInRequest(new SignInRequest(UNIV_ID, PASSWORD));
 
         assertThat(signInRequestValidationResult.getRoleKey()).isEqualTo(DEFAULT_MEMBER_ROLE);
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"STUDENT", "LECTURER", "ADMIN"})
-    @MockSecurityContextMember(role = Role.ADMIN)
-    @Transactional
-    void test(String roleKey) {
-        authService.signUp(UNIV_ID, NAME, PASSWORD);
-        RoleChangeRequest roleChangeRequest = new RoleChangeRequest();
-        roleChangeRequest.setRole(roleKey);
-
-        authService.memberRoleChange(roleChangeRequest, UNIV_ID);
-        Member member = memberRepository.findByUnivId(UNIV_ID)
-            .orElseThrow();
-        assertThat(member.getRole()).isEqualTo(Role.valueOf(roleKey));
     }
 }
