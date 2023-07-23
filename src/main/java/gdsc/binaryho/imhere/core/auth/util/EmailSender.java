@@ -24,6 +24,7 @@ public class EmailSender {
 
     private static final String SENDER_PERSONAL = "jinholee";
     private static final String SENDER_ADDRESS = "gdscimhere@gmail.com";
+    private static final String MESSAGE_SUBJECT = "Hello There! GDSC Hongik i'm here 회원가입 인증 코드입니다.";
     private final static String MESSAGE_PREFIX = ""
         + "<div style='margin:20px;'>"
         + "<div style='margin:20px;'>"
@@ -64,7 +65,7 @@ public class EmailSender {
         MimeMessage message = emailSender.createMimeMessage();
 
         message.addRecipients(RecipientType.TO, recipient);
-        message.setSubject("Hello There! GDSC Hongik i'm here 회원가입 인증 코드입니다.");
+        message.setSubject(MESSAGE_SUBJECT);
         message.setText(getMessage(verificationCode), "utf-8", "html");
         message.setFrom(getInternetAddress());
         return message;
