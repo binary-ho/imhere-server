@@ -7,7 +7,6 @@ import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.lecture.application.LectureService;
 import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
-import gdsc.binaryho.imhere.exception.ImhereException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -64,41 +63,22 @@ public class LectureController {
     @Operation(summary = "로그인한 강사가 강의를 생성하는 API")
     @PostMapping
     public ResponseEntity<Void> createLecture(@RequestBody LectureCreateRequest request) {
-        try {
-            lectureService.createLecture(request);
-            return ResponseEntity.ok().build();
-        } catch (ImhereException error) {
-            return ResponseEntity
-                .status(error.getErrorInfo().getCode())
-                .build();
-        }
+        lectureService.createLecture(request);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "로그인한 강사가 강의를 OPEN하고 출석 번호를 발급 받는 API")
     @PostMapping("/{lecture_id}/open")
     public ResponseEntity<AttendanceNumberResponse> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lectureId) {
-        try {
-            int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lectureId);
-            return ResponseEntity
-                .ok(new AttendanceNumberResponse(attendanceNumber));
-        } catch (ImhereException e) {
-            log.error("[강의 OPEN ERROR] : " + e);
-            return ResponseEntity
-                .status(e.getErrorInfo().getCode())
-                .build();
-        }
+        int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lectureId);
+        return ResponseEntity
+            .ok(new AttendanceNumberResponse(attendanceNumber));
     }
 
     @Operation(summary = "로그인한 강사가 강의를 CLOSED 상태로 바꾸는 API")
     @PostMapping("/{lecture_id}/close")
     public ResponseEntity<Void> changeLectureState(@PathVariable("lecture_id") Long lecture_id) {
-        try {
-            lectureService.closeLecture(lecture_id);
-            return ResponseEntity.ok().build();
-        } catch (ImhereException e) {
-            return ResponseEntity
-                .status(e.getErrorInfo().getCode())
-                .build();
-        }
+        lectureService.closeLecture(lecture_id);
+        return ResponseEntity.ok().build();
     }
 }

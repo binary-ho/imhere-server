@@ -3,7 +3,6 @@ package gdsc.binaryho.imhere.core.attendance.controller;
 import gdsc.binaryho.imhere.core.attendance.application.AttendanceService;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
 import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceResponse;
-import gdsc.binaryho.imhere.exception.ImhereException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -32,15 +31,8 @@ public class AttendanceController {
     @PostMapping("/{lecture_id}")
     public ResponseEntity<Void> takeAttendance(@RequestBody AttendanceRequest attendanceRequest,
         @PathVariable("lecture_id") Long lectureId) {
-        try {
-            attendanceService.takeAttendance(attendanceRequest, lectureId);
-            return ResponseEntity.ok().build();
-        } catch (ImhereException error) {
-            log.info("[출석 시도 예외 발생] : ", error);
-            return ResponseEntity
-                .status(error.getErrorInfo().getHttpStatus())
-                .build();
-        }
+        attendanceService.takeAttendance(attendanceRequest, lectureId);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "특정 강의의 출석 정보 전체를 가져오는 API")
