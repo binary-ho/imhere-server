@@ -2,11 +2,13 @@ package gdsc.binaryho.imhere.core.attendance.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class AttendanceRequest {
 
     @Schema(description = "출석 번호")
