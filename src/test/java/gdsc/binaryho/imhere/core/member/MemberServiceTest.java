@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import gdsc.binaryho.imhere.MockMember;
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.member.application.MemberService;
+import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.core.member.model.request.RoleChangeRequest;
 import javax.transaction.Transactional;
 import org.junit.jupiter.params.ParameterizedTest;

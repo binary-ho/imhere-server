@@ -1,5 +1,7 @@
-package gdsc.binaryho.imhere.core.lecture;
+package gdsc.binaryho.imhere.core.lecture.infrastructure;
 
+import gdsc.binaryho.imhere.core.lecture.Lecture;
+import gdsc.binaryho.imhere.core.lecture.LectureState;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

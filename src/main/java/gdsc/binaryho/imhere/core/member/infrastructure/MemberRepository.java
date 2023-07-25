@@ -1,5 +1,6 @@
-package gdsc.binaryho.imhere.core.member;
+package gdsc.binaryho.imhere.core.member.infrastructure;
 
+import gdsc.binaryho.imhere.core.member.Member;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
