@@ -13,7 +13,7 @@ import gdsc.binaryho.imhere.core.auth.exception.PasswordIncorrectException;
 import gdsc.binaryho.imhere.core.auth.model.request.SignInRequest;
 import gdsc.binaryho.imhere.core.auth.model.response.SignInRequestValidationResult;
 import gdsc.binaryho.imhere.core.member.Member;
-import gdsc.binaryho.imhere.core.member.MemberRepository;
+import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

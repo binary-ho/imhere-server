@@ -2,7 +2,7 @@ package gdsc.binaryho.imhere.security.filter;
 
 import gdsc.binaryho.imhere.core.auth.PrincipalDetails;
 import gdsc.binaryho.imhere.core.member.Member;
-import gdsc.binaryho.imhere.core.member.MemberRepository;
+import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.security.jwt.TokenService;
 import java.io.IOException;
 import javax.servlet.FilterChain;
