@@ -44,7 +44,7 @@ public class AuthController {
     @GetMapping("/verification/{email}/{verification-code}")
     public ResponseEntity<Void> verifyCode(@PathVariable("email") String email,
         @PathVariable("verification-code") String verificationCode) {
-        emailSender.verifyCode(email, verificationCode);
+        authService.verifyCode(email, verificationCode);
         return ResponseEntity.ok().build();
     }
 }

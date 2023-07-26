@@ -1,7 +1,6 @@
 package gdsc.binaryho.imhere.core.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -13,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import gdsc.binaryho.imhere.core.auth.application.EmailSender;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.EmailFormatMismatchException;
-import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
 import gdsc.binaryho.imhere.core.auth.exception.MessagingServerException;
 import gdsc.binaryho.imhere.mock.FakeVerificationCodeRepository;
 import javax.mail.Message.RecipientType;
@@ -40,12 +38,12 @@ public class EmailSenderTest {
     VerificationCodeRepository verificationCodeRepository = new FakeVerificationCodeRepository();
     EmailSender emailSender;
 
+    private static final String EMAIL = "dlwlsgh4687@gmail.com";
+
     @BeforeEach
     void initEmailSender() {
         emailSender = new EmailSender(javaMailSender, verificationCodeRepository);
     }
-
-    private static final String EMAIL = "dlwlsgh4687@gmail.com";
 
     @Test
     void 회원가임_시도_이메일에_메일을_보낼_수_있다() {
@@ -95,36 +93,5 @@ public class EmailSenderTest {
 
         // then
         assertThat(verificationCodeRepository.getByEmail(EMAIL)).isNotNull();
-    }
-
-    @Test
-    void 인증_코드를_인증할_수_있다() {
-        // given
-        given(javaMailSender.createMimeMessage()).willReturn(mockMimeMessage);
-        doNothing().when(javaMailSender).send(any(MimeMessage.class));
-
-        // when
-        emailSender.sendMailAndGetVerificationCode(EMAIL);
-        String verificationCode = verificationCodeRepository.getByEmail(EMAIL);
-
-        // then
-        assertThatCode(
-            () -> emailSender.verifyCode(EMAIL, verificationCode)
-        ).doesNotThrowAnyException();
-    }
-
-    @Test
-    void 인증_코드가_틀린_경우_예외를_발생시킨다() {
-        // given
-        given(javaMailSender.createMimeMessage()).willReturn(mockMimeMessage);
-        doNothing().when(javaMailSender).send(any(MimeMessage.class));
-
-        // when
-        emailSender.sendMailAndGetVerificationCode(EMAIL);
-
-        // then
-        assertThatThrownBy(
-            () -> emailSender.verifyCode(EMAIL, "WrongCode")
-        ).isInstanceOf(EmailVerificationCodeIncorrectException.class);
     }
 }
