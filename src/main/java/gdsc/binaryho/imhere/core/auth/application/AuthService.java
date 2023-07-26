@@ -2,7 +2,6 @@ package gdsc.binaryho.imhere.core.auth.application;
 
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
-import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordIncorrectException;
@@ -11,7 +10,6 @@ import gdsc.binaryho.imhere.core.auth.model.response.SignInRequestValidationResu
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -66,13 +64,6 @@ public class AuthService {
     private void validateMatchesPassword(String rawPassword, String encodedPassword) {
         if (!bCryptPasswordEncoder.matches(rawPassword, encodedPassword)) {
             throw PasswordIncorrectException.EXCEPTION;
-        }
-    }
-
-    public void verifyCode(String email, String verificationCode) {
-        String emailVerificationCode = verificationCodeRepository.getByEmail(email);
-        if (!Objects.equals(emailVerificationCode, verificationCode)) {
-            throw EmailVerificationCodeIncorrectException.EXCEPTION;
         }
     }
 }

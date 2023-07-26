@@ -1,6 +1,7 @@
 package gdsc.binaryho.imhere.core.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -9,9 +10,10 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import gdsc.binaryho.imhere.core.auth.application.EmailSender;
+import gdsc.binaryho.imhere.core.auth.application.EmailVerificationService;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.EmailFormatMismatchException;
+import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
 import gdsc.binaryho.imhere.core.auth.exception.MessagingServerException;
 import gdsc.binaryho.imhere.mock.FakeVerificationCodeRepository;
 import javax.mail.Message.RecipientType;
@@ -27,7 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mail.javamail.JavaMailSender;
 
 @ExtendWith(MockitoExtension.class)
-public class EmailSenderTest {
+public class EmailVerificationServiceTest {
 
     @Mock
     JavaMailSender javaMailSender;
@@ -36,13 +38,13 @@ public class EmailSenderTest {
     MimeMessage mockMimeMessage;
 
     VerificationCodeRepository verificationCodeRepository = new FakeVerificationCodeRepository();
-    EmailSender emailSender;
+    EmailVerificationService emailVerificationService;
 
     private static final String EMAIL = "dlwlsgh4687@gmail.com";
 
     @BeforeEach
     void initEmailSender() {
-        emailSender = new EmailSender(javaMailSender, verificationCodeRepository);
+        emailVerificationService = new EmailVerificationService(javaMailSender, verificationCodeRepository);
     }
 
     @Test
@@ -52,7 +54,7 @@ public class EmailSenderTest {
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
 
         // then
-        emailSender.sendMailAndGetVerificationCode(EMAIL);
+        emailVerificationService.sendMailAndGetVerificationCode(EMAIL);
 
         // then
         verify(javaMailSender, times(1)).send(any(MimeMessage.class));
@@ -65,7 +67,7 @@ public class EmailSenderTest {
         // when
         // then
         assertThatThrownBy(() ->
-            emailSender.sendMailAndGetVerificationCode("test@" + postfix))
+            emailVerificationService.sendMailAndGetVerificationCode("test@" + postfix))
             .isInstanceOf(EmailFormatMismatchException.class);
     }
 
@@ -78,7 +80,7 @@ public class EmailSenderTest {
 
         // then
         assertThatThrownBy(
-            () -> emailSender.sendMailAndGetVerificationCode(EMAIL)
+            () -> emailVerificationService.sendMailAndGetVerificationCode(EMAIL)
         ).isInstanceOf(MessagingServerException.class);
     }
 
@@ -89,9 +91,35 @@ public class EmailSenderTest {
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
 
         // when
-        emailSender.sendMailAndGetVerificationCode(EMAIL);
+        emailVerificationService.sendMailAndGetVerificationCode(EMAIL);
 
         // then
         assertThat(verificationCodeRepository.getByEmail(EMAIL)).isNotNull();
+    }
+
+    @Test
+    void 인증_코드를_인증할_수_있다() {
+        // given
+        String verificationCode = "imhere forever";
+        verificationCodeRepository.saveWithEmailAsKey(EMAIL, verificationCode);
+
+        // when
+        // then
+        assertThatCode(
+            () -> emailVerificationService.verifyCode(EMAIL, verificationCode)
+        ).doesNotThrowAnyException();
+    }
+
+    @Test
+    void 인증_코드가_틀린_경우_예외를_발생시킨다() {
+        // given
+        String verificationCode = "imhere forever";
+        verificationCodeRepository.saveWithEmailAsKey(EMAIL, verificationCode);
+
+        // when
+        // then
+        assertThatThrownBy(
+            () -> emailVerificationService.verifyCode(EMAIL, verificationCode + "wrong code")
+        ).isInstanceOf(EmailVerificationCodeIncorrectException.class);
     }
 }

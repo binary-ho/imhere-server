@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.auth.controller;
 
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
-import gdsc.binaryho.imhere.core.auth.application.EmailSender;
+import gdsc.binaryho.imhere.core.auth.application.EmailVerificationService;
 import gdsc.binaryho.imhere.core.auth.model.request.SignUpRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
-    private final EmailSender emailSender;
+    private final EmailVerificationService emailVerificationService;
 
     @Operation(summary = "회원가입 API")
     @PostMapping("/new")
@@ -36,7 +36,7 @@ public class AuthController {
     @Operation(summary = "특정 이메일로 회원가입 코드를 발급하여 발송하는 API")
     @PostMapping("/verification/{email}")
     public ResponseEntity<Void> generateVerificationNumber(@PathVariable("email") String email) {
-        emailSender.sendMailAndGetVerificationCode(email);
+        emailVerificationService.sendMailAndGetVerificationCode(email);
         return ResponseEntity.ok().build();
     }
 
@@ -44,7 +44,7 @@ public class AuthController {
     @GetMapping("/verification/{email}/{verification-code}")
     public ResponseEntity<Void> verifyCode(@PathVariable("email") String email,
         @PathVariable("verification-code") String verificationCode) {
-        authService.verifyCode(email, verificationCode);
+        emailVerificationService.verifyCode(email, verificationCode);
         return ResponseEntity.ok().build();
     }
 }

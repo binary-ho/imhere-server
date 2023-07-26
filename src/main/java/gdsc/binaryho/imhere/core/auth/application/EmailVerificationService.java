@@ -2,8 +2,10 @@ package gdsc.binaryho.imhere.core.auth.application;
 
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.EmailFormatMismatchException;
+import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
 import gdsc.binaryho.imhere.core.auth.exception.MessagingServerException;
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 import java.util.UUID;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Service;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class EmailSender {
+public class EmailVerificationService {
 
     private static final String SENDER_PERSONAL = "jinholee";
     private static final String SENDER_ADDRESS = "gdscimhere@gmail.com";
@@ -91,6 +93,13 @@ public class EmailSender {
     private void validateEmailForm(String recipient) {
         if (!recipient.matches(EMAIL_REGEX) && !recipient.matches(GMAIL_REGEX)) {
             throw EmailFormatMismatchException.EXCEPTION;
+        }
+    }
+
+    public void verifyCode(String email, String verificationCode) {
+        String emailVerificationCode = verificationCodeRepository.getByEmail(email);
+        if (!Objects.equals(emailVerificationCode, verificationCode)) {
+            throw EmailVerificationCodeIncorrectException.EXCEPTION;
         }
     }
 }
