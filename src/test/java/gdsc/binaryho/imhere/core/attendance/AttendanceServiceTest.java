@@ -59,7 +59,7 @@ public class AttendanceServiceTest {
     AttendanceService attendanceService;
 
     @BeforeEach
-    void saveAllEntities() {
+    void beforeEachTest() {
         attendanceService = new AttendanceService(
             authenticationHelper, attendanceRepository, enrollmentRepository, lectureRepository, attendanceNumberRepository);
 
