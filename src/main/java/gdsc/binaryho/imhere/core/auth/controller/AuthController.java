@@ -1,8 +1,8 @@
 package gdsc.binaryho.imhere.core.auth.controller;
 
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
+import gdsc.binaryho.imhere.core.auth.application.EmailSender;
 import gdsc.binaryho.imhere.core.auth.model.request.SignUpRequest;
-import gdsc.binaryho.imhere.core.auth.util.EmailSender;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
