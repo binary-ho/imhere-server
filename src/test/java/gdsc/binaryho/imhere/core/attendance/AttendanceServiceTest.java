@@ -114,14 +114,14 @@ public class AttendanceServiceTest {
             .isInstanceOf(AttendanceNumberIncorrectException.class);
     }
 
-    /*@Transactional
-    public void saveAttendanceNumber(Long lectureId, int attendanceNumber) {
-        attendanceNumberRepository.saveByLectureId(lectureId, attendanceNumber);
-    }*/
-
     @Test
     void 출석_번호를_강의_아이디와_함께_저장할_수_있다() {
+        // given
+        // when
+        attendanceService.saveAttendanceNumber(LECTURER.getId(), ATTENDANCE_NUMBER);
 
+        // then
+        assertThat(attendanceNumberRepository.getByLectureId(LECTURER.getId())).isEqualTo(ATTENDANCE_NUMBER);
     }
 
     private Lecture getMockOpenLecture() {
