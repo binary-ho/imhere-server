@@ -2,6 +2,7 @@ package gdsc.binaryho.imhere.core.attendance.application;
 
 
 import gdsc.binaryho.imhere.core.attendance.Attendance;
+import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceNumberRepository;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectException;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
@@ -25,7 +26,6 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +38,7 @@ public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final EnrollmentInfoRepository enrollmentRepository;
     private final LectureRepository lectureRepository;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final AttendanceNumberRepository attendanceNumberRepository;
 
     @Transactional
     public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) {
@@ -50,15 +50,24 @@ public class AttendanceService {
         validateLectureOpen(enrollmentInfo);
         validateAttendanceNumber(enrollmentInfo, attendanceRequest.getAttendanceNumber());
 
-        Attendance attendance = Attendance.createAttendance(enrollmentInfo.getMember(),
+        attend(attendanceRequest, enrollmentInfo);
+    }
+
+    private void attend(AttendanceRequest attendanceRequest, EnrollmentInfo enrollmentInfo) {
+        Attendance attendance = Attendance.createAttendance(
+            enrollmentInfo.getMember(),
             enrollmentInfo.getLecture(),
-            attendanceRequest.getDistance(), attendanceRequest.getAccuracy(),
-            getLocalDateTime(attendanceRequest.getMilliseconds()));
+            attendanceRequest.getDistance(),
+            attendanceRequest.getAccuracy(),
+            getLocalDateTime(attendanceRequest.getMilliseconds())
+        );
 
         attendanceRepository.save(attendance);
+
+        Member attendMember = enrollmentInfo.getMember();
         log.info("[출석 완료] {}({}) , 학생 : {} ({})",
             () -> attendance.getLecture().getLectureName(), () -> attendance.getLecture().getId(),
-            () -> currentStudent.getUnivId(), () -> currentStudent.getName());
+            () -> attendMember.getUnivId(), () -> attendMember.getName());
     }
 
     private void validateLectureOpen(EnrollmentInfo enrollmentInfo) {
@@ -68,8 +77,8 @@ public class AttendanceService {
     }
 
     private void validateAttendanceNumber(EnrollmentInfo enrollmentInfo, int attendanceNumber) {
-        String actualAttendanceNumber = redisTemplate.opsForValue()
-            .get(enrollmentInfo.getLecture().getId().toString());
+        long lectureId = enrollmentInfo.getLecture().getId();
+        String actualAttendanceNumber = attendanceNumberRepository.getByLectureId(lectureId);
 
         validateAttendanceNumberNotTimeOut(actualAttendanceNumber);
         validateAttendanceNumberCorrect(actualAttendanceNumber, attendanceNumber);
@@ -131,5 +140,10 @@ public class AttendanceService {
         Lecture lecture = attendances.get(0).getLecture();
         verifyRequestMemberLogInMember(lecture.getMember());
         return getAttendanceDto(lecture, attendances);
+    }
+
+    @Transactional
+    public void saveAttendanceNumber(Long lectureId, int attendanceNumber) {
+        attendanceNumberRepository.saveByLectureId(lectureId, attendanceNumber);
     }
 }
