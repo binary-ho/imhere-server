@@ -1,19 +1,18 @@
-package gdsc.binaryho.imhere.core.auth.util;
+package gdsc.binaryho.imhere.core.auth.application;
 
+import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.EmailFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
 import gdsc.binaryho.imhere.core.auth.exception.MessagingServerException;
 import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -35,13 +34,12 @@ public class EmailSender {
         + "</strong>"
         + "<h3> 10분안에 입력 부탁드립니다. 감사합니다! <h3>"
         + "<br>";
-    private final static int ATTENDANCE_NUMBER_EXPIRE_TIME = 10;
     private final static String EMAIL_REGEX = "^[a-zA-Z0-9]+@(?:(?:g\\.)?hongik\\.ac\\.kr)$";;
     private final static String GMAIL_REGEX = "^[a-zA-Z0-9]+@gmail\\.com$";
+    private final StringBuilder stringBuilder = new StringBuilder();
 
     private final JavaMailSender emailSender;
-    private final StringBuilder stringBuilder = new StringBuilder();
-    private final RedisTemplate<String, String> redisTemplate;
+    private final VerificationCodeRepository verificationCodeRepository;
 
     public void sendMailAndGetVerificationCode(String recipient) {
         validateEmailForm(recipient);
@@ -89,12 +87,7 @@ public class EmailSender {
     }
 
     private void setVerificationCode(String recipient, String verificationCode) {
-        redisTemplate.opsForValue().set(
-            recipient,
-            verificationCode,
-            ATTENDANCE_NUMBER_EXPIRE_TIME,
-            TimeUnit.MINUTES
-        );
+        verificationCodeRepository.saveWithEmailAsKey(recipient, verificationCode);
     }
 
     private void validateEmailForm(String recipient) {
@@ -104,9 +97,8 @@ public class EmailSender {
     }
 
     public void verifyCode(String email, String verificationCode) {
-        String nonNullEmail = Objects.requireNonNull(email);
-        String nonNullVerificationCode = Objects.requireNonNull(verificationCode);
-        if (!Objects.equals(redisTemplate.opsForValue().get(nonNullEmail), nonNullVerificationCode)) {
+        String emailVerificationCode = verificationCodeRepository.getByEmail(email);
+        if (!Objects.equals(emailVerificationCode, verificationCode)) {
             throw EmailVerificationCodeIncorrectException.EXCEPTION;
         }
     }
