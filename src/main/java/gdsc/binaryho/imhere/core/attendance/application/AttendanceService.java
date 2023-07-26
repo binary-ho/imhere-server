@@ -78,20 +78,20 @@ public class AttendanceService {
 
     private void validateAttendanceNumber(EnrollmentInfo enrollmentInfo, int attendanceNumber) {
         long lectureId = enrollmentInfo.getLecture().getId();
-        String actualAttendanceNumber = attendanceNumberRepository.getByLectureId(lectureId);
+        Integer actualAttendanceNumber = attendanceNumberRepository.getByLectureId(lectureId);
 
         validateAttendanceNumberNotTimeOut(actualAttendanceNumber);
         validateAttendanceNumberCorrect(actualAttendanceNumber, attendanceNumber);
     }
 
-    private void validateAttendanceNumberNotTimeOut(String attendanceNumber) {
+    private void validateAttendanceNumberNotTimeOut(Integer attendanceNumber) {
         if (Objects.isNull(attendanceNumber)) {
             throw AttendanceTimeExceededException.EXCEPTION;
         }
     }
 
-    private void validateAttendanceNumberCorrect(String actualAttendanceNumber, int attendanceNumber) {
-        if (Integer.parseInt(actualAttendanceNumber) != attendanceNumber) {
+    private void validateAttendanceNumberCorrect(Integer actualAttendanceNumber, int attendanceNumber) {
+        if (actualAttendanceNumber != attendanceNumber) {
             throw AttendanceNumberIncorrectException.EXCEPTION;
         }
     }
@@ -144,6 +144,6 @@ public class AttendanceService {
 
     @Transactional
     public void saveAttendanceNumber(Long lectureId, int attendanceNumber) {
-        attendanceNumberRepository.saveByLectureId(lectureId, attendanceNumber);
+        attendanceNumberRepository.saveWithLectureIdAsKey(lectureId, attendanceNumber);
     }
 }

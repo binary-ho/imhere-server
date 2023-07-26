@@ -14,13 +14,19 @@ public class AttendanceNumberRedisRepository implements AttendanceNumberReposito
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public String getByLectureId(Long lectureId) {
-        return redisTemplate.opsForValue()
+    public Integer getByLectureId(Long lectureId) {
+        String attendanceNumber = redisTemplate.opsForValue()
             .get(lectureId.toString());
+
+        if (attendanceNumber == null) {
+            return null;
+        }
+
+        return Integer.parseInt(attendanceNumber);
     }
 
     @Override
-    public void saveByLectureId(Long lectureId, int attendanceNumber) {
+    public void saveWithLectureIdAsKey(Long lectureId, int attendanceNumber) {
         redisTemplate.opsForValue().set(
             lectureId.toString(),
             String.valueOf(attendanceNumber),
