@@ -25,8 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LectureService {
 
-    private final static Integer RANDOM_NUMBER_START = 100;
-    private final static Integer RANDOM_NUMBER_END = 1000;
+    private static final Integer RANDOM_NUMBER_START = 100;
+    private static final Integer RANDOM_NUMBER_END = 1000;
 
     private final AuthenticationHelper authenticationHelper;
     private final AttendanceService attendanceService;

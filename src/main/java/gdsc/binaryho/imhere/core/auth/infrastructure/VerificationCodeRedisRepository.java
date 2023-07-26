@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class VerificationCodeRedisRepository implements VerificationCodeRepository {
 
-    private final static Integer VERIFICATION_CODE_EXPIRE_TIME = 10;
+    private static final Integer VERIFICATION_CODE_EXPIRE_TIME = 10;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override

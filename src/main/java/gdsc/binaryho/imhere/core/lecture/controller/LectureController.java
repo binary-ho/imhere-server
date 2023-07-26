@@ -30,7 +30,7 @@ public class LectureController {
     private final LectureService lectureService;
     private final LectureRepository lectureRepository;
 
-    private final static String STATUS = "status=";
+    private static final String STATUS = "status=";
 
     @Operation(summary = "학생이 수강신청을 위해 개설된 모든 강의 리스트를 가져오는 API")
     @GetMapping

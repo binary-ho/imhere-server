@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class AttendanceNumberRedisRepository implements AttendanceNumberRepository {
 
-    private final static Integer ATTENDANCE_NUMBER_EXPIRE_TIME = 10;
+    private static final Integer ATTENDANCE_NUMBER_EXPIRE_TIME = 10;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
