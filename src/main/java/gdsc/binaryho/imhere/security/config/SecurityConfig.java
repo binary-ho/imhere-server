@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.security.config;
 
 
-import gdsc.binaryho.imhere.core.member.MemberRepository;
+import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.security.filter.JwtAuthenticationFilter;
 import gdsc.binaryho.imhere.security.filter.JwtAuthorizationFilter;
 import gdsc.binaryho.imhere.security.jwt.TokenService;

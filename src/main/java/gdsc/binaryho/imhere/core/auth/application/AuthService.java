@@ -1,5 +1,6 @@
 package gdsc.binaryho.imhere.core.auth.application;
 
+import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordFormatMismatchException;
@@ -7,8 +8,8 @@ import gdsc.binaryho.imhere.core.auth.exception.PasswordIncorrectException;
 import gdsc.binaryho.imhere.core.auth.model.request.SignInRequest;
 import gdsc.binaryho.imhere.core.auth.model.response.SignInRequestValidationResult;
 import gdsc.binaryho.imhere.core.member.Member;
-import gdsc.binaryho.imhere.core.member.MemberRepository;
 import gdsc.binaryho.imhere.core.member.Role;
+import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final MemberRepository memberRepository;
+    private final VerificationCodeRepository verificationCodeRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private static final String PASSWORD_REGEX = "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,20}$";

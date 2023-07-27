@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
+import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordFormatMismatchException;
@@ -13,8 +14,10 @@ import gdsc.binaryho.imhere.core.auth.exception.PasswordIncorrectException;
 import gdsc.binaryho.imhere.core.auth.model.request.SignInRequest;
 import gdsc.binaryho.imhere.core.auth.model.response.SignInRequestValidationResult;
 import gdsc.binaryho.imhere.core.member.Member;
-import gdsc.binaryho.imhere.core.member.MemberRepository;
+import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
+import gdsc.binaryho.imhere.mock.FakeVerificationCodeRepository;
 import javax.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -26,16 +29,22 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 class AuthServiceTest {
 
     @Autowired
-    private AuthService authService;
-    @Autowired
     private MemberRepository memberRepository;
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private AuthService authService;
 
-    String UNIV_ID = "UNIV_ID";
-    String NAME = "이진호";
-    String PASSWORD = "abcd1234";
-    String DEFAULT_MEMBER_ROLE = "ROLE_STUDENT";
+    VerificationCodeRepository verificationCodeRepository = new FakeVerificationCodeRepository();
+
+    private static final String UNIV_ID = "UNIV_ID";
+    private static final String NAME = "이진호";
+    private static final String PASSWORD = "abcd1234";
+    private static final String DEFAULT_MEMBER_ROLE = "ROLE_STUDENT";
+
+    @BeforeEach
+    void initAuthService() {
+        authService = new AuthService(memberRepository, verificationCodeRepository, bCryptPasswordEncoder);
+    }
 
     @Test
     @Transactional

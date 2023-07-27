@@ -1,5 +1,7 @@
-package gdsc.binaryho.imhere.core.enrollment;
+package gdsc.binaryho.imhere.core.enrollment.infrastructure;
 
+import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
+import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
 import java.util.List;

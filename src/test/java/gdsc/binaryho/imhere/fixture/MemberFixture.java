@@ -14,4 +14,5 @@ public class MemberFixture {
     public static final Role ROLE = Role.STUDENT;
 
     public static final Member STUDENT = Member.createMember(UNIV_ID, NAME, PASSWORD, ROLE);
+    public static final Member LECTURER = Member.createMember(UNIV_ID, NAME, PASSWORD, Role.LECTURER);
 }

@@ -1,23 +1,22 @@
 package gdsc.binaryho.imhere.core.lecture.application;
 
+import gdsc.binaryho.imhere.core.attendance.application.AttendanceService;
 import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
-import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
+import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
-import gdsc.binaryho.imhere.core.lecture.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
+import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.core.member.Member;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,14 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class LectureService {
 
-    private final static Integer RANDOM_NUMBER_START = 100;
-    private final static Integer RANDOM_NUMBER_END = 1000;
-    private final static Integer ATTENDANCE_NUMBER_EXPIRE_TIME = 10;
+    private static final Integer RANDOM_NUMBER_START = 100;
+    private static final Integer RANDOM_NUMBER_END = 1000;
 
     private final AuthenticationHelper authenticationHelper;
+    private final AttendanceService attendanceService;
     private final LectureRepository lectureRepository;
     private final EnrollmentInfoRepository enrollmentInfoRepository;
-    private final RedisTemplate<String, String> redisTemplate;
 
     @Transactional
     public void createLecture(LectureCreateRequest request) {
@@ -98,14 +96,8 @@ public class LectureService {
 
         lecture.setLectureState(LectureState.OPEN);
 
-        Integer attendanceNumber = generateRandomNumber();
-
-        redisTemplate.opsForValue().set(
-            String.valueOf(lecture.getId()),
-            String.valueOf(attendanceNumber),
-            ATTENDANCE_NUMBER_EXPIRE_TIME,
-            TimeUnit.MINUTES
-        );
+        int attendanceNumber = generateRandomNumber();
+        attendanceService.saveAttendanceNumber(lecture.getId(), attendanceNumber);
 
         log.info("[강의 OPEN] {} ({}), 출석 번호 : " + attendanceNumber
             , () -> lecture.getLectureName(), () -> lecture.getId());
