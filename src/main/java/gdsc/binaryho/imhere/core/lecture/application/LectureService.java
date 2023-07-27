@@ -13,7 +13,6 @@ import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.core.member.Member;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -86,12 +85,10 @@ public class LectureService {
     }
 
     @Transactional
+    // TODO : 이름 바꾸기
     public int openLectureAndGetAttendanceNumber(Long lectureId) {
-        Optional<Lecture> findLecture = lectureRepository.findById(lectureId);
-
-        validateLectureNonNull(findLecture);
-
-        Lecture lecture = findLecture.get();
+        Lecture lecture = lectureRepository.findById(lectureId)
+            .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
         authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         lecture.setLectureState(LectureState.OPEN);
@@ -106,11 +103,8 @@ public class LectureService {
 
     @Transactional
     public void closeLecture(Long lectureId) {
-        Optional<Lecture> findLecture = lectureRepository.findById(lectureId);
-
-        validateLectureNonNull(findLecture);
-
-        Lecture lecture = findLecture.get();
+        Lecture lecture = lectureRepository.findById(lectureId)
+            .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
         authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         lecture.setLectureState(LectureState.CLOSED);
@@ -122,11 +116,5 @@ public class LectureService {
     private Integer generateRandomNumber() {
         int rangeSize = RANDOM_NUMBER_END - RANDOM_NUMBER_START + 1;
         return (int) (Math.random() * (rangeSize)) + RANDOM_NUMBER_START;
-    }
-
-    private void validateLectureNonNull(Optional<Lecture> findLecture) {
-        if (findLecture.isEmpty()) {
-            throw LectureNotFoundException.EXCEPTION;
-        }
     }
 }

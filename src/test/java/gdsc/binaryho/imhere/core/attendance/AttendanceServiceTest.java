@@ -19,43 +19,42 @@ import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectE
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
-import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
-import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.fixture.AttendanceFixture;
-import gdsc.binaryho.imhere.mock.FakeAttendanceNumberRepository;
+import gdsc.binaryho.imhere.mock.TestContainer;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class AttendanceServiceTest {
 
-    private final int ATTENDANCE_NUMBER = AttendanceFixture.ATTENDANCE_NUMBER;
-    private final String DISTANCE = AttendanceFixture.DISTANCE;
-    private final String ACCURACY = AttendanceFixture.ACCURACY;
-    private final long MILLISECONDS = AttendanceFixture.MILLISECONDS;
+    private final static int ATTENDANCE_NUMBER = AttendanceFixture.ATTENDANCE_NUMBER;
+    private final static String DISTANCE = AttendanceFixture.DISTANCE;
+    private final static String ACCURACY = AttendanceFixture.ACCURACY;
+    private final static long MILLISECONDS = AttendanceFixture.MILLISECONDS;
 
-    @Autowired
-    AuthenticationHelper authenticationHelper;
     @Mock
     AttendanceRepository attendanceRepository;
     @Mock
     EnrollmentInfoRepository enrollmentRepository;
-    @Autowired
-    LectureRepository lectureRepository;
 
-    AttendanceNumberRepository attendanceNumberRepository = new FakeAttendanceNumberRepository();
+    AttendanceNumberRepository attendanceNumberRepository;
     AttendanceService attendanceService;
+
+    TestContainer testContainer;
 
     @BeforeEach
     void beforeEachTest() {
-        attendanceService = new AttendanceService(
-            authenticationHelper, attendanceRepository, enrollmentRepository, lectureRepository, attendanceNumberRepository);
+        testContainer = TestContainer.builder()
+            .enrollmentInfoRepository(enrollmentRepository)
+            .attendanceRepository(attendanceRepository)
+            .build();
+        attendanceService = testContainer.attendanceService;
+        attendanceNumberRepository = testContainer.attendanceNumberRepository;
 
         // EnrollmentRepository Mocking
         given(enrollmentRepository

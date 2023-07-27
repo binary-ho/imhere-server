@@ -5,36 +5,42 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import gdsc.binaryho.imhere.core.auth.application.EmailVerificationService;
-import gdsc.binaryho.imhere.core.auth.application.port.MailSender;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.EmailFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
-import gdsc.binaryho.imhere.mock.FakeVerificationCodeRepository;
+import gdsc.binaryho.imhere.mock.TestContainer;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public class EmailVerificationServiceTest {
 
-    boolean isMailSent;
-    MailSender mailSender = (recipient, verificationCode) -> isMailSent = true;
-    VerificationCodeRepository verificationCodeRepository = new FakeVerificationCodeRepository();
-
-    EmailVerificationService emailVerificationService =
-        new EmailVerificationService(mailSender, verificationCodeRepository);
-
     private static final String EMAIL = "dlwlsgh4687@gmail.com";
+
+    EmailVerificationService emailVerificationService;
+    VerificationCodeRepository verificationCodeRepository;
+
+    TestContainer testContainer;
+
+    @BeforeEach
+    void beforeEachTest() {
+        testContainer = TestContainer.builder().build();
+
+        verificationCodeRepository = testContainer.verificationCodeRepository;
+        emailVerificationService = testContainer.emailVerificationService;
+    }
 
     @Test
     void 인증코드와_메일을_보낼_수_있다() {
         // given
-        isMailSent = false;
+        testContainer.isMailSent = false;
 
         // then
         emailVerificationService.sendMailAndGetVerificationCode(EMAIL);
 
         // then
-        assertThat(isMailSent).isTrue();
+        assertThat(testContainer.isMailSent).isTrue();
     }
 
     @ParameterizedTest
