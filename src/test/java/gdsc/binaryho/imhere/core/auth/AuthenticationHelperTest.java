@@ -12,16 +12,13 @@ import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.Role;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class AuthenticationHelperTest {
 
-    private static Long WRONG_ID = 0L;
-
-    @Autowired
-    private AuthenticationHelper authenticationHelper;
+    private static final Long WRONG_ID = 0L;
+    private final AuthenticationHelper authenticationHelper = new AuthenticationHelper();
 
     @Test
     @MockSecurityContextMember
