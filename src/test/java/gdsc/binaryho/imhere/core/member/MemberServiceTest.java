@@ -1,43 +1,50 @@
 package gdsc.binaryho.imhere.core.member;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static gdsc.binaryho.imhere.fixture.MemberFixture.UNIV_ID;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import gdsc.binaryho.imhere.MockSecurityContextMember;
-import gdsc.binaryho.imhere.core.auth.application.AuthService;
+import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.member.application.MemberService;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.core.member.model.request.RoleChangeRequest;
-import javax.transaction.Transactional;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 class MemberServiceTest {
 
-    @Autowired
-    private AuthService authService;
-    @Autowired
-    private MemberService memberService;
-    @Autowired
-    private MemberRepository memberRepository;
 
-    String UNIV_ID = "UNIV_ID";
-    String NAME = "이진호";
-    String PASSWORD = "abcd1234";
+    @Mock
+    private MemberRepository memberRepository;
+    private MemberService memberService;
+
+    @BeforeEach
+    void beforeEachTest() {
+        memberService = new MemberService(new AuthenticationHelper(), memberRepository);
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"STUDENT", "LECTURER", "ADMIN"})
     @MockSecurityContextMember(role = Role.ADMIN)
-    @Transactional
-    void test(String roleKey) {
-        authService.signUp(UNIV_ID, NAME, PASSWORD);
-        RoleChangeRequest roleChangeRequest = new RoleChangeRequest(roleKey);
+    void Admin은_다른_회원의_권한을_변경할_수_있다(String roleKey) {
+        Member mockStudent = mock(Member.class);
+        given(memberRepository.findByUnivId(UNIV_ID)).willReturn(Optional.of(mockStudent));
 
+        // when
+        RoleChangeRequest roleChangeRequest = new RoleChangeRequest(roleKey);
         memberService.memberRoleChange(roleChangeRequest, UNIV_ID);
-        Member member = memberRepository.findByUnivId(UNIV_ID)
-            .orElseThrow();
-        assertThat(member.getRole()).isEqualTo(Role.valueOf(roleKey));
+
+        // then
+        verify(mockStudent, times(1)).setRole(Role.valueOf(roleKey));
     }
+
+    // TODO : 예외 상황 테스트 작성
 }

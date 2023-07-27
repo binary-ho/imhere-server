@@ -1,18 +1,17 @@
 package gdsc.binaryho.imhere.core.auth;
 
+import static gdsc.binaryho.imhere.fixture.MemberFixture.STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.BDDMockito.given;
 
-import gdsc.binaryho.imhere.MockSecurityContextMember;
 import gdsc.binaryho.imhere.core.auth.application.PrincipalDetailsService;
-import gdsc.binaryho.imhere.core.member.Member;
-import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
-import gdsc.binaryho.imhere.fixture.MemberFixture;
-import javax.transaction.Transactional;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,27 +19,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 @SpringBootTest
 class PrincipalDetailsServiceTest {
 
-    private static final String UNIV_ID = MemberFixture.UNIV_ID;
-    private static final String NAME = MemberFixture.NAME;
-    private static final String RAW_PASSWORD = MemberFixture.RAW_PASSWORD;
-    private static final Role ROLE = MemberFixture.ROLE;
-
-    @Autowired
     private PrincipalDetailsService principalDetailsService;
 
-    @Autowired
+    @Mock
     private MemberRepository memberRepository;
 
+    @BeforeEach
+    void beforeEachTest() {
+        principalDetailsService = new PrincipalDetailsService(memberRepository);
+    }
+
     @Test
-    @MockSecurityContextMember(univId = UNIV_ID)
-    @Transactional
     void UnivId가_일치하는_유저의_PrincipalDetails을_생성할_수_있다() {
+        given(memberRepository.findByUnivId("UNIV_ID")).willReturn(Optional.of(STUDENT));
 
-        Member member = Member.createMember(UNIV_ID, NAME, RAW_PASSWORD, ROLE);
-        memberRepository.save(member);
-
-        UserDetails userDetails = principalDetailsService.loadUserByUsername(UNIV_ID);
-        UserDetails principalDetails = new PrincipalDetails(member);
+        UserDetails userDetails = principalDetailsService.loadUserByUsername("UNIV_ID");
+        UserDetails principalDetails = new PrincipalDetails(STUDENT);
 
         assertAll(
             () -> assertThat(userDetails.getUsername()).isEqualTo(principalDetails.getUsername()),
@@ -50,8 +44,10 @@ class PrincipalDetailsServiceTest {
 
     @Test
     void loadUserByUsername호출시_UnivId가_일치하는_유저가_없다면_예외를_던진다() {
+        given(memberRepository.findByUnivId("UNIV_ID")).willReturn(Optional.empty());
+
         assertThatThrownBy(
-            () -> principalDetailsService.loadUserByUsername("WRONG" + UNIV_ID)
+            () -> principalDetailsService.loadUserByUsername("WRONG")
         ).isInstanceOf(AuthenticationException.class);
     }
 }
