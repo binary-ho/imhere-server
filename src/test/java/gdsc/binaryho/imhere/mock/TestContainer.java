@@ -17,17 +17,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class TestContainer {
 
-    public AttendanceNumberRepository attendanceNumberRepository = new FakeAttendanceNumberRepository();
-    public VerificationCodeRepository verificationCodeRepository = new FakeVerificationCodeRepository();
+    public final AttendanceNumberRepository attendanceNumberRepository = new FakeAttendanceNumberRepository();
+    public final VerificationCodeRepository verificationCodeRepository = new FakeVerificationCodeRepository();
+
+    public final AuthService authService;
+    public final EmailVerificationService emailVerificationService;
+    public final LectureService lectureService;
+    public final AttendanceService attendanceService;
+
     public boolean isMailSent = false;
-    public MailSender mailSender = (recipient, verificationCode) -> isMailSent = true;
-
-    public AuthService authService;
-    public EmailVerificationService emailVerificationService;
-    public LectureService lectureService;
-    public AttendanceService attendanceService;
-
-    public BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    private final MailSender mailSender = (recipient, verificationCode) -> isMailSent = true;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    private final AuthenticationHelper authenticationHelper = new AuthenticationHelper();
 
     @Builder
     public TestContainer(
@@ -35,8 +36,6 @@ public class TestContainer {
         LectureRepository lectureRepository,
         EnrollmentInfoRepository enrollmentInfoRepository,
         AttendanceRepository attendanceRepository) {
-
-        AuthenticationHelper authenticationHelper = new AuthenticationHelper();
 
         authService = new AuthService(
             memberRepository, verificationCodeRepository, bCryptPasswordEncoder
