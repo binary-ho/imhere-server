@@ -13,6 +13,20 @@ public class MemberFixture {
         new BCryptPasswordEncoder().encode(RAW_PASSWORD);
     public static final Role ROLE = Role.STUDENT;
 
-    public static final Member STUDENT = Member.createMember(UNIV_ID, NAME, PASSWORD, ROLE);
-    public static final Member LECTURER = Member.createMember(UNIV_ID, NAME, PASSWORD, Role.LECTURER);
+    public static final Long STUDENT_ID = 1L;
+    public static final Long LECTURER_ID = 2L;
+    public static final Member STUDENT = createMockStudent();
+    public static final Member LECTURER = createMockLecturer();
+
+    private static Member createMockStudent() {
+        Member student = Member.createMember(UNIV_ID, NAME, PASSWORD, Role.STUDENT);
+        student.setId(STUDENT_ID);
+        return student;
+    }
+
+    private static Member createMockLecturer() {
+        Member lecturer = Member.createMember(UNIV_ID, NAME, PASSWORD, Role.STUDENT);
+        lecturer.setId(LECTURER_ID);
+        return lecturer;
+    }
 }

@@ -1,5 +1,7 @@
 package gdsc.binaryho.imhere.core.attendance;
 
+import static gdsc.binaryho.imhere.fixture.EnrollmentInfoFixture.ENROLLMENT_INFO;
+import static gdsc.binaryho.imhere.fixture.LectureFixture.OPEN_LECTURE;
 import static gdsc.binaryho.imhere.fixture.MemberFixture.LECTURER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -18,14 +20,10 @@ import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededExce
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
 import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
-import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
-import gdsc.binaryho.imhere.core.lecture.Lecture;
-import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.fixture.AttendanceFixture;
-import gdsc.binaryho.imhere.fixture.MemberFixture;
 import gdsc.binaryho.imhere.mock.FakeAttendanceNumberRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,10 +39,6 @@ public class AttendanceServiceTest {
     private final String DISTANCE = AttendanceFixture.DISTANCE;
     private final String ACCURACY = AttendanceFixture.ACCURACY;
     private final long MILLISECONDS = AttendanceFixture.MILLISECONDS;
-
-    private final Lecture OPEN_LECTURE = getMockOpenLecture();
-    private final EnrollmentInfo ENROLLMENT_INFO = EnrollmentInfo
-        .createEnrollmentInfo(OPEN_LECTURE, MemberFixture.STUDENT, EnrollmentState.APPROVAL);
 
     @Autowired
     AuthenticationHelper authenticationHelper;
@@ -122,12 +116,5 @@ public class AttendanceServiceTest {
 
         // then
         assertThat(attendanceNumberRepository.getByLectureId(LECTURER.getId())).isEqualTo(ATTENDANCE_NUMBER);
-    }
-
-    private Lecture getMockOpenLecture() {
-        Lecture lecture = Lecture.createLecture(LECTURER, "mockLecture");
-        lecture.setId(1L);
-        lecture.setLectureState(LectureState.OPEN);
-        return lecture;
     }
 }
