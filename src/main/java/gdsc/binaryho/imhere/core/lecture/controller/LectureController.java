@@ -70,7 +70,7 @@ public class LectureController {
     @Operation(summary = "로그인한 강사가 강의를 OPEN하고 출석 번호를 발급 받는 API")
     @PostMapping("/{lecture_id}/open")
     public ResponseEntity<AttendanceNumberResponse> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lectureId) {
-        int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lectureId);
+        int attendanceNumber = lectureService.openLectureAndGenerateAttendanceNumber(lectureId);
         return ResponseEntity
             .ok(new AttendanceNumberResponse(attendanceNumber));
     }

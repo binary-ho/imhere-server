@@ -85,8 +85,7 @@ public class LectureService {
     }
 
     @Transactional
-    // TODO : 이름 바꾸기
-    public int openLectureAndGetAttendanceNumber(Long lectureId) {
+    public int openLectureAndGenerateAttendanceNumber(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId)
             .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
         authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());

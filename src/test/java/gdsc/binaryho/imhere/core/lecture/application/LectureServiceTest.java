@@ -162,7 +162,7 @@ class LectureServiceTest {
             .willReturn(Optional.of(mockLecture));
 
         // when
-        lectureService.openLectureAndGetAttendanceNumber(LECTURER.getId());
+        lectureService.openLectureAndGenerateAttendanceNumber(LECTURER.getId());
 
         // then
         verify(mockLecture, times(1)).setLectureState(LectureState.OPEN);
@@ -176,7 +176,7 @@ class LectureServiceTest {
             .willReturn(Optional.of(LECTURE));
 
         // when
-        int generatedAttendanceNumber = lectureService.openLectureAndGetAttendanceNumber(LECTURER.getId());
+        int generatedAttendanceNumber = lectureService.openLectureAndGenerateAttendanceNumber(LECTURER.getId());
 
         // then
         AttendanceNumberRepository attendanceNumberRepository =
@@ -222,7 +222,7 @@ class LectureServiceTest {
         // then
         assertAll(
             () -> assertThatThrownBy(() ->
-                lectureService.openLectureAndGetAttendanceNumber(noExistentLectureId))
+                lectureService.openLectureAndGenerateAttendanceNumber(noExistentLectureId))
                 .isInstanceOf(LectureNotFoundException.class),
 
             () -> assertThatThrownBy(() ->
@@ -250,7 +250,7 @@ class LectureServiceTest {
         // then
         assertAll(
             () -> assertThatThrownBy(() ->
-                lectureService.openLectureAndGetAttendanceNumber(anotherLecturerLecture.getId()))
+                lectureService.openLectureAndGenerateAttendanceNumber(anotherLecturerLecture.getId()))
                 .isInstanceOf(RequestMemberIdMismatchException.class),
 
             () -> assertThatThrownBy(() ->
