@@ -79,10 +79,5 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         private String univId;
         private String password;
-
-        public SignInRequest(String univId, String password) {
-            this.univId = univId;
-            this.password = password;
-        }
     }
 }
