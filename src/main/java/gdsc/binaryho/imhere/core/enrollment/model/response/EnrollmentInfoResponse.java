@@ -2,6 +2,7 @@ package gdsc.binaryho.imhere.core.enrollment.model.response;
 
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
+import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,25 +24,18 @@ public class EnrollmentInfoResponse {
     private EnrollmentInfoResponse() {
     }
 
-    public static EnrollmentInfoResponse createEnrollmentInfoDto(List<EnrollmentInfo> enrollmentInfos) {
-
-        if (enrollmentInfos.isEmpty()) {
-            return new EnrollmentInfoResponse();
-        }
-
+    public static EnrollmentInfoResponse createEnrollmentInfoDto(Lecture lecture, List<EnrollmentInfo> enrollmentInfos) {
         EnrollmentInfoResponse enrollmentInfoResponse = new EnrollmentInfoResponse();
-        EnrollmentInfo anyEnrollmentInfo = enrollmentInfos.get(0);
-        enrollmentInfoResponse.lectureId = anyEnrollmentInfo.getLecture().getId();
-        enrollmentInfoResponse.lectureName = anyEnrollmentInfo.getLecture().getLectureName();
-        enrollmentInfoResponse.lecturerName = anyEnrollmentInfo.getLecture().getLecturerName();
-        enrollmentInfoResponse.studentInfos =
-            enrollmentInfos.stream()
-                .map(StudentInfo::createStudentInfo)
-                .collect(Collectors.toList());
+        enrollmentInfoResponse.lectureId = lecture.getId();
+        enrollmentInfoResponse.lectureName = lecture.getLectureName();
+        enrollmentInfoResponse.lecturerName = lecture.getLecturerName();
+
+        enrollmentInfoResponse.studentInfos = enrollmentInfos.stream()
+            .map(StudentInfo::createStudentInfo)
+            .collect(Collectors.toList());
 
         return enrollmentInfoResponse;
     }
-
 
     @Getter
     @Tag(name = "StudentInfo", description = "학생 정보와 수강신청 승인 상태")

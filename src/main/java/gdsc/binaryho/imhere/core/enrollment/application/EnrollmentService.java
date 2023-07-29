@@ -37,7 +37,8 @@ public class EnrollmentService {
         Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId)
             .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
-        authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
+
+        validateLecturerOwnLecture(lecture);
 
         List<Member> students = getStudentsByUnivId(enrollMentRequestForLecturer.getUnivIds());
         students.forEach(student -> enrollStudent(lecture, student));
@@ -65,25 +66,21 @@ public class EnrollmentService {
     @Transactional
     public void requestEnrollment(Long lectureId) {
         Member student = authenticationHelper.getCurrentMember();
+
         validateDuplicated(student, lectureId);
 
         Lecture lecture = lectureRepository.findById(lectureId)
             .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
+
         EnrollmentInfo enrollmentInfo = EnrollmentInfo.createEnrollmentInfo(lecture, student, EnrollmentState.AWAIT);
         enrollmentInfoRepository.save(enrollmentInfo);
     }
 
     @Transactional
     public void approveStudents(Long lectureId, Long studentId) {
-        EnrollmentInfo enrollmentInfo = enrollmentInfoRepository
-            .findByMemberIdAndLectureId(studentId, lectureId)
-            .orElseThrow(() -> EnrollmentNotFoundException.EXCEPTION);
+        EnrollmentInfo enrollmentInfo = getEnrollmentInfo(lectureId, studentId);
+        validateLecturerOwnLecture(enrollmentInfo.getLecture());
 
-        authenticationHelper.verifyRequestMemberLogInMember(
-            enrollmentInfo.getLecture()
-                .getMember()
-                .getId()
-        );
         enrollmentInfo.setEnrollmentState(EnrollmentState.APPROVAL);
 
         log.info("[수강신청 승인] 강의 : {} ({}) 학생 : {} ({})"
@@ -91,16 +88,17 @@ public class EnrollmentService {
             , () -> enrollmentInfo.getMember().getUnivId(), () -> enrollmentInfo.getMember().getName());
     }
 
-    @Transactional
-    public void rejectStudents(Long lectureId, Long studentId) {
-        EnrollmentInfo enrollmentInfo = enrollmentInfoRepository
+    private EnrollmentInfo getEnrollmentInfo(Long lectureId, Long studentId) {
+        return enrollmentInfoRepository
             .findByMemberIdAndLectureId(studentId, lectureId)
             .orElseThrow(() -> EnrollmentNotFoundException.EXCEPTION);
-        authenticationHelper.verifyRequestMemberLogInMember(
-            enrollmentInfo.getLecture()
-                .getMember()
-                .getId()
-        );
+    }
+
+    @Transactional
+    public void rejectStudents(Long lectureId, Long studentId) {
+        EnrollmentInfo enrollmentInfo = getEnrollmentInfo(lectureId, studentId);
+        validateLecturerOwnLecture(enrollmentInfo.getLecture());
+
         enrollmentInfo.setEnrollmentState(EnrollmentState.REJECTION);
 
         log.info("[수강신청 거절] 강의 : {} ({}) 학생 : {} ({})"
@@ -112,9 +110,10 @@ public class EnrollmentService {
     public EnrollmentInfoResponse getLectureEnrollment(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId)
             .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
-        authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
+        validateLecturerOwnLecture(lecture);
+
         List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository.findAllByLecture(lecture);
-        return EnrollmentInfoResponse.createEnrollmentInfoDto(enrollmentInfos);
+        return EnrollmentInfoResponse.createEnrollmentInfoDto(lecture, enrollmentInfos);
     }
 
     private void validateDuplicated(Member student, Long lectureId) {
@@ -130,5 +129,11 @@ public class EnrollmentService {
                 , () -> enrollment.getLecture().getId());
             throw EnrollmentDuplicatedException.EXCEPTION;
         }
+    }
+
+    private void validateLecturerOwnLecture(Lecture lecture) {
+        authenticationHelper.verifyRequestMemberLogInMember(
+            lecture.getMember().getId()
+        );
     }
 }
