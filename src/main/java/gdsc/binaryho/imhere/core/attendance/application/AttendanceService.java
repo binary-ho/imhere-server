@@ -128,8 +128,9 @@ public class AttendanceService {
 
     @Transactional(readOnly = true)
     public AttendanceResponse getDayAttendances(Long lectureId, Long milliseconds) {
-        LocalDateTime timestamp = getLocalDateTime(milliseconds).withHour(0).withMinute(0).withSecond(0);
-        List<Attendance> attendances = attendanceRepository.findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
+        LocalDateTime timestamp = getDayLocalDateTime(milliseconds);
+        List<Attendance> attendances = attendanceRepository
+            .findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
 
         if (attendances.isEmpty()) {
             return getNullAttendanceDto(lectureId);
@@ -138,6 +139,12 @@ public class AttendanceService {
         Lecture lecture = attendances.get(0).getLecture();
         verifyRequestMemberLogInMember(lecture.getMember());
         return new AttendanceResponse(lecture, attendances);
+    }
+
+    private LocalDateTime getDayLocalDateTime(Long milliseconds) {
+        return LocalDateTime
+            .ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("Asia/Seoul"))
+            .withHour(0).withMinute(0).withSecond(0);
     }
 
     @Transactional

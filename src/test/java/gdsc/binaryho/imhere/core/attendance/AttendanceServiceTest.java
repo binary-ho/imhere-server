@@ -36,6 +36,9 @@ import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.fixture.MemberFixture;
 import gdsc.binaryho.imhere.mock.TestContainer;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -213,5 +216,34 @@ public class AttendanceServiceTest {
 
         // then
         assertThat(attendanceNumberRepository.getByLectureId(LECTURER.getId())).isEqualTo(ATTENDANCE_NUMBER);
+    }
+
+    @Test
+    @MockSecurityContextMember(id = 2L, role = Role.LECTURER)
+    void 강사는_지정_날짜의_출석_정보를_가져올_수_있다() {
+        // given
+        LocalDateTime dayLocalDateTime = LocalDateTime
+            .ofInstant(Instant.ofEpochMilli(MILLISECONDS), ZoneId.of("Asia/Seoul"))
+            .withHour(0).withMinute(0).withSecond(0);
+
+        // 위에서 구한 LocalDateTime 이용
+        given(attendanceRepository
+            .findByLectureIdAndTimestampBetween(LECTURE.getId(), dayLocalDateTime, dayLocalDateTime.plusDays(1)))
+            .willReturn(List.of(ATTENDANCE));
+
+        // when
+        AttendanceResponse response = attendanceService.getDayAttendances(LECTURE.getId(), MILLISECONDS);
+
+        // then
+        AttendanceInfo attendanceInfo = response.getAttendanceInfos().get(0);
+        assertAll(
+            () -> assertThat(response.getLectureName()).isEqualTo(LECTURE.getLectureName()),
+            () -> assertThat(response.getLecturerName()).isEqualTo(LECTURE.getLecturerName()),
+            () -> assertThat(attendanceInfo.getUnivId()).isEqualTo(ATTENDANCE.getMember().getUnivId()),
+            () -> assertThat(attendanceInfo.getName()).isEqualTo(ATTENDANCE.getMember().getName()),
+            () -> assertThat(attendanceInfo.getAccuracy()).isEqualTo(ATTENDANCE.getAccuracy()),
+            () -> assertThat(attendanceInfo.getDistance()).isEqualTo(ATTENDANCE.getDistance()),
+            () -> assertThat(attendanceInfo.getTimestamp()).isEqualTo(ATTENDANCE.getTimestamp())
+        );
     }
 }
