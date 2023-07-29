@@ -26,6 +26,7 @@ import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
+import gdsc.binaryho.imhere.core.lecture.model.response.AttendanceNumberResponse;
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse.LectureInfo;
 import gdsc.binaryho.imhere.core.member.Member;
@@ -176,7 +177,8 @@ class LectureServiceTest {
             .willReturn(Optional.of(LECTURE));
 
         // when
-        int generatedAttendanceNumber = lectureService.openLectureAndGenerateAttendanceNumber(LECTURER.getId());
+        AttendanceNumberResponse response = lectureService.openLectureAndGenerateAttendanceNumber(LECTURER.getId());
+        int generatedAttendanceNumber = response.getAttendanceNumber();
 
         // then
         AttendanceNumberRepository attendanceNumberRepository =

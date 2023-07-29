@@ -10,6 +10,7 @@ import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
+import gdsc.binaryho.imhere.core.lecture.model.response.AttendanceNumberResponse;
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.core.member.Member;
 import java.util.List;
@@ -85,7 +86,7 @@ public class LectureService {
     }
 
     @Transactional
-    public int openLectureAndGenerateAttendanceNumber(Long lectureId) {
+    public AttendanceNumberResponse openLectureAndGenerateAttendanceNumber(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId)
             .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
         authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
@@ -97,7 +98,7 @@ public class LectureService {
 
         log.info("[강의 OPEN] {} ({}), 출석 번호 : " + attendanceNumber
             , () -> lecture.getLectureName(), () -> lecture.getId());
-        return attendanceNumber;
+        return new AttendanceNumberResponse(attendanceNumber);
     }
 
     @Transactional
