@@ -15,6 +15,7 @@ import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentNotApprovedExcep
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
+import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Member;
@@ -112,19 +113,16 @@ public class AttendanceService {
         Lecture lecture = attendances.get(0).getLecture();
         verifyRequestMemberLogInMember(lecture.getMember());
 
-        return getAttendanceDto(lecture, attendances);
+        return new AttendanceResponse(lecture, attendances);
     }
 
     private void verifyRequestMemberLogInMember(Member lecturer) {
         authenticationHelper.verifyRequestMemberLogInMember(lecturer.getId());
     }
 
-    private AttendanceResponse getAttendanceDto(Lecture lecture, List<Attendance> attendances) {
-        return new AttendanceResponse(lecture, attendances);
-    }
-
     private AttendanceResponse getNullAttendanceDto(Long lectureId) {
-        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        Lecture lecture = lectureRepository.findById(lectureId)
+            .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
         return new AttendanceResponse(lecture, new ArrayList<>());
     }
 
@@ -139,7 +137,7 @@ public class AttendanceService {
 
         Lecture lecture = attendances.get(0).getLecture();
         verifyRequestMemberLogInMember(lecture.getMember());
-        return getAttendanceDto(lecture, attendances);
+        return new AttendanceResponse(lecture, attendances);
     }
 
     @Transactional
