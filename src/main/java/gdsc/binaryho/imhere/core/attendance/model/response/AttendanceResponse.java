@@ -32,7 +32,7 @@ public class AttendanceResponse {
 
     @Getter
     @Tag(name = "AttendanceInfo", description = "한 학생의 출석 정보")
-    private static class AttendanceInfo {
+    public static class AttendanceInfo {
 
         private final String univId;
         private final String name;
