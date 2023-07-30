@@ -42,7 +42,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String jwtToken = request.getHeader(HEADER_STRING)
             .replace(ACCESS_TOKEN_PREFIX, "");
 
-        if (tokenService.validateTokenExpirationTime(jwtToken)) {
+        if (tokenService.validateTokenExpirationTimeNotExpired(jwtToken)) {
 
             String univId = tokenService.getUnivId(jwtToken);
             Member member = memberRepository.findByUnivId(univId).orElseThrow();
