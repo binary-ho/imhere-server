@@ -6,16 +6,16 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
+@RequiredArgsConstructor
 public class TokenService {
 
-    @Value("${jwt.access-token-prefix}")
-    private String SECRET;
+    private final SecretHolder secretHolder;
 
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000L * 60L * 20L;
 
@@ -29,7 +29,7 @@ public class TokenService {
                 .setClaims(memberClaims)
                 .setIssuedAt(timeNow)
                 .setExpiration(new Date(timeNow.getTime() + ACCESS_TOKEN_EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, SECRET)
+                .signWith(SignatureAlgorithm.HS256, secretHolder.getSecret())
                 .compact()
         );
     }
@@ -41,7 +41,7 @@ public class TokenService {
 
         try {
             Jwts.parser()
-                .setSigningKey(SECRET)
+                .setSigningKey(secretHolder.getSecret())
                 .parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException exception) {
@@ -54,7 +54,7 @@ public class TokenService {
 
     public String getUnivId(String token) {
         return Jwts.parser()
-            .setSigningKey(SECRET)
+            .setSigningKey(secretHolder.getSecret())
             .parseClaimsJws(token)
             .getBody()
             .getSubject();
