@@ -1,13 +1,16 @@
 package gdsc.binaryho.imhere.security.jwt;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 public class TokenService {
 
@@ -31,21 +34,20 @@ public class TokenService {
         );
     }
 
-    public boolean validateTokenExpirationTime(String token) {
-        if (token.isEmpty()) {
+    public boolean validateTokenExpirationTimeNotExpired(String token) {
+        if (token == null || token.isEmpty()) {
             return false;
         }
 
         try {
-            Jws<Claims> claims = Jwts.parser()
+            Jwts.parser()
                 .setSigningKey(SECRET)
                 .parseClaimsJws(token);
-
-            return claims.getBody()
-                .getExpiration()
-                .after(new Date());
-        } catch (Exception e) {
-            e.printStackTrace();
+            return true;
+        } catch (ExpiredJwtException exception) {
+            return false;
+        } catch (JwtException | IllegalArgumentException exception) {
+            log.info("[토큰 에러] {}", () -> exception.getMessage());
             return false;
         }
     }
