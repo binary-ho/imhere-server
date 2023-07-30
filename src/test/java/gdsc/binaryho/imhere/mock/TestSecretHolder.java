@@ -2,11 +2,11 @@ package gdsc.binaryho.imhere.mock;
 
 import gdsc.binaryho.imhere.security.jwt.SecretHolder;
 
-public class FakeSecretHolder implements SecretHolder {
+public class TestSecretHolder implements SecretHolder {
 
     private final String secret;
 
-    public FakeSecretHolder(String secret) {
+    public TestSecretHolder(String secret) {
         this.secret = secret;
     }
 
