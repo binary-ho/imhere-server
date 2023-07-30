@@ -24,7 +24,6 @@ import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoRespons
 import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoResponse.StudentInfo;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
-import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,8 +35,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 class EnrollmentServiceTest {
 
     @Mock
-    private MemberRepository memberRepository;
-    @Mock
     private LectureRepository lectureRepository;
     @Mock
     private EnrollmentInfoRepository enrollmentInfoRepository;
@@ -47,7 +44,7 @@ class EnrollmentServiceTest {
     @BeforeEach
     void beforeEachTest() {
         enrollmentService = new EnrollmentService(
-            new AuthenticationHelper(), lectureRepository, memberRepository, enrollmentInfoRepository
+            new AuthenticationHelper(), lectureRepository, enrollmentInfoRepository
         );
     }
 

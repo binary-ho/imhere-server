@@ -6,14 +6,11 @@ import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentDuplicatedException;
 import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentNotFoundException;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
-import gdsc.binaryho.imhere.core.enrollment.model.request.EnrollmentRequestForLecturer;
 import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoResponse;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Member;
-import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -29,39 +26,7 @@ public class EnrollmentService {
 
     private final AuthenticationHelper authenticationHelper;
     private final LectureRepository lectureRepository;
-    private final MemberRepository memberRepository;
     private final EnrollmentInfoRepository enrollmentInfoRepository;
-
-    @Transactional
-    public void enrollStudents(EnrollmentRequestForLecturer enrollMentRequestForLecturer,
-        Long lectureId) {
-        Lecture lecture = lectureRepository.findById(lectureId)
-            .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
-
-        validateLecturerOwnLecture(lecture);
-
-        List<Member> students = getStudentsByUnivId(enrollMentRequestForLecturer.getUnivIds());
-        students.forEach(student -> enrollStudent(lecture, student));
-    }
-
-    private void enrollStudent(Lecture lecture, Member student) {
-        EnrollmentInfo enrollmentInfo = EnrollmentInfo.createEnrollmentInfo(lecture, student, EnrollmentState.APPROVAL);
-        enrollmentInfoRepository.save(enrollmentInfo);
-    }
-
-    private List<Member> getStudentsByUnivId(List<String> univIds) {
-        List<Member> members = new ArrayList<>();
-        for (String univId : univIds) {
-            Optional<Member> member = memberRepository.findByUnivId(univId);
-            if (member.isEmpty()) {
-                log.info("[수강신청 승인 실패] 회원 없음 : " + univId);
-                continue;
-            }
-            members.add(member.get());
-        }
-
-        return members;
-    }
 
     @Transactional
     public void requestEnrollment(Long lectureId) {
