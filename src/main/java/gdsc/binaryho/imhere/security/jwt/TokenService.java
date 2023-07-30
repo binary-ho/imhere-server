@@ -5,6 +5,8 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -16,22 +18,27 @@ import org.springframework.stereotype.Service;
 public class TokenService {
 
     private final SecretHolder secretHolder;
-
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000L * 60L * 20L;
 
     public Token createToken(String univId, String roleKey) {
-        Claims memberClaims = Jwts.claims().setSubject(univId);
-        memberClaims.put("role", roleKey);
+        Claims claims = Jwts.claims().setSubject(univId);
+        claims.put("role", roleKey);
 
-        Date timeNow = new Date();
-        return new Token(
-            Jwts.builder()
-                .setClaims(memberClaims)
-                .setIssuedAt(timeNow)
-                .setExpiration(new Date(timeNow.getTime() + ACCESS_TOKEN_EXPIRATION_TIME))
-                .signWith(SignatureAlgorithm.HS256, secretHolder.getSecret())
-                .compact()
-        );
+        long timeNowByMillis = getSeoulTimeNowByMillis();
+
+        String jwt = Jwts.builder()
+            .setClaims(claims)
+            .setIssuedAt(new Date(timeNowByMillis))
+            .setExpiration(new Date(timeNowByMillis + ACCESS_TOKEN_EXPIRATION_TIME))
+            .signWith(SignatureAlgorithm.HS256, secretHolder.getSecret())
+            .compact();
+
+        return new Token(jwt);
+    }
+
+    private long getSeoulTimeNowByMillis() {
+        ZonedDateTime seoulTimeNow = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+        return seoulTimeNow.toInstant().toEpochMilli();
     }
 
     public boolean validateTokenExpirationTimeNotExpired(String token) {
