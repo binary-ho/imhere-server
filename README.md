@@ -20,11 +20,10 @@
 
 - [<b>기초 웹 스터디 강의 소개 페이지</b>](https://www.gdschongik.com/web-study/introduce) 
 - [<b>수업과 실습 영상 유튜브</b>](https://www.youtube.com/watch?v=KpxVNBJ9UDw)
-- [<b>질문 답변 공간</b>](https://dwaejinho.tistory.com/entry/GIT-GitThe-Information-Manager-from-Hell-%EA%B9%83%EA%B3%BC-%EA%B9%83%ED%97%88%EB%B8%8C)
 
 <br>
 
-#### 시간과 에너지의 절약했습니다
+### 시간과 에너지의 절약했습니다
 개발 일정이 늦어지면서, 70명의 대면 수업 참석 인원을 직접 호명하여 출석 체크를 진행한 수업이 있었습니다.
 
 한분 한분 이름을 부르며 얼굴을 확인하니 총 10분의 시간과 많은 에너지가 소모되었습니다. 
@@ -101,9 +100,13 @@ Imhere 도입 이후 출석 번호를 칠판에 적은 뒤, 수업을 바로 진
 
 <br>
 
-### 3.3 앱과 DB 서버 배포
+## 3.3 앱과 DB 서버 배포
 
-어플리케이션은 도커 이미지로 만들어 레디스 이미지와 함께 AWS EC2 서비스에 배포했습니다. 유저의 안전한 접속을 위해 certibot을 이용해 Let's Encrypt의 인증서를 발급 받아 HTTPS 프로토콜 연결을 구축했습니다. 이를 위한 리버스 프록시 기능엔 nginx 서버를 사용했고, nginx 또한 인증서 경로가 포함된 이미지로 만들어 배포했습니다. 모든 컨테이너는 도커 컴포즈로 간편하게 관리중입니다. <br>
+어플리케이션은 도커 이미지로 만들어 레디스 이미지와 함께 AWS EC2 서비스에 배포했습니다. <br>
+유저의 안전한 접속을 위해 certibot을 이용해 Let's Encrypt의 인증서를 발급 받아 HTTPS 프로토콜 연결을 구축했습니다. 
+이를 위한 리버스 프록시엔 nginx 서버를 사용했고, nginx는 인증서 경로가 포함된 이미지를 만들어 배포했습니다. <br> 
+
+모든 컨테이너는 도커 컴포즈로 간편하게 관리중입니다. <br>
 
 MySQL는 원활한 배포와 관리 및 백업을 위해 RDS 서비스를 이용했습니다.
 
@@ -111,10 +114,10 @@ MySQL는 원활한 배포와 관리 및 백업을 위해 RDS 서비스를 이용
 1. [@WithSecurityContext를 이용해 커스텀 UserDetails SecurityContext Test 코드 작성하기](https://dwaejinho.tistory.com/entry/%EC%BB%A4%EC%8A%A4%ED%85%80-UserDetails-SecurityContext-Test-%EC%BD%94%EB%93%9C-%EC%9E%91%EC%84%B1%ED%95%98%EA%B8%B0)
 2. S3와 CloudFront를 활용한 배포와 보안 설정 -> [S3 배포시 '이것' 설정 안 하자... 개인정보 '술술'](https://dwaejinho.tistory.com/entry/%EC%B6%A9%EA%B2%A9-S3-Hosting-%EC%9D%B4%EA%B2%83-%EC%84%A4%EC%A0%95-%EC%95%88-%ED%95%98%EC%9E%90-%EA%B0%9C%EC%9D%B8%EC%A0%95%EB%B3%B4-%EC%88%A0%EC%88%A0)
 3. Nginx 다중 소스 허용과 if 문법 -> [Don't try this at home - "IF" is Evil](https://dwaejinho.tistory.com/entry/Nginx-%EC%95%85%EB%A7%88%EC%9D%98-IF-Dont-try-if-at-home)
-4. CORS 처리와 HTTPS 인증 처리 -> 작성중
-2. @Slf4j와 logback, log4j, log4j2 -> 작성중
-3. 도커 컴포즈를 활용한 백엔드 애플리케이션 배포하기 -> 작성중
-4. 의존성 역전으로 테스트하기 어려운 객체 테스트하기 -> 작성중
+4. CORS 처리와 HTTPS 인증 처리 -> 작성 예정
+2. @Slf4j와 logback, log4j, log4j2 -> 작성 예정
+3. 도커 컴포즈를 활용한 백엔드 애플리케이션 배포하기 -> 작성 예정
+4. 의존성 역전으로 테스트하기 어려운 객체 테스트하기 -> 작성 예정
 
 
 # 5. 향후 개발 계획
