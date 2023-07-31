@@ -1,16 +1,16 @@
-package gdsc.binaryho.imhere;
+package gdsc.binaryho.imhere.mock.securitycontext;
 
-import gdsc.binaryho.imhere.core.auth.PrincipalDetails;
 import gdsc.binaryho.imhere.core.member.Member;
+import gdsc.binaryho.imhere.security.principal.PrincipalDetails;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
-public class MockSecurityContextFactory implements WithSecurityContextFactory<MockMember> {
+public class MockSecurityContextFactory implements WithSecurityContextFactory<MockSecurityContextMember> {
 
     @Override
-    public SecurityContext createSecurityContext(MockMember annotation) {
+    public SecurityContext createSecurityContext(MockSecurityContextMember annotation) {
         Member mockMember = Member.createMember(annotation.univId(), annotation.name(),
             annotation.password(), annotation.role());
         mockMember.setId(annotation.id());

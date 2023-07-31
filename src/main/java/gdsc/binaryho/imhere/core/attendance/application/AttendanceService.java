@@ -8,16 +8,17 @@ import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededExce
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
 import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceResponse;
-import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentNotApprovedException;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
+import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Member;
+import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -112,26 +113,24 @@ public class AttendanceService {
         Lecture lecture = attendances.get(0).getLecture();
         verifyRequestMemberLogInMember(lecture.getMember());
 
-        return getAttendanceDto(lecture, attendances);
+        return new AttendanceResponse(lecture, attendances);
     }
 
     private void verifyRequestMemberLogInMember(Member lecturer) {
         authenticationHelper.verifyRequestMemberLogInMember(lecturer.getId());
     }
 
-    private AttendanceResponse getAttendanceDto(Lecture lecture, List<Attendance> attendances) {
-        return new AttendanceResponse(lecture, attendances);
-    }
-
     private AttendanceResponse getNullAttendanceDto(Long lectureId) {
-        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow();
+        Lecture lecture = lectureRepository.findById(lectureId)
+            .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
         return new AttendanceResponse(lecture, new ArrayList<>());
     }
 
     @Transactional(readOnly = true)
     public AttendanceResponse getDayAttendances(Long lectureId, Long milliseconds) {
-        LocalDateTime timestamp = getLocalDateTime(milliseconds).withHour(0).withMinute(0).withSecond(0);
-        List<Attendance> attendances = attendanceRepository.findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
+        LocalDateTime timestamp = getDayLocalDateTime(milliseconds);
+        List<Attendance> attendances = attendanceRepository
+            .findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
 
         if (attendances.isEmpty()) {
             return getNullAttendanceDto(lectureId);
@@ -139,7 +138,13 @@ public class AttendanceService {
 
         Lecture lecture = attendances.get(0).getLecture();
         verifyRequestMemberLogInMember(lecture.getMember());
-        return getAttendanceDto(lecture, attendances);
+        return new AttendanceResponse(lecture, attendances);
+    }
+
+    private LocalDateTime getDayLocalDateTime(Long milliseconds) {
+        return LocalDateTime
+            .ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("Asia/Seoul"))
+            .withHour(0).withMinute(0).withSecond(0);
     }
 
     @Transactional

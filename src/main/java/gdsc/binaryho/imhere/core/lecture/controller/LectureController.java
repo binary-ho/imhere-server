@@ -1,11 +1,11 @@
 package gdsc.binaryho.imhere.core.lecture.controller;
 
-import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceNumberResponse;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.lecture.application.LectureService;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
+import gdsc.binaryho.imhere.core.lecture.model.response.AttendanceNumberResponse;
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -70,9 +70,8 @@ public class LectureController {
     @Operation(summary = "로그인한 강사가 강의를 OPEN하고 출석 번호를 발급 받는 API")
     @PostMapping("/{lecture_id}/open")
     public ResponseEntity<AttendanceNumberResponse> openLectureAndGetAttendanceNumber(@PathVariable("lecture_id") Long lectureId) {
-        int attendanceNumber = lectureService.openLectureAndGetAttendanceNumber(lectureId);
         return ResponseEntity
-            .ok(new AttendanceNumberResponse(attendanceNumber));
+            .ok(lectureService.openLectureAndGenerateAttendanceNumber(lectureId));
     }
 
     @Operation(summary = "로그인한 강사가 강의를 CLOSED 상태로 바꾸는 API")

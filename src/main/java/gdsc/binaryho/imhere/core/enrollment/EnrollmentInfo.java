@@ -12,12 +12,15 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "enrollment_infos")
 @Getter @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class EnrollmentInfo {
 
     @Id

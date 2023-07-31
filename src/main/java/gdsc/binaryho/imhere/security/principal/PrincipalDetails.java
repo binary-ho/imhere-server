@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.auth;
+package gdsc.binaryho.imhere.security.principal;
 
 import gdsc.binaryho.imhere.core.member.Member;
 import java.util.ArrayList;

@@ -1,6 +1,5 @@
-package gdsc.binaryho.imhere.core.auth.application;
+package gdsc.binaryho.imhere.security.principal;
 
-import gdsc.binaryho.imhere.core.auth.PrincipalDetails;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import org.springframework.security.core.AuthenticationException;

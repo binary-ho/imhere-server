@@ -1,11 +1,11 @@
 package gdsc.binaryho.imhere.core.member.application;
 
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
-import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.core.member.model.request.RoleChangeRequest;
+import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
