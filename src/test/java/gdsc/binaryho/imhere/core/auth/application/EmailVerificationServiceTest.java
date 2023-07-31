@@ -1,10 +1,9 @@
-package gdsc.binaryho.imhere.core.auth;
+package gdsc.binaryho.imhere.core.auth.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import gdsc.binaryho.imhere.core.auth.application.EmailVerificationService;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.EmailFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;

@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere;
+package gdsc.binaryho.imhere.mock.securitycontext;
 
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.fixture.MemberFixture;

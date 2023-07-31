@@ -15,7 +15,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import gdsc.binaryho.imhere.MockSecurityContextMember;
 import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceNumberRepository;
 import gdsc.binaryho.imhere.core.auth.exception.RequestMemberIdMismatchException;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
@@ -33,6 +32,7 @@ import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.fixture.MemberFixture;
 import gdsc.binaryho.imhere.mock.TestContainer;
+import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;

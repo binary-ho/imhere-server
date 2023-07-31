@@ -12,7 +12,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import gdsc.binaryho.imhere.MockSecurityContextMember;
 import gdsc.binaryho.imhere.core.auth.exception.RequestMemberIdMismatchException;
 import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
@@ -24,6 +23,7 @@ import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoRespons
 import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoResponse.StudentInfo;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
+import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;

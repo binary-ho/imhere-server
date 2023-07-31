@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.auth;
+package gdsc.binaryho.imhere.core.auth.application;
 
 import static gdsc.binaryho.imhere.fixture.MemberFixture.STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,7 +8,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordFormatMismatchException;

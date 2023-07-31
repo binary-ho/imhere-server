@@ -1,15 +1,14 @@
-package gdsc.binaryho.imhere.core.auth;
+package gdsc.binaryho.imhere.core.auth.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import gdsc.binaryho.imhere.MockSecurityContextMember;
 import gdsc.binaryho.imhere.core.auth.exception.PermissionDeniedException;
 import gdsc.binaryho.imhere.core.auth.exception.RequestMemberIdMismatchException;
-import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.Role;
+import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.springframework.boot.test.context.SpringBootTest;

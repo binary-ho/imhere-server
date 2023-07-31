@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.member;
+package gdsc.binaryho.imhere.core.member.application;
 
 import static gdsc.binaryho.imhere.fixture.MemberFixture.UNIV_ID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,13 +7,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import gdsc.binaryho.imhere.MockSecurityContextMember;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.auth.exception.PermissionDeniedException;
 import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
-import gdsc.binaryho.imhere.core.member.application.MemberService;
+import gdsc.binaryho.imhere.core.member.Member;
+import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.core.member.model.request.RoleChangeRequest;
+import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

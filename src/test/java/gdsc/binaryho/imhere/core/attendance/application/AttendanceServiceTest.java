@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.attendance;
+package gdsc.binaryho.imhere.core.attendance.application;
 
 import static gdsc.binaryho.imhere.fixture.AttendanceFixture.ACCURACY;
 import static gdsc.binaryho.imhere.fixture.AttendanceFixture.ATTENDANCE;
@@ -18,8 +18,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import gdsc.binaryho.imhere.MockSecurityContextMember;
-import gdsc.binaryho.imhere.core.attendance.application.AttendanceService;
 import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceNumberRepository;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectException;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
@@ -36,6 +34,7 @@ import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.fixture.MemberFixture;
 import gdsc.binaryho.imhere.mock.TestContainer;
+import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;

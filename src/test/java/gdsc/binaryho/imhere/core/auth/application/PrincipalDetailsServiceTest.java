@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.auth;
+package gdsc.binaryho.imhere.core.auth.application;
 
 import static gdsc.binaryho.imhere.fixture.MemberFixture.STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.given;
 
-import gdsc.binaryho.imhere.core.auth.application.PrincipalDetailsService;
+import gdsc.binaryho.imhere.core.auth.PrincipalDetails;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
