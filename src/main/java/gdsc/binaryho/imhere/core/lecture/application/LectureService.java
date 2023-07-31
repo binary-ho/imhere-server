@@ -1,7 +1,6 @@
 package gdsc.binaryho.imhere.core.lecture.application;
 
 import gdsc.binaryho.imhere.core.attendance.application.AttendanceService;
-import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
@@ -13,6 +12,7 @@ import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
 import gdsc.binaryho.imhere.core.lecture.model.response.AttendanceNumberResponse;
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.core.member.Member;
+import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;

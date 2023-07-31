@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.auth.util;
+package gdsc.binaryho.imhere.security.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

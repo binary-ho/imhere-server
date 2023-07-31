@@ -1,6 +1,5 @@
 package gdsc.binaryho.imhere.core.enrollment.application;
 
-import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentDuplicatedException;
@@ -11,6 +10,7 @@ import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Member;
+import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

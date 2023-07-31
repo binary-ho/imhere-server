@@ -8,7 +8,6 @@ import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededExce
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
 import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceResponse;
-import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentNotApprovedException;
@@ -19,6 +18,7 @@ import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Member;
+import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;

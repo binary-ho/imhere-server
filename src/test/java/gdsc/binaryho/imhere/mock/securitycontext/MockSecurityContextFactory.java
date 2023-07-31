@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.mock.securitycontext;
 
-import gdsc.binaryho.imhere.core.auth.PrincipalDetails;
 import gdsc.binaryho.imhere.core.member.Member;
+import gdsc.binaryho.imhere.security.principal.PrincipalDetails;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;

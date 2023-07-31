@@ -9,12 +9,12 @@ import static org.mockito.Mockito.verify;
 
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.auth.exception.PermissionDeniedException;
-import gdsc.binaryho.imhere.core.auth.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.core.member.model.request.RoleChangeRequest;
 import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
+import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

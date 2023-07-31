@@ -1,11 +1,11 @@
-package gdsc.binaryho.imhere.core.auth.util;
+package gdsc.binaryho.imhere.security.util;
 
-import gdsc.binaryho.imhere.core.auth.PrincipalDetails;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.auth.exception.PermissionDeniedException;
 import gdsc.binaryho.imhere.core.auth.exception.RequestMemberIdMismatchException;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.Role;
+import gdsc.binaryho.imhere.security.principal.PrincipalDetails;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
