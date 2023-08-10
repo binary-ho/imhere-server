@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @Log4j2
 @Tag(name = "Attendance", description = "출석 기능 관련 API입니다.")
 @RestController
