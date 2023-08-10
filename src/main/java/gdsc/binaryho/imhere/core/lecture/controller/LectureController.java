@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 @Tag(name = "Lecture", description = "강의 관련 API입니다.")
 @RestController
-@RequestMapping("/api/lectures")
+@RequestMapping("/api/lecture")
 @RequiredArgsConstructor
 public class LectureController {
 

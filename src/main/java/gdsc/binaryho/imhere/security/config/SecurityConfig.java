@@ -20,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
-// 필터 추가, url 허용
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -60,10 +59,10 @@ public class SecurityConfig {
             .antMatchers("/login", "/logout", "/member/**", "/swagger*/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**")
             .permitAll()
 
-            .antMatchers("/api/v1/admin/**")
+            .antMatchers("/api/admin/**")
             .access("hasRole('ROLE_ADMIN')")
 
-            .antMatchers("/api/v1/lectures/**", "/api/v1/enrollment/**", "/api/v1/attendance/**")
+            .antMatchers("/api/lecture/**", "/api/enrollment/**", "/api/attendance/**")
             .access("hasAnyRole('ROLE_ADMIN', 'ROLE_LECTURER', 'ROLE_STUDENT')")
 
             .anyRequest().authenticated();
