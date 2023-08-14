@@ -116,10 +116,8 @@ class LectureServiceTest {
         EnrollmentInfo enrollmentInfo = EnrollmentInfo
             .createEnrollmentInfo(OPEN_LECTURE, MemberFixture.STUDENT, EnrollmentState.APPROVAL);
 
-        given(enrollmentInfoRepository
-            .findAllByMemberIdAndLecture_LectureStateAndEnrollmentState(
-                1L, LectureState.OPEN, EnrollmentState.APPROVAL))
-            .willReturn(List.of(enrollmentInfo));
+        given(lectureRepository.findOpenAndApprovalLecturesByMemberId(1L))
+            .willReturn(List.of(OPEN_LECTURE));
 
         Long expectedOpenLectureId = enrollmentInfo.getLecture().getId();
 

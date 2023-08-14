@@ -59,19 +59,8 @@ public class LectureService {
     @Transactional(readOnly = true)
     public LectureResponse getStudentOpenLectures() {
         Member currentStudent = authenticationHelper.getCurrentMember();
-        List<Lecture> studentOpenLectures = findStudentOpenLectures(currentStudent);
-
+        List<Lecture> studentOpenLectures = lectureRepository.findOpenAndApprovalLecturesByMemberId(currentStudent.getId());
         return LectureResponse.createLectureResponseFromLectures(studentOpenLectures);
-    }
-
-    private List<Lecture> findStudentOpenLectures(Member currentStudent) {
-        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository
-            .findAllByMemberIdAndLecture_LectureStateAndEnrollmentState(
-                currentStudent.getId(), LectureState.OPEN, EnrollmentState.APPROVAL);
-
-        return enrollmentInfos.stream()
-            .map(EnrollmentInfo::getLecture)
-            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
