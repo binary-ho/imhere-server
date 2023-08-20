@@ -53,7 +53,8 @@ public class OpenLectureRedisRepository implements OpenLectureRepository {
     private OpenLecture getOpenLecture(Long id, Map<Object, Object> queryResult) {
         String name = (String) queryResult.get(OpenLectureFieldKeys.NAME);
         String lecturerName = (String) queryResult.get(OpenLectureFieldKeys.LECTURER_NAME);
-        int attendanceNumber = (int) queryResult.get(OpenLectureFieldKeys.ATTENDANCE_NUMBER);
+        int attendanceNumber = Integer.parseInt(
+            (String) queryResult.get(OpenLectureFieldKeys.ATTENDANCE_NUMBER));
 
         return new OpenLecture(id, name, lecturerName, attendanceNumber);
     }
