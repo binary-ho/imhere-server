@@ -29,6 +29,7 @@ public enum ErrorInfo {
 
     REQUEST_MEMBER_ID_MISMATCH(HttpStatus.BAD_REQUEST, 9001, "실제로 요청을 보낸 유저의 id와 Request에 기재된 id가 다릅니다. (악의적 요청)"),
     PERMISSION_DENIED(HttpStatus.FORBIDDEN, 9002, "유저가 권한이 없는 요청을 보냈습니다. (악의적 요청)"),
+    UNEXPECTED_REDIS_DATA_TYPE(HttpStatus.NOT_FOUND, 9003, "수강생 정보에 이상이 있어 캐싱할 수 없습니다. (문의 주세요)")
 
     ;
 
