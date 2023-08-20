@@ -8,7 +8,6 @@ import static gdsc.binaryho.imhere.fixture.AttendanceFixture.MILLISECONDS;
 import static gdsc.binaryho.imhere.fixture.EnrollmentInfoFixture.ENROLLMENT_INFO;
 import static gdsc.binaryho.imhere.fixture.LectureFixture.LECTURE;
 import static gdsc.binaryho.imhere.fixture.LectureFixture.OPEN_LECTURE;
-import static gdsc.binaryho.imhere.fixture.MemberFixture.LECTURER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -18,7 +17,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceNumberRepository;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectException;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
@@ -29,8 +27,10 @@ import gdsc.binaryho.imhere.core.auth.exception.RequestMemberIdMismatchException
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
+import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureRepository;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
+import gdsc.binaryho.imhere.core.lecture.model.OpenLecture;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.fixture.MemberFixture;
 import gdsc.binaryho.imhere.mock.TestContainer;
@@ -55,7 +55,7 @@ public class AttendanceServiceTest {
     @Mock
     LectureRepository lectureRepository;
 
-    AttendanceNumberRepository attendanceNumberRepository;
+    OpenLectureRepository openLectureRepository;
     AttendanceService attendanceService;
 
     TestContainer testContainer;
@@ -68,7 +68,7 @@ public class AttendanceServiceTest {
             .lectureRepository(lectureRepository)
             .build();
         attendanceService = testContainer.attendanceService;
-        attendanceNumberRepository = testContainer.attendanceNumberRepository;
+        openLectureRepository = testContainer.openLectureRepository;
     }
 
     @Test
@@ -81,7 +81,10 @@ public class AttendanceServiceTest {
 
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
-        attendanceNumberRepository.saveWithLectureIdAsKey(OPEN_LECTURE.getId(), ATTENDANCE_NUMBER);
+
+        openLectureRepository.save(new OpenLecture(OPEN_LECTURE.getId(), OPEN_LECTURE.getLectureName(),
+            OPEN_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
+
         attendanceService.takeAttendance(request, OPEN_LECTURE.getId());
 
         // then
@@ -101,7 +104,9 @@ public class AttendanceServiceTest {
 
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
-        attendanceNumberRepository.saveWithLectureIdAsKey(LECTURE.getId(), ATTENDANCE_NUMBER);
+
+        openLectureRepository.save(new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
+            LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
         // then
         assertThatThrownBy(
@@ -119,7 +124,7 @@ public class AttendanceServiceTest {
 
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
-        Integer attendanceNumber = attendanceNumberRepository.getByLectureId(OPEN_LECTURE.getId());
+        Integer attendanceNumber = openLectureRepository.findAttendanceNumber(OPEN_LECTURE.getId());
 
         // then
         assertAll(
@@ -141,7 +146,8 @@ public class AttendanceServiceTest {
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
         int wrongNumber = ATTENDANCE_NUMBER + 7;
-        attendanceNumberRepository.saveWithLectureIdAsKey(OPEN_LECTURE.getId(), wrongNumber);
+        openLectureRepository.save(new OpenLecture(OPEN_LECTURE.getId(), OPEN_LECTURE.getLectureName(),
+            OPEN_LECTURE.getLecturerName(), wrongNumber));
 
         // then
         assertThatThrownBy(
@@ -211,10 +217,12 @@ public class AttendanceServiceTest {
     void 출석_번호를_강의_아이디와_함께_저장할_수_있다() {
         // given
         // when
-        attendanceService.saveAttendanceNumber(LECTURER.getId(), ATTENDANCE_NUMBER);
+        openLectureRepository.save(new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
+            LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
         // then
-        assertThat(attendanceNumberRepository.getByLectureId(LECTURER.getId())).isEqualTo(ATTENDANCE_NUMBER);
+        assertThat(openLectureRepository.findAttendanceNumber(LECTURE.getId()))
+            .isEqualTo(ATTENDANCE_NUMBER);
     }
 
     @Test

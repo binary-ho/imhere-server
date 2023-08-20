@@ -1,14 +1,13 @@
 package gdsc.binaryho.imhere.mock;
 
 import gdsc.binaryho.imhere.core.attendance.application.AttendanceService;
-import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceNumberRepository;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.auth.application.EmailVerificationService;
 import gdsc.binaryho.imhere.core.auth.application.port.MailSender;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
-import gdsc.binaryho.imhere.core.lecture.application.LectureService;
+import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureRepository;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
@@ -17,12 +16,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class TestContainer {
 
-    public final AttendanceNumberRepository attendanceNumberRepository = new FakeAttendanceNumberRepository();
+    public final OpenLectureRepository openLectureRepository = new FakeOpenLectureRepository();
     public final VerificationCodeRepository verificationCodeRepository = new FakeVerificationCodeRepository();
 
     public final AuthService authService;
     public final EmailVerificationService emailVerificationService;
-    public final LectureService lectureService;
+//    public final LectureService lectureService;
     public final AttendanceService attendanceService;
 
     public boolean isMailSent = false;
@@ -44,7 +43,7 @@ public class TestContainer {
         emailVerificationService = new EmailVerificationService(mailSender, verificationCodeRepository);
 
         attendanceService = new AttendanceService(
-            authenticationHelper, attendanceRepository, enrollmentInfoRepository, lectureRepository, attendanceNumberRepository
+            authenticationHelper, attendanceRepository, enrollmentInfoRepository, lectureRepository, openLectureRepository
         );
 
         lectureService = new LectureService(
