@@ -1,8 +1,8 @@
 package gdsc.binaryho.imhere.core.lecture.infrastructure;
 
 import gdsc.binaryho.imhere.config.redis.RedisKeyPrefixes;
-import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureRepository;
-import gdsc.binaryho.imhere.core.lecture.model.OpenLecture;
+import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
+import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class OpenLectureRedisRepository implements OpenLectureRepository {
+public class OpenLectureRedisCacheRepository implements OpenLectureCacheRepository {
 
     private static final int OPEN_LECTURE_EXPIRE_TIME = 10;
     private static final String KEY_PREFIX = RedisKeyPrefixes.OPEN_LECTURE_KEY_PREFIX;

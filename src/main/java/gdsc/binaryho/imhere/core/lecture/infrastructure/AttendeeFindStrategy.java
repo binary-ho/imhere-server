@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.RedisTemplate;
 
-public enum StudentReadStrategy {
+public enum AttendeeFindStrategy {
 
     EMPTY(DataType.NONE) {
         @Override
@@ -38,8 +38,8 @@ public enum StudentReadStrategy {
 
     public abstract Set<Long> findLectureIds(RedisTemplate<String, String> redisTemplate, String key);
 
-    public static StudentReadStrategy fromDataType(DataType dataType) {
-        for (StudentReadStrategy strategy : values()) {
+    public static AttendeeFindStrategy fromDataType(DataType dataType) {
+        for (AttendeeFindStrategy strategy : values()) {
             if (strategy.dataType == dataType) {
                 return strategy;
             }
@@ -48,7 +48,7 @@ public enum StudentReadStrategy {
         throw UnexpectedRedisDataTypeException.EXCEPTION;
     }
 
-    StudentReadStrategy(DataType dataType) {
+    AttendeeFindStrategy(DataType dataType) {
         this.dataType = dataType;
     }
 }

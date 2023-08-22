@@ -4,11 +4,11 @@ import gdsc.binaryho.imhere.core.lecture.exception.UnexpectedRedisDataTypeExcept
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.RedisTemplate;
 
-public enum StudentSaveStrategy {
+public enum AttendeeCacheStrategy {
 
     SAVE_AS_STRING(DataType.NONE) {
         @Override
-        public void saveStudent(
+        public void cache(
             RedisTemplate<String, String> redisTemplate, String key, String value) {
             redisTemplate.opsForValue().set(key, value);
         }
@@ -16,7 +16,7 @@ public enum StudentSaveStrategy {
 
     CONVERT_TO_SET(DataType.STRING) {
         @Override
-        public void saveStudent(
+        public void cache(
             RedisTemplate<String, String> redisTemplate, String key, String value) {
             String savedValue = redisTemplate.opsForValue().get(key);
             redisTemplate.delete(key);
@@ -26,7 +26,7 @@ public enum StudentSaveStrategy {
 
     ADD_TO_SET(DataType.SET) {
         @Override
-        public void saveStudent(
+        public void cache(
             RedisTemplate<String, String> redisTemplate, String key, String value) {
             redisTemplate.opsForSet().add(key, value);
         }
@@ -34,11 +34,11 @@ public enum StudentSaveStrategy {
 
     private final DataType dataType;
 
-    public abstract void saveStudent(
+    public abstract void cache(
         RedisTemplate<String, String> redisTemplate, String key, String value);
 
-    public static StudentSaveStrategy fromDataType(DataType dataType) {
-        for (StudentSaveStrategy strategy : values()) {
+    public static AttendeeCacheStrategy fromDataType(DataType dataType) {
+        for (AttendeeCacheStrategy strategy : values()) {
             if (strategy.dataType == dataType) {
                 return strategy;
             }
@@ -47,7 +47,7 @@ public enum StudentSaveStrategy {
         throw UnexpectedRedisDataTypeException.EXCEPTION;
     }
 
-    StudentSaveStrategy(DataType dataType) {
+    AttendeeCacheStrategy(DataType dataType) {
         this.dataType = dataType;
     }
 }
