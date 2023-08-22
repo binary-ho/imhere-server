@@ -1,11 +1,11 @@
 package gdsc.binaryho.imhere.core.lecture.model;
 
 import gdsc.binaryho.imhere.core.lecture.Lecture;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OpenLecture {
 
     private final long id;
