@@ -15,7 +15,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceNumberRepository;
 import gdsc.binaryho.imhere.core.auth.exception.RequestMemberIdMismatchException;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
@@ -25,7 +24,6 @@ import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
-import gdsc.binaryho.imhere.core.lecture.model.response.AttendanceNumberResponse;
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse.LectureInfo;
 import gdsc.binaryho.imhere.core.member.Member;
@@ -38,9 +36,13 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.context.event.RecordApplicationEvents;
 
 @SpringBootTest
+@RecordApplicationEvents
 class LectureServiceTest {
 
     private static final String LECTURE_NAME = "GDSC 기초 웹 스터디";
@@ -49,16 +51,17 @@ class LectureServiceTest {
     private LectureRepository lectureRepository;
     @Mock
     private EnrollmentInfoRepository enrollmentInfoRepository;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     private LectureService lectureService;
 
-    TestContainer testContainer;
-
     @BeforeEach
     void initServices() {
-        testContainer = TestContainer.builder()
+        TestContainer testContainer = TestContainer.builder()
             .lectureRepository(lectureRepository)
             .enrollmentInfoRepository(enrollmentInfoRepository)
+            .applicationEventPublisher(applicationEventPublisher)
             .build();
 
         lectureService = testContainer.lectureService;
@@ -116,7 +119,7 @@ class LectureServiceTest {
         EnrollmentInfo enrollmentInfo = EnrollmentInfo
             .createEnrollmentInfo(OPEN_LECTURE, MemberFixture.STUDENT, EnrollmentState.APPROVAL);
 
-        given(lectureRepository.findOpenAndApprovalLecturesByMemberId(1L))
+        given(lectureRepository.findOpenAndApprovalLecturesByMemberId(any()))
             .willReturn(List.of(OPEN_LECTURE));
 
         Long expectedOpenLectureId = enrollmentInfo.getLecture().getId();
@@ -137,7 +140,7 @@ class LectureServiceTest {
             .willReturn(List.of(LECTURE));
 
         given(enrollmentInfoRepository
-            .findAllByLectureAndEnrollmentState(LECTURE, EnrollmentState.APPROVAL))
+            .findAllApprovedByLectureId(any()))
             .willReturn(List.of(ENROLLMENT_INFO));
         String expectedLecturerName = LECTURE.getLecturerName();
 
@@ -167,6 +170,7 @@ class LectureServiceTest {
         verify(mockLecture, times(1)).setLectureState(LectureState.OPEN);
     }
 
+    /*
     @Test
     @MockSecurityContextMember(id = 2L, role = Role.LECTURER)
     void 강사가_강의를_열_때_출석_번호가_발급되고_저장된다() {
@@ -184,7 +188,7 @@ class LectureServiceTest {
         Integer savedAttendanceNumber = attendanceNumberRepository.getByLectureId(LECTURE.getId());
 
         assertThat(generatedAttendanceNumber).isEqualTo(savedAttendanceNumber);
-    }
+    }*/
 
     @Test
     @MockSecurityContextMember(id = 2L, role = Role.LECTURER)

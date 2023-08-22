@@ -22,30 +22,40 @@ import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoRespons
 import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoResponse.StudentInfo;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
+import gdsc.binaryho.imhere.mock.TestContainer;
 import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
-import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.context.event.RecordApplicationEvents;
 
 @SpringBootTest
+@RecordApplicationEvents
 class EnrollmentServiceTest {
 
     @Mock
     private LectureRepository lectureRepository;
     @Mock
     private EnrollmentInfoRepository enrollmentInfoRepository;
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 
     private EnrollmentService enrollmentService;
 
     @BeforeEach
     void beforeEachTest() {
-        enrollmentService = new EnrollmentService(
-            new AuthenticationHelper(), lectureRepository, enrollmentInfoRepository
-        );
+        TestContainer testContainer = TestContainer.builder()
+            .lectureRepository(lectureRepository)
+            .enrollmentInfoRepository(enrollmentInfoRepository)
+            .applicationEventPublisher(applicationEventPublisher)
+            .build();
+
+        enrollmentService = testContainer.enrollmentService;
     }
 
     @Test

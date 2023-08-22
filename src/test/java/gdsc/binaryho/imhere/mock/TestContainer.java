@@ -6,6 +6,7 @@ import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.auth.application.EmailVerificationService;
 import gdsc.binaryho.imhere.core.auth.application.port.MailSender;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
+import gdsc.binaryho.imhere.core.enrollment.application.EnrollmentService;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.lecture.application.LectureService;
 import gdsc.binaryho.imhere.core.lecture.application.OpenLectureService;
@@ -29,6 +30,7 @@ public class TestContainer {
     public final LectureService lectureService;
     public final AttendanceService attendanceService;
     public final OpenLectureService openLectureService;
+    public final EnrollmentService enrollmentService;
 
     public boolean isMailSent = false;
     private final MailSender mailSender = (recipient, verificationCode) -> isMailSent = true;
@@ -53,6 +55,10 @@ public class TestContainer {
 
         /* OpenLectureService 초기화 */
         openLectureService = new OpenLectureService(openLectureCacheRepository);
+
+        enrollmentService = new EnrollmentService(
+            authenticationHelper, openLectureService, lectureRepository, enrollmentInfoRepository, applicationEventPublisher
+        );
 
         /* Attendance ervice 초기화 */
         attendanceService = new AttendanceService(

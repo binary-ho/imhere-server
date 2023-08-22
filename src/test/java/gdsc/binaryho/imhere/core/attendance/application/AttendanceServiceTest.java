@@ -27,7 +27,8 @@ import gdsc.binaryho.imhere.core.auth.exception.RequestMemberIdMismatchException
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
-import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureRepository;
+import gdsc.binaryho.imhere.core.lecture.application.OpenLectureService;
+import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.model.OpenLecture;
@@ -55,7 +56,9 @@ public class AttendanceServiceTest {
     @Mock
     LectureRepository lectureRepository;
 
-    OpenLectureRepository openLectureRepository;
+    OpenLectureCacheRepository openLectureCacheRepository;
+
+    OpenLectureService openLectureService;
     AttendanceService attendanceService;
 
     TestContainer testContainer;
@@ -67,8 +70,9 @@ public class AttendanceServiceTest {
             .attendanceRepository(attendanceRepository)
             .lectureRepository(lectureRepository)
             .build();
+        openLectureCacheRepository = testContainer.openLectureCacheRepository;
         attendanceService = testContainer.attendanceService;
-        openLectureRepository = testContainer.openLectureRepository;
+        openLectureService = testContainer.openLectureService;
     }
 
     @Test
@@ -82,7 +86,7 @@ public class AttendanceServiceTest {
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
 
-        openLectureRepository.save(new OpenLecture(OPEN_LECTURE.getId(), OPEN_LECTURE.getLectureName(),
+        openLectureCacheRepository.save(new OpenLecture(OPEN_LECTURE.getId(), OPEN_LECTURE.getLectureName(),
             OPEN_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
         attendanceService.takeAttendance(request, OPEN_LECTURE.getId());
@@ -105,7 +109,7 @@ public class AttendanceServiceTest {
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
 
-        openLectureRepository.save(new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
+        openLectureCacheRepository.save(new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
             LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
         // then
@@ -124,7 +128,7 @@ public class AttendanceServiceTest {
 
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
-        Integer attendanceNumber = openLectureRepository.findAttendanceNumber(OPEN_LECTURE.getId());
+        Integer attendanceNumber = openLectureService.findAttendanceNumber(OPEN_LECTURE.getId());
 
         // then
         assertAll(
@@ -146,7 +150,7 @@ public class AttendanceServiceTest {
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
         int wrongNumber = ATTENDANCE_NUMBER + 7;
-        openLectureRepository.save(new OpenLecture(OPEN_LECTURE.getId(), OPEN_LECTURE.getLectureName(),
+        openLectureCacheRepository.save(new OpenLecture(OPEN_LECTURE.getId(), OPEN_LECTURE.getLectureName(),
             OPEN_LECTURE.getLecturerName(), wrongNumber));
 
         // then
@@ -217,11 +221,11 @@ public class AttendanceServiceTest {
     void 출석_번호를_강의_아이디와_함께_저장할_수_있다() {
         // given
         // when
-        openLectureRepository.save(new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
+        openLectureCacheRepository.save(new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
             LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
         // then
-        assertThat(openLectureRepository.findAttendanceNumber(LECTURE.getId()))
+        assertThat(openLectureService.findAttendanceNumber(LECTURE.getId()))
             .isEqualTo(ATTENDANCE_NUMBER);
     }
 
