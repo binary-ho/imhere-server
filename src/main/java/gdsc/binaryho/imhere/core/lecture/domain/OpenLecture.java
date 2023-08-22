@@ -1,6 +1,5 @@
-package gdsc.binaryho.imhere.core.lecture.model;
+package gdsc.binaryho.imhere.core.lecture.domain;
 
-import gdsc.binaryho.imhere.core.lecture.Lecture;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

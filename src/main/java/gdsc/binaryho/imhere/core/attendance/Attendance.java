@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.attendance;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gdsc.binaryho.imhere.core.lecture.Lecture;
+import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
 import gdsc.binaryho.imhere.core.member.Member;
 import java.time.LocalDateTime;
 import javax.persistence.Column;

@@ -1,6 +1,7 @@
 package gdsc.binaryho.imhere.core.lecture.application;
 
 import gdsc.binaryho.imhere.core.lecture.application.port.AttendeeCacheRepository;
+import gdsc.binaryho.imhere.core.lecture.domain.AttendeeCacheEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

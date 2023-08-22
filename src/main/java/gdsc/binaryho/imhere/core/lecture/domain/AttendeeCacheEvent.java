@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.lecture.application;
+package gdsc.binaryho.imhere.core.lecture.domain;
 
 import gdsc.binaryho.imhere.core.lecture.model.StudentIds;
 import lombok.Getter;

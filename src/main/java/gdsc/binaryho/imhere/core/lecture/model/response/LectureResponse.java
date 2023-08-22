@@ -1,9 +1,9 @@
 package gdsc.binaryho.imhere.core.lecture.model.response;
 
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
-import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
-import gdsc.binaryho.imhere.core.lecture.model.OpenLecture;
+import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
+import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;

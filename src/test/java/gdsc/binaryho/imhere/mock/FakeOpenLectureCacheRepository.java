@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.mock;
 
 import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
-import gdsc.binaryho.imhere.core.lecture.model.OpenLecture;
+import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

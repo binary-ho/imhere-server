@@ -1,8 +1,8 @@
 package gdsc.binaryho.imhere.core.lecture.controller;
 
-import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.lecture.application.LectureService;
+import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
 import gdsc.binaryho.imhere.core.lecture.model.response.AttendanceNumberResponse;

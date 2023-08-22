@@ -2,8 +2,8 @@ package gdsc.binaryho.imhere.fixture;
 
 import static gdsc.binaryho.imhere.fixture.MemberFixture.LECTURER;
 
-import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
+import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
 
 public class LectureFixture {
 

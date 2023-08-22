@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.lecture.application;
 
 import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
-import gdsc.binaryho.imhere.core.lecture.model.OpenLecture;
+import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

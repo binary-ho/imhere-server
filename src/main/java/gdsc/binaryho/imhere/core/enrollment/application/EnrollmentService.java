@@ -6,12 +6,12 @@ import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentDuplicatedExcept
 import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentNotFoundException;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoResponse;
-import gdsc.binaryho.imhere.core.lecture.Lecture;
-import gdsc.binaryho.imhere.core.lecture.application.AttendeeCacheEvent;
 import gdsc.binaryho.imhere.core.lecture.application.OpenLectureService;
+import gdsc.binaryho.imhere.core.lecture.domain.AttendeeCacheEvent;
+import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
+import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
-import gdsc.binaryho.imhere.core.lecture.model.OpenLecture;
 import gdsc.binaryho.imhere.core.lecture.model.StudentIds;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
