@@ -7,14 +7,19 @@ import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentNotFoundExceptio
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoResponse;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
+import gdsc.binaryho.imhere.core.lecture.application.AttendeeCacheEvent;
+import gdsc.binaryho.imhere.core.lecture.application.OpenLectureService;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
+import gdsc.binaryho.imhere.core.lecture.model.OpenLecture;
+import gdsc.binaryho.imhere.core.lecture.model.StudentIds;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,8 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class EnrollmentService {
 
     private final AuthenticationHelper authenticationHelper;
+    private final OpenLectureService openLectureService;
     private final LectureRepository lectureRepository;
     private final EnrollmentInfoRepository enrollmentInfoRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void requestEnrollment(Long lectureId) {
@@ -48,9 +55,21 @@ public class EnrollmentService {
 
         enrollmentInfo.setEnrollmentState(EnrollmentState.APPROVAL);
 
+        cacheStudentIfLectureIsOpen(lectureId, enrollmentInfo);
+
         log.info("[수강신청 승인] 강의 : {} ({}) 학생 : {} ({})"
             , () -> enrollmentInfo.getLecture().getLectureName(), () -> enrollmentInfo.getLecture().getLecturerName()
             , () -> enrollmentInfo.getMember().getUnivId(), () -> enrollmentInfo.getMember().getName());
+    }
+
+    private void cacheStudentIfLectureIsOpen(Long lectureId, EnrollmentInfo enrollmentInfo) {
+        Optional<OpenLecture> lecture = openLectureService.find(lectureId);
+
+        if (lecture.isPresent()) {
+            Long studentId = enrollmentInfo.getMember().getId();
+
+            eventPublisher.publishEvent(new AttendeeCacheEvent(lectureId, new StudentIds(studentId)));
+        }
     }
 
     private EnrollmentInfo getEnrollmentInfo(Long lectureId, Long studentId) {
