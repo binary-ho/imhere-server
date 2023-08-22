@@ -42,7 +42,7 @@ public class OpenLectureRedisCacheRepository implements OpenLectureCacheReposito
 
     @Override
     public void cache(OpenLecture openLecture) {
-        String saveKey = KEY_PREFIX + openLecture;
+        String saveKey = KEY_PREFIX + openLecture.getId();
 
         Map<String, String> openLectureInfo = getOpenLectureInfo(openLecture);
         redisTemplate.opsForHash()
