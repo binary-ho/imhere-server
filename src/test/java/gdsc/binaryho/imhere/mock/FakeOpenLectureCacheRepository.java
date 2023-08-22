@@ -1,12 +1,12 @@
 package gdsc.binaryho.imhere.mock;
 
-import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureRepository;
+import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.model.OpenLecture;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class FakeOpenLectureRepository implements OpenLectureRepository {
+public class FakeOpenLectureCacheRepository implements OpenLectureCacheRepository {
 
     private final Map<String, Map<String, String>> data = new HashMap<>();
     private static final String NAME = "name";
