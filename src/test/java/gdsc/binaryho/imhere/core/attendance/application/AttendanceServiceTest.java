@@ -6,8 +6,9 @@ import static gdsc.binaryho.imhere.fixture.AttendanceFixture.ATTENDANCE_NUMBER;
 import static gdsc.binaryho.imhere.fixture.AttendanceFixture.DISTANCE;
 import static gdsc.binaryho.imhere.fixture.AttendanceFixture.MILLISECONDS;
 import static gdsc.binaryho.imhere.fixture.EnrollmentInfoFixture.ENROLLMENT_INFO;
+import static gdsc.binaryho.imhere.fixture.LectureFixture.CLOSED_STATE_LECTURE;
 import static gdsc.binaryho.imhere.fixture.LectureFixture.LECTURE;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.OPEN_LECTURE;
+import static gdsc.binaryho.imhere.fixture.LectureFixture.OPEN_STATE_LECTURE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -80,16 +81,16 @@ public class AttendanceServiceTest {
     void 저장된_출석_번호와_학생이_제출한_출석번호가_일치하는_경우_학생은_출석된다() {
         // given
         given(enrollmentRepository
-            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(OPEN_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
+            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(OPEN_STATE_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
             .willReturn(Optional.of(ENROLLMENT_INFO));
 
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
 
-        openLectureCacheRepository.save(new OpenLecture(OPEN_LECTURE.getId(), OPEN_LECTURE.getLectureName(),
-            OPEN_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
+        openLectureCacheRepository.save(new OpenLecture(OPEN_STATE_LECTURE.getId(), OPEN_STATE_LECTURE.getLectureName(),
+            OPEN_STATE_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
-        attendanceService.takeAttendance(request, OPEN_LECTURE.getId());
+        attendanceService.takeAttendance(request, OPEN_STATE_LECTURE.getId());
 
         // then
         verify(attendanceRepository, times(1)).save(any());
@@ -100,21 +101,21 @@ public class AttendanceServiceTest {
     void 학생이_출석을_시도한_수업이_열려있지_않은_경우_예외가_발생한다() {
         // given
         EnrollmentInfo closeLectureEnrollmentInfo = EnrollmentInfo
-            .createEnrollmentInfo(LECTURE, MemberFixture.STUDENT, EnrollmentState.APPROVAL);
+            .createEnrollmentInfo(CLOSED_STATE_LECTURE, MemberFixture.STUDENT, EnrollmentState.APPROVAL);
 
         given(enrollmentRepository
-            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
+            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(CLOSED_STATE_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
             .willReturn(Optional.of(closeLectureEnrollmentInfo));
 
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
 
-        openLectureCacheRepository.save(new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
-            LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
+        openLectureCacheRepository.save(new OpenLecture(CLOSED_STATE_LECTURE.getId(), CLOSED_STATE_LECTURE.getLectureName(),
+            CLOSED_STATE_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
         // then
         assertThatThrownBy(
-            () -> attendanceService.takeAttendance(request, LECTURE.getId()))
+            () -> attendanceService.takeAttendance(request, CLOSED_STATE_LECTURE.getId()))
             .isInstanceOf(LectureNotOpenException.class);
     }
 
@@ -123,18 +124,18 @@ public class AttendanceServiceTest {
     void 수업에_저장된_출석_번호가_없는_경우_예외를_발생시킨다() {
         // given
         given(enrollmentRepository
-            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(OPEN_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
+            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(OPEN_STATE_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
             .willReturn(Optional.of(ENROLLMENT_INFO));
 
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
-        Integer attendanceNumber = openLectureService.findAttendanceNumber(OPEN_LECTURE.getId());
+        Integer attendanceNumber = openLectureService.findAttendanceNumber(OPEN_STATE_LECTURE.getId());
 
         // then
         assertAll(
             () -> assertThat(attendanceNumber).isEqualTo(null),
             () -> assertThatThrownBy(
-                () -> attendanceService.takeAttendance(request, OPEN_LECTURE.getId()))
+                () -> attendanceService.takeAttendance(request, OPEN_STATE_LECTURE.getId()))
                 .isInstanceOf(AttendanceTimeExceededException.class)
         );
     }
@@ -144,18 +145,18 @@ public class AttendanceServiceTest {
     void 저장된_출석_번호와_학생이_제출한_출석번호가_다른_경우_예외를_발생시킨다() {
         // given
         given(enrollmentRepository
-            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(OPEN_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
+            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(OPEN_STATE_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
             .willReturn(Optional.of(ENROLLMENT_INFO));
 
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
         int wrongNumber = ATTENDANCE_NUMBER + 7;
-        openLectureCacheRepository.save(new OpenLecture(OPEN_LECTURE.getId(), OPEN_LECTURE.getLectureName(),
-            OPEN_LECTURE.getLecturerName(), wrongNumber));
+        openLectureCacheRepository.save(new OpenLecture(OPEN_STATE_LECTURE.getId(), OPEN_STATE_LECTURE.getLectureName(),
+            OPEN_STATE_LECTURE.getLecturerName(), wrongNumber));
 
         // then
         assertThatThrownBy(
-            () -> attendanceService.takeAttendance(request, OPEN_LECTURE.getId()))
+            () -> attendanceService.takeAttendance(request, OPEN_STATE_LECTURE.getId()))
             .isInstanceOf(AttendanceNumberIncorrectException.class);
     }
 
