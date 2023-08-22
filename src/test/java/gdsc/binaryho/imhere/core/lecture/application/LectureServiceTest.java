@@ -157,7 +157,7 @@ class LectureServiceTest {
         OpenLecture openLecture = new OpenLecture(OPEN_STATE_LECTURE.getId(),
             OPEN_STATE_LECTURE.getLectureName(), OPEN_STATE_LECTURE.getLecturerName(), ATTENDANCE_NUMBER);
 
-        openLectureCacheRepository.save(openLecture);
+        openLectureCacheRepository.cache(openLecture);
         attendeeCacheRepository.cache(OPEN_STATE_LECTURE.getId(), new StudentIds(1L));
 
 
@@ -242,7 +242,7 @@ class LectureServiceTest {
         AttendanceNumberResponse response = lectureService.openLectureAndGenerateAttendanceNumber(LECTURER.getId());
 
         // then
-        Optional<OpenLecture> savedOpenLecture = openLectureCacheRepository.findByLectureId(LECTURE.getId());
+        Optional<OpenLecture> savedOpenLecture = openLectureCacheRepository.find(LECTURE.getId());
 
         assertAll(
             () -> assertThat(savedOpenLecture.isPresent()).isTrue(),

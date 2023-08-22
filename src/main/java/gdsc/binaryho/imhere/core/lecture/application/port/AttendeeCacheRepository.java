@@ -5,7 +5,7 @@ import java.util.Set;
 
 public interface AttendeeCacheRepository {
 
-    Set<Long> findLectureIds(Long studentId);
+    Set<Long> findAllAttendLectureId(Long studentId);
 
     void cache(Long lectureId, StudentIds studentIds);
 }

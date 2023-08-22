@@ -212,7 +212,7 @@ class EnrollmentServiceTest {
 
         OpenLecture openLecture = new OpenLecture(OPEN_STATE_LECTURE.getId(),
             OPEN_STATE_LECTURE.getLectureName(), OPEN_STATE_LECTURE.getLecturerName(), 7777);
-        openLectureCacheRepository.save(openLecture);
+        openLectureCacheRepository.cache(openLecture);
 
         // when
         enrollmentService.approveStudents(OPEN_STATE_LECTURE.getId(), STUDENT.getId());

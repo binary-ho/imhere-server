@@ -87,7 +87,7 @@ public class AttendanceServiceTest {
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
 
-        openLectureCacheRepository.save(new OpenLecture(OPEN_STATE_LECTURE.getId(), OPEN_STATE_LECTURE.getLectureName(),
+        openLectureCacheRepository.cache(new OpenLecture(OPEN_STATE_LECTURE.getId(), OPEN_STATE_LECTURE.getLectureName(),
             OPEN_STATE_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
         attendanceService.takeAttendance(request, OPEN_STATE_LECTURE.getId());
@@ -110,7 +110,7 @@ public class AttendanceServiceTest {
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
 
-        openLectureCacheRepository.save(new OpenLecture(CLOSED_STATE_LECTURE.getId(), CLOSED_STATE_LECTURE.getLectureName(),
+        openLectureCacheRepository.cache(new OpenLecture(CLOSED_STATE_LECTURE.getId(), CLOSED_STATE_LECTURE.getLectureName(),
             CLOSED_STATE_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
         // then
@@ -151,7 +151,7 @@ public class AttendanceServiceTest {
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
         int wrongNumber = ATTENDANCE_NUMBER + 7;
-        openLectureCacheRepository.save(new OpenLecture(OPEN_STATE_LECTURE.getId(), OPEN_STATE_LECTURE.getLectureName(),
+        openLectureCacheRepository.cache(new OpenLecture(OPEN_STATE_LECTURE.getId(), OPEN_STATE_LECTURE.getLectureName(),
             OPEN_STATE_LECTURE.getLecturerName(), wrongNumber));
 
         // then
@@ -222,7 +222,7 @@ public class AttendanceServiceTest {
     void 출석_번호를_강의_아이디와_함께_저장할_수_있다() {
         // given
         // when
-        openLectureCacheRepository.save(new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
+        openLectureCacheRepository.cache(new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
             LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
         // then

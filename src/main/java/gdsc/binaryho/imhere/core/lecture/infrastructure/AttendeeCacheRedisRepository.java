@@ -19,7 +19,7 @@ public class AttendeeCacheRedisRepository implements AttendeeCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public Set<Long> findLectureIds(Long studentId) {
+    public Set<Long> findAllAttendLectureId(Long studentId) {
         String queryKey = KEY_PREFIX + studentId.toString();
         DataType dataType = redisTemplate.type(queryKey);
 

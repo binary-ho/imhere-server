@@ -11,7 +11,7 @@ public class FakeAttendeeCacheRepository implements AttendeeCacheRepository {
     private final Map<Long, Set<Long>> data = new HashMap<>();
 
     @Override
-    public Set<Long> findLectureIds(Long studentId) {
+    public Set<Long> findAllAttendLectureId(Long studentId) {
         Set<Long> ids = data.get(studentId);
 
         if (ids == null) {

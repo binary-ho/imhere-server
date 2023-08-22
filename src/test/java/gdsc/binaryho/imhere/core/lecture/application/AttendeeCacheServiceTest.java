@@ -31,7 +31,7 @@ public class AttendeeCacheServiceTest {
         attendeeCacheService.cache(new AttendeeCacheEvent(LECTURE.getId(), studentIds));
 
         // when
-        Set<Long> lectureIds = attendeeCacheRepository.findLectureIds(STUDENT.getId());
+        Set<Long> lectureIds = attendeeCacheRepository.findAllAttendLectureId(STUDENT.getId());
 
         // then
         assertThat(lectureIds.stream().findAny().get()).isEqualTo(LECTURE.getId());

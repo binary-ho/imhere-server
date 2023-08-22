@@ -85,9 +85,9 @@ public class LectureService {
     }
 
     private List<OpenLecture> findCachedOpenLectures(Long studentId) {
-        Set<Long> lectureIds = attendeeCacheRepository.findLectureIds(studentId);
+        Set<Long> lectureIds = attendeeCacheRepository.findAllAttendLectureId(studentId);
         return lectureIds.stream()
-            .map(openLectureCacheRepository::findByLectureId)
+            .map(openLectureCacheRepository::find)
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toList());
@@ -124,7 +124,7 @@ public class LectureService {
 
     private void saveOpenLecture(Lecture lecture, int attendanceNumber) {
         OpenLecture openLecture = OpenLecture.from(lecture, attendanceNumber);
-        openLectureCacheRepository.save(openLecture);
+        openLectureCacheRepository.cache(openLecture);
     }
 
     private void cacheAttendee(Lecture lecture) {

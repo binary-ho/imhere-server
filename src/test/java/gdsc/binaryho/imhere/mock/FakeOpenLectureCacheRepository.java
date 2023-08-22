@@ -14,7 +14,7 @@ public class FakeOpenLectureCacheRepository implements OpenLectureCacheRepositor
     private static final String ATTENDANCE_NUMBER = "attendance_number";
 
     @Override
-    public Optional<OpenLecture> findByLectureId(Long lectureId) {
+    public Optional<OpenLecture> find(Long lectureId) {
         Map<String, String> queryResult = data.get(String.valueOf(lectureId));
 
         if (queryResult == null || queryResult.isEmpty()) {
@@ -30,13 +30,13 @@ public class FakeOpenLectureCacheRepository implements OpenLectureCacheRepositor
 
     @Override
     public Integer findAttendanceNumber(Long lectureId) {
-        return findByLectureId(lectureId)
+        return find(lectureId)
             .map(OpenLecture::getAttendanceNumber)
             .orElse(null);
     }
 
     @Override
-    public void save(OpenLecture openLecture) {
+    public void cache(OpenLecture openLecture) {
         Map<String, String> hash = new HashMap<>();
         hash.put(NAME, openLecture.getName());
         hash.put(LECTURER_NAME, openLecture.getLecturerName());

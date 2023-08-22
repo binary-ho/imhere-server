@@ -5,9 +5,9 @@ import java.util.Optional;
 
 public interface OpenLectureCacheRepository {
 
-    Optional<OpenLecture> findByLectureId(Long lectureId);
+    Optional<OpenLecture> find(Long lectureId);
 
     Integer findAttendanceNumber(Long lectureId);
 
-    void save(OpenLecture openLecture);
+    void cache(OpenLecture openLecture);
 }

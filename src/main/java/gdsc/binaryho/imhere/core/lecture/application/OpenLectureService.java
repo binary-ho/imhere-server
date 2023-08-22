@@ -13,7 +13,7 @@ public class OpenLectureService {
     private final OpenLectureCacheRepository openLectureCacheRepository;
 
     public Optional<OpenLecture> find(Long lectureId) {
-        return openLectureCacheRepository.findByLectureId(lectureId);
+        return openLectureCacheRepository.find(lectureId);
     }
 
     public Integer findAttendanceNumber(Long lectureId) {

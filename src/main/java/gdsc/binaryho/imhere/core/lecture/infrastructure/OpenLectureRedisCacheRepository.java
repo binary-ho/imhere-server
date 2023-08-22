@@ -20,7 +20,7 @@ public class OpenLectureRedisCacheRepository implements OpenLectureCacheReposito
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public Optional<OpenLecture> findByLectureId(Long lectureId) {
+    public Optional<OpenLecture> find(Long lectureId) {
         String queryKey = KEY_PREFIX + lectureId;
         Map<Object, Object> queryResult = redisTemplate.opsForHash()
             .entries(queryKey);
@@ -35,13 +35,13 @@ public class OpenLectureRedisCacheRepository implements OpenLectureCacheReposito
 
     @Override
     public Integer findAttendanceNumber(Long lectureId) {
-        return findByLectureId(lectureId)
+        return find(lectureId)
             .map(OpenLecture::getAttendanceNumber)
             .orElse(null);
     }
 
     @Override
-    public void save(OpenLecture openLecture) {
+    public void cache(OpenLecture openLecture) {
         String saveKey = KEY_PREFIX + openLecture;
 
         Map<String, String> openLectureInfo = getOpenLectureInfo(openLecture);

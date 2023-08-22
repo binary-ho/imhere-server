@@ -31,7 +31,7 @@ public class OpenLectureServiceTest {
         // given
         OpenLecture openLecture = new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
             LECTURE.getLecturerName(), ATTENDANCE_NUMBER);
-        openLectureCacheRepository.save(openLecture);
+        openLectureCacheRepository.cache(openLecture);
 
         // when
         Optional<OpenLecture> actualOpenLecture = openLectureService.find(LECTURE.getId());
@@ -50,7 +50,7 @@ public class OpenLectureServiceTest {
         // given
         OpenLecture openLecture = new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
             LECTURE.getLecturerName(), ATTENDANCE_NUMBER);
-        openLectureCacheRepository.save(openLecture);
+        openLectureCacheRepository.cache(openLecture);
 
         // when
         Integer actualAttendanceNumber = openLectureService.findAttendanceNumber(LECTURE.getId());
