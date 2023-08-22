@@ -13,7 +13,7 @@ import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentNotApprovedExcep
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
-import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureRepository;
+import gdsc.binaryho.imhere.core.lecture.application.OpenLectureService;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
@@ -36,10 +36,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class AttendanceService {
 
     private final AuthenticationHelper authenticationHelper;
+    private final OpenLectureService openLectureService;
     private final AttendanceRepository attendanceRepository;
     private final EnrollmentInfoRepository enrollmentRepository;
     private final LectureRepository lectureRepository;
-    private final OpenLectureRepository openLectureRepository;
 
     @Transactional
     public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) {
@@ -79,7 +79,7 @@ public class AttendanceService {
 
     private void validateAttendanceNumber(EnrollmentInfo enrollmentInfo, int attendanceNumber) {
         long lectureId = enrollmentInfo.getLecture().getId();
-        Integer actualAttendanceNumber = openLectureRepository.findAttendanceNumber(lectureId);
+        Integer actualAttendanceNumber = openLectureService.findAttendanceNumber(lectureId);
 
         validateAttendanceNumberNotTimeOut(actualAttendanceNumber);
         validateAttendanceNumberCorrect(actualAttendanceNumber, attendanceNumber);
