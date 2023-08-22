@@ -5,6 +5,7 @@ import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
+import gdsc.binaryho.imhere.core.lecture.application.port.AttendeeCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
@@ -16,6 +17,8 @@ import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -35,6 +38,7 @@ public class LectureService {
     private final LectureRepository lectureRepository;
     private final EnrollmentInfoRepository enrollmentInfoRepository;
     private final OpenLectureCacheRepository openLectureCacheRepository;
+    private final AttendeeCacheRepository attendeeCacheRepository;
 
     private final ApplicationEventPublisher eventPublisher;
 
@@ -64,9 +68,28 @@ public class LectureService {
     @Transactional(readOnly = true)
     public LectureResponse getStudentOpenLectures() {
         Member currentStudent = authenticationHelper.getCurrentMember();
-        // TODO : 캐시 먼저 확인 추가
+
+        List<OpenLecture> openLectures = findCachedOpenLectures(currentStudent.getId());
+
+        if (NotEmpty(openLectures)) {
+            return LectureResponse.from(openLectures);
+        }
+
         List<Lecture> studentOpenLectures = lectureRepository.findOpenAndApprovalLecturesByMemberId(currentStudent.getId());
         return LectureResponse.createLectureResponseFromLectures(studentOpenLectures);
+    }
+
+    private boolean NotEmpty(List<OpenLecture> openLectures) {
+        return openLectures.size() > 0;
+    }
+
+    private List<OpenLecture> findCachedOpenLectures(Long studentId) {
+        Set<Long> lectureIds = attendeeCacheRepository.findLectureIds(studentId);
+        return lectureIds.stream()
+            .map(openLectureCacheRepository::findByLectureId)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
