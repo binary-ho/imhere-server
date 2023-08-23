@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.lecture.infrastructure;
 
-import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
+import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
 import io.lettuce.core.dynamic.annotation.Param;
 import java.util.List;
 import java.util.Optional;

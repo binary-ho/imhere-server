@@ -1,13 +1,15 @@
 package gdsc.binaryho.imhere.core.lecture.model.response;
 
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
-import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
+import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
+import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
@@ -34,8 +36,17 @@ public class LectureResponse {
         return new LectureResponse(lectureInfos);
     }
 
+    public static LectureResponse from(List<OpenLecture> openLectures) {
+        List<LectureInfo> lectureInfos = openLectures.stream()
+            .map(openLecture -> new LectureInfo(openLecture.getId(), openLecture.getName(),
+                    openLecture.getLecturerName(), LectureState.OPEN, new ArrayList<>()))
+            .collect(Collectors.toList());
+        return new LectureResponse(lectureInfos);
+    }
+
     @Getter
     @Tag(name = "LectureDto", description = "수업 정보")
+    @AllArgsConstructor
     public static class LectureInfo {
 
         private final Long lectureId;

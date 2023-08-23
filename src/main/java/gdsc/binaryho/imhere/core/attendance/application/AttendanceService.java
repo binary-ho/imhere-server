@@ -2,7 +2,6 @@ package gdsc.binaryho.imhere.core.attendance.application;
 
 
 import gdsc.binaryho.imhere.core.attendance.Attendance;
-import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceNumberRepository;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectException;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
@@ -12,8 +11,9 @@ import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentNotApprovedException;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
-import gdsc.binaryho.imhere.core.lecture.Lecture;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
+import gdsc.binaryho.imhere.core.lecture.application.OpenLectureService;
+import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
@@ -36,10 +36,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class AttendanceService {
 
     private final AuthenticationHelper authenticationHelper;
+    private final OpenLectureService openLectureService;
     private final AttendanceRepository attendanceRepository;
     private final EnrollmentInfoRepository enrollmentRepository;
     private final LectureRepository lectureRepository;
-    private final AttendanceNumberRepository attendanceNumberRepository;
 
     @Transactional
     public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) {
@@ -79,7 +79,7 @@ public class AttendanceService {
 
     private void validateAttendanceNumber(EnrollmentInfo enrollmentInfo, int attendanceNumber) {
         long lectureId = enrollmentInfo.getLecture().getId();
-        Integer actualAttendanceNumber = attendanceNumberRepository.getByLectureId(lectureId);
+        Integer actualAttendanceNumber = openLectureService.findAttendanceNumber(lectureId);
 
         validateAttendanceNumberNotTimeOut(actualAttendanceNumber);
         validateAttendanceNumberCorrect(actualAttendanceNumber, attendanceNumber);
@@ -145,10 +145,5 @@ public class AttendanceService {
         return LocalDateTime
             .ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("Asia/Seoul"))
             .withHour(0).withMinute(0).withSecond(0);
-    }
-
-    @Transactional
-    public void saveAttendanceNumber(Long lectureId, int attendanceNumber) {
-        attendanceNumberRepository.saveWithLectureIdAsKey(lectureId, attendanceNumber);
     }
 }

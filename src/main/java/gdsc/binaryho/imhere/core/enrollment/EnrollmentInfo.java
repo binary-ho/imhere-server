@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.core.enrollment;
 
-import gdsc.binaryho.imhere.core.lecture.Lecture;
+import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
 import gdsc.binaryho.imhere.core.member.Member;
 import javax.persistence.Column;
 import javax.persistence.Entity;

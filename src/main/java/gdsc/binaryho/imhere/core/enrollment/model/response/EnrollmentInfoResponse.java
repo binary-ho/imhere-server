@@ -2,7 +2,7 @@ package gdsc.binaryho.imhere.core.enrollment.model.response;
 
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
-import gdsc.binaryho.imhere.core.lecture.Lecture;
+import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
 import gdsc.binaryho.imhere.core.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,7 +44,6 @@ public class EnrollmentInfoResponse {
         private final Long id;
         private final String univId;
         private final String name;
-        @Schema(description = "학생 수강신청 승인 상태")
         private final EnrollmentState enrollmentState;
 
         private StudentInfo(Long id, String univId, String name,

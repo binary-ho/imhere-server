@@ -1,29 +1,36 @@
 package gdsc.binaryho.imhere.mock;
 
 import gdsc.binaryho.imhere.core.attendance.application.AttendanceService;
-import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceNumberRepository;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.auth.application.EmailVerificationService;
 import gdsc.binaryho.imhere.core.auth.application.port.MailSender;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
+import gdsc.binaryho.imhere.core.enrollment.application.EnrollmentService;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.lecture.application.LectureService;
+import gdsc.binaryho.imhere.core.lecture.application.OpenLectureService;
+import gdsc.binaryho.imhere.core.lecture.application.port.AttendeeCacheRepository;
+import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import lombok.Builder;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class TestContainer {
 
-    public final AttendanceNumberRepository attendanceNumberRepository = new FakeAttendanceNumberRepository();
+    public final OpenLectureCacheRepository openLectureCacheRepository = new FakeOpenLectureCacheRepository();
+    public final AttendeeCacheRepository attendeeCacheRepository = new FakeAttendeeCacheRepository();
     public final VerificationCodeRepository verificationCodeRepository = new FakeVerificationCodeRepository();
 
     public final AuthService authService;
     public final EmailVerificationService emailVerificationService;
     public final LectureService lectureService;
     public final AttendanceService attendanceService;
+    public final OpenLectureService openLectureService;
+    public final EnrollmentService enrollmentService;
 
     public boolean isMailSent = false;
     private final MailSender mailSender = (recipient, verificationCode) -> isMailSent = true;
@@ -35,20 +42,32 @@ public class TestContainer {
         MemberRepository memberRepository,
         LectureRepository lectureRepository,
         EnrollmentInfoRepository enrollmentInfoRepository,
-        AttendanceRepository attendanceRepository) {
+        AttendanceRepository attendanceRepository,
+        ApplicationEventPublisher applicationEventPublisher) {
 
+        /* AuthService 초기화 */
         authService = new AuthService(
             memberRepository, verificationCodeRepository, bCryptPasswordEncoder
         );
 
+        /* EmailVerificationService 초기화 */
         emailVerificationService = new EmailVerificationService(mailSender, verificationCodeRepository);
 
-        attendanceService = new AttendanceService(
-            authenticationHelper, attendanceRepository, enrollmentInfoRepository, lectureRepository, attendanceNumberRepository
+        /* OpenLectureService 초기화 */
+        openLectureService = new OpenLectureService(openLectureCacheRepository);
+
+        enrollmentService = new EnrollmentService(
+            authenticationHelper, openLectureService, lectureRepository, enrollmentInfoRepository, applicationEventPublisher
         );
 
+        /* Attendance ervice 초기화 */
+        attendanceService = new AttendanceService(
+            authenticationHelper, openLectureService, attendanceRepository, enrollmentInfoRepository, lectureRepository
+        );
+
+        /* LectureService 초기화 */
         lectureService = new LectureService(
-            authenticationHelper, attendanceService, lectureRepository, enrollmentInfoRepository
+            authenticationHelper, lectureRepository, enrollmentInfoRepository, openLectureCacheRepository, attendeeCacheRepository, applicationEventPublisher
         );
     }
 }

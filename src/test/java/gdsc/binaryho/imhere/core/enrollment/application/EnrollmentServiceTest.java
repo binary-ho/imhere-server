@@ -2,6 +2,7 @@ package gdsc.binaryho.imhere.core.enrollment.application;
 
 import static gdsc.binaryho.imhere.fixture.EnrollmentInfoFixture.ENROLLMENT_INFO;
 import static gdsc.binaryho.imhere.fixture.LectureFixture.LECTURE;
+import static gdsc.binaryho.imhere.fixture.LectureFixture.OPEN_STATE_LECTURE;
 import static gdsc.binaryho.imhere.fixture.MemberFixture.STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,32 +21,53 @@ import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentNotFoundExceptio
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoResponse;
 import gdsc.binaryho.imhere.core.enrollment.model.response.EnrollmentInfoResponse.StudentInfo;
+import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
+import gdsc.binaryho.imhere.core.lecture.domain.AttendeeCacheEvent;
+import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
+import gdsc.binaryho.imhere.mock.TestContainer;
 import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
-import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 
 @SpringBootTest
+@RecordApplicationEvents
 class EnrollmentServiceTest {
 
     @Mock
     private LectureRepository lectureRepository;
+
     @Mock
     private EnrollmentInfoRepository enrollmentInfoRepository;
 
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @Autowired
+    private ApplicationEvents events;
+
     private EnrollmentService enrollmentService;
+    private OpenLectureCacheRepository openLectureCacheRepository;
 
     @BeforeEach
     void beforeEachTest() {
-        enrollmentService = new EnrollmentService(
-            new AuthenticationHelper(), lectureRepository, enrollmentInfoRepository
-        );
+        TestContainer testContainer = TestContainer.builder()
+            .lectureRepository(lectureRepository)
+            .enrollmentInfoRepository(enrollmentInfoRepository)
+            .applicationEventPublisher(applicationEventPublisher)
+            .build();
+
+        enrollmentService = testContainer.enrollmentService;
+        openLectureCacheRepository = testContainer.openLectureCacheRepository;
     }
 
     @Test
@@ -177,6 +199,26 @@ class EnrollmentServiceTest {
 
         // then
         verify(enrollmentInfo, times(1)).setEnrollmentState(EnrollmentState.REJECTION);
+    }
+
+    @Test
+    @MockSecurityContextMember(id = 2L)
+    void 강사가_학생을_승인할_때_이미_수업이_OPEN_이라면_캐싱한다() {
+        // given
+        EnrollmentInfo enrollmentInfo = EnrollmentInfo
+            .createEnrollmentInfo(OPEN_STATE_LECTURE, STUDENT, EnrollmentState.AWAIT);
+        given(enrollmentInfoRepository.findByMemberIdAndLectureId(any(), any()))
+            .willReturn(Optional.of(enrollmentInfo));
+
+        OpenLecture openLecture = new OpenLecture(OPEN_STATE_LECTURE.getId(),
+            OPEN_STATE_LECTURE.getLectureName(), OPEN_STATE_LECTURE.getLecturerName(), 7777);
+        openLectureCacheRepository.cache(openLecture);
+
+        // when
+        enrollmentService.approveStudents(OPEN_STATE_LECTURE.getId(), STUDENT.getId());
+
+        // then
+        assertThat(events.stream(AttendeeCacheEvent.class).count()).isEqualTo(1);
     }
 
     @Test
