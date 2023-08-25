@@ -34,7 +34,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws ServletException, IOException {
-        if (!checkTokenHeader(request)) {
+        if (isNullToken(request)) {
             chain.doFilter(request, response);
             return;
         }
@@ -57,12 +57,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         chain.doFilter(request, response);
     }
 
-    private boolean checkTokenHeader(HttpServletRequest request) {
+    private boolean isNullToken(HttpServletRequest request) {
         String jwtHeader = request.getHeader(HEADER_STRING);
-
         if (jwtHeader == null || !jwtHeader.startsWith(ACCESS_TOKEN_PREFIX)) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }
