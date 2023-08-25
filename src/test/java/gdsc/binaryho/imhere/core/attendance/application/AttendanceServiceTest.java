@@ -40,6 +40,7 @@ import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -188,7 +189,7 @@ public class AttendanceServiceTest {
     void 강사는_자신의_수업의_출석_번호가_없는_경우_빈_응답을_받을_수_있다() {
         // given
         given(attendanceRepository.findAllByLectureId(LECTURE.getId()))
-            .willReturn(List.of());
+            .willReturn(Collections.emptyList());
 
         given(lectureRepository.findById(LECTURE.getId()))
             .willReturn(Optional.of(LECTURE));

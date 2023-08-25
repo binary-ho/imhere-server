@@ -28,6 +28,7 @@ import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.mock.TestContainer;
 import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -259,7 +260,7 @@ class EnrollmentServiceTest {
             .willReturn(Optional.of(LECTURE));
 
         given(enrollmentInfoRepository.findAllByLecture(LECTURE))
-            .willReturn(List.of());
+            .willReturn(Collections.emptyList());
 
         // when
         EnrollmentInfoResponse response =

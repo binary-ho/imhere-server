@@ -22,7 +22,7 @@ import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -122,7 +122,7 @@ public class AttendanceService {
     private AttendanceResponse getNullAttendanceDto(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId)
             .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
-        return new AttendanceResponse(lecture, new ArrayList<>());
+        return new AttendanceResponse(lecture, Collections.emptyList());
     }
 
     @Transactional(readOnly = true)
