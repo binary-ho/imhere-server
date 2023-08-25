@@ -1,6 +1,7 @@
 package gdsc.binaryho.imhere.core.lecture.infrastructure;
 
 import gdsc.binaryho.imhere.core.lecture.exception.UnexpectedRedisDataTypeException;
+import java.util.Arrays;
 import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -38,13 +39,11 @@ public enum AttendeeCacheStrategy {
         RedisTemplate<String, String> redisTemplate, String key, String value);
 
     public static AttendeeCacheStrategy fromDataType(DataType dataType) {
-        for (AttendeeCacheStrategy strategy : values()) {
-            if (strategy.dataType == dataType) {
-                return strategy;
-            }
-        }
-
-        throw UnexpectedRedisDataTypeException.EXCEPTION;
+        return Arrays
+            .stream(values())
+            .filter(strategy -> strategy.dataType == dataType)
+            .findAny()
+            .orElseThrow(() -> UnexpectedRedisDataTypeException.EXCEPTION);
     }
 
     AttendeeCacheStrategy(DataType dataType) {
