@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -86,7 +85,7 @@ public class AttendanceService {
     }
 
     private void validateAttendanceNumberNotTimeOut(Integer attendanceNumber) {
-        if (Objects.isNull(attendanceNumber)) {
+        if (attendanceNumber == null) {
             throw AttendanceTimeExceededException.EXCEPTION;
         }
     }
