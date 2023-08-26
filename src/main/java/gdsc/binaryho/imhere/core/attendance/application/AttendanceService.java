@@ -123,7 +123,7 @@ public class AttendanceService {
 
     @Transactional(readOnly = true)
     public AttendanceResponse getDayAttendances(Long lectureId, Long milliseconds) {
-        LocalDateTime timestamp = getDayLocalDateTime(milliseconds);
+        LocalDateTime timestamp = getTodaySeoulDateTime(milliseconds);
         List<Attendance> attendances = attendanceRepository
             .findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
 
@@ -136,7 +136,7 @@ public class AttendanceService {
         return new AttendanceResponse(lecture, attendances);
     }
 
-    private LocalDateTime getDayLocalDateTime(Long milliseconds) {
+    private LocalDateTime getTodaySeoulDateTime(Long milliseconds) {
         return SeoulDateTime.from(milliseconds)
             .withHour(0).withMinute(0).withSecond(0);
     }

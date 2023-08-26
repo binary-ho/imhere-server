@@ -45,8 +45,8 @@ public class OpenLectureRedisCacheRepository implements OpenLectureCacheReposito
         String saveKey = KEY_PREFIX + openLecture.getId();
 
         Map<String, String> openLectureInfo = getOpenLectureInfo(openLecture);
-        redisTemplate.opsForHash()
-            .putAll(saveKey, openLectureInfo);
+
+        redisTemplate.opsForHash().putAll(saveKey, openLectureInfo);
         redisTemplate.expire(saveKey, OPEN_LECTURE_EXPIRE_TIME, TimeUnit.MINUTES);
     }
 
@@ -61,9 +61,11 @@ public class OpenLectureRedisCacheRepository implements OpenLectureCacheReposito
 
     private Map<String, String> getOpenLectureInfo(OpenLecture openLecture) {
         Map<String, String> hash = new HashMap<>();
+
         hash.put(OpenLectureFieldKeys.NAME, openLecture.getName());
         hash.put(OpenLectureFieldKeys.LECTURER_NAME, openLecture.getLecturerName());
         hash.put(OpenLectureFieldKeys.ATTENDANCE_NUMBER, String.valueOf(openLecture.getAttendanceNumber()));
+
         return hash;
     }
 

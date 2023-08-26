@@ -32,7 +32,7 @@ public class FakeAttendeeCacheRepository implements AttendeeCacheRepository {
     private void putLectureId(Long studentId, Long lectureId) {
         Set<Long> result = data.get(studentId);
         if (result == null || result.isEmpty()) {
-            data.put(studentId, Set.of(lectureId));
+            data.put(studentId, Collections.singleton(lectureId));
         } else {
             result.add(lectureId);
         }

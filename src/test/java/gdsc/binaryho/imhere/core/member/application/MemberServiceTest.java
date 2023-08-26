@@ -26,7 +26,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class MemberServiceTest {
 
-
     @Mock
     private MemberRepository memberRepository;
     private MemberService memberService;

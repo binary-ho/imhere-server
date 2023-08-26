@@ -21,7 +21,7 @@ public enum AttendeeFindStrategy {
         @Override
         public Set<Long> findLectureIds(RedisTemplate<String, String> redisTemplate, String key) {
             String value = redisTemplate.opsForValue().get(key);
-            return Set.of(Long.parseLong(value));
+            return Collections.singleton(Long.parseLong(value));
         }
     },
 

@@ -13,6 +13,7 @@ public class OpenLecture {
     private final int attendanceNumber;
 
     public static OpenLecture from(Lecture lecture, int attendanceNumber) {
-        return new OpenLecture(lecture.getId(), lecture.getLectureName(), lecture.getLecturerName(), attendanceNumber);
+        return new OpenLecture(lecture.getId(), lecture.getLectureName(),
+            lecture.getLecturerName(), attendanceNumber);
     }
 }

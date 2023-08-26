@@ -84,7 +84,8 @@ public class AttendanceServiceTest {
             .willReturn(Optional.of(MOCK_ENROLLMENT_INFO));
 
         // when
-        AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
+        AttendanceRequest request =
+            new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
 
         openLectureCacheRepository.cache(new OpenLecture(MOCK_OPEN_LECTURE.getId(), MOCK_OPEN_LECTURE.getLectureName(),
             MOCK_OPEN_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));

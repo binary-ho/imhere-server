@@ -228,8 +228,8 @@ class LectureServiceTest {
         int generatedAttendanceNumber = response.getAttendanceNumber();
 
         // then
-        Integer savedAttendanceNumber = openLectureCacheRepository.findAttendanceNumber(
-            MOCK_LECTURE.getId());
+        Integer savedAttendanceNumber = openLectureCacheRepository
+            .findAttendanceNumber(MOCK_LECTURE.getId());
 
         assertThat(generatedAttendanceNumber).isEqualTo(savedAttendanceNumber);
     }
@@ -246,7 +246,8 @@ class LectureServiceTest {
             MOCK_LECTURER.getId());
 
         // then
-        Optional<OpenLecture> savedOpenLecture = openLectureCacheRepository.find(MOCK_LECTURE.getId());
+        Optional<OpenLecture> savedOpenLecture = openLectureCacheRepository
+            .find(MOCK_LECTURE.getId());
 
         assertAll(
             () -> assertThat(savedOpenLecture.isPresent()).isTrue(),

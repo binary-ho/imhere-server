@@ -27,6 +27,7 @@ public class AttendeeCacheRedisRepository implements AttendeeCacheRepository {
         DataType dataType = redisTemplate.type(queryKey);
 
         AttendeeFindStrategy readStrategy = AttendeeFindStrategy.fromDataType(dataType);
+
         try {
             return readStrategy.findLectureIds(redisTemplate, queryKey);
         } catch (RuntimeException exception) {
@@ -49,6 +50,7 @@ public class AttendeeCacheRedisRepository implements AttendeeCacheRepository {
         String key = KEY_PREFIX + studentId;
         DataType dataType = redisTemplate.type(key);
         AttendeeCacheStrategy saveStrategy = AttendeeCacheStrategy.fromDataType(dataType);
+
         try {
             saveStrategy.cache(redisTemplate, key, lectureId);
             redisTemplate.expire(key, LECTURE_STUDENT_EXPIRE_TIME, TimeUnit.MINUTES);

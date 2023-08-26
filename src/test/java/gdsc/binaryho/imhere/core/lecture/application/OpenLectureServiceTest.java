@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import gdsc.binaryho.imhere.mock.TestContainer;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,14 +33,16 @@ public class OpenLectureServiceTest {
         openLectureCacheRepository.cache(openLecture);
 
         // when
-        Optional<OpenLecture> actualOpenLecture = openLectureService.find(MOCK_LECTURE.getId());
+        OpenLecture actualOpenLecture = openLectureService
+            .find(MOCK_LECTURE.getId())
+            .get();
 
         // then
         assertAll(
-            () -> assertThat(actualOpenLecture.get().getId()).isEqualTo(MOCK_LECTURE.getId()),
-            () -> assertThat(actualOpenLecture.get().getName()).isEqualTo(MOCK_LECTURE.getLectureName()),
-            () -> assertThat(actualOpenLecture.get().getLecturerName()).isEqualTo(MOCK_LECTURE.getLecturerName()),
-            () -> assertThat(actualOpenLecture.get().getAttendanceNumber()).isEqualTo(ATTENDANCE_NUMBER)
+            () -> assertThat(actualOpenLecture.getId()).isEqualTo(MOCK_LECTURE.getId()),
+            () -> assertThat(actualOpenLecture.getName()).isEqualTo(MOCK_LECTURE.getLectureName()),
+            () -> assertThat(actualOpenLecture.getLecturerName()).isEqualTo(MOCK_LECTURE.getLecturerName()),
+            () -> assertThat(actualOpenLecture.getAttendanceNumber()).isEqualTo(ATTENDANCE_NUMBER)
         );
     }
 
