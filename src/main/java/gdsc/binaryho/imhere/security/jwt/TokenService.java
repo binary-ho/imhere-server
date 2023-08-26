@@ -5,6 +5,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Service;
 public class TokenService {
 
     private final SecretHolder secretHolder;
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000L * 60L * 20L;
+    private static final Duration ACCESS_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(30);;
 
     public Token createToken(String univId, String roleKey) {
         Claims claims = Jwts.claims().setSubject(univId);
@@ -29,7 +30,7 @@ public class TokenService {
         String jwt = Jwts.builder()
             .setClaims(claims)
             .setIssuedAt(new Date(timeNowByMillis))
-            .setExpiration(new Date(timeNowByMillis + ACCESS_TOKEN_EXPIRATION_TIME))
+            .setExpiration(new Date(timeNowByMillis + ACCESS_TOKEN_EXPIRATION_TIME.toMillis()))
             .signWith(SignatureAlgorithm.HS256, secretHolder.getSecret())
             .compact();
 

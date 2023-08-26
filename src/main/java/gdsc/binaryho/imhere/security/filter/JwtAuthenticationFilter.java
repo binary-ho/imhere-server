@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private static final String HEADER_STRING = "authorization";
+    private static final String HEADER_STRING = HttpHeaders.AUTHORIZATION;
     private static final String ACCESS_TOKEN_PREFIX = "Token ";
 
     private final AuthenticationManager authenticationManager;
@@ -61,7 +62,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String grantedAuthority = authResult.getAuthorities().stream().findAny().orElseThrow().toString();
         Token jwtToken = tokenService.createToken(authResult.getPrincipal().toString(), grantedAuthority);
 
-        response.addHeader("Access-Control-Expose-Headers", "authorization");
+        response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.AUTHORIZATION);
         response.addHeader(HEADER_STRING, ACCESS_TOKEN_PREFIX + jwtToken.getAccessToken());
     }
 
