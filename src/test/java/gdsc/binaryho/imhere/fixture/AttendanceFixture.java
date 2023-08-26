@@ -4,9 +4,8 @@ import static gdsc.binaryho.imhere.fixture.LectureFixture.LECTURE;
 import static gdsc.binaryho.imhere.fixture.MemberFixture.STUDENT;
 
 import gdsc.binaryho.imhere.core.attendance.Attendance;
-import java.time.Instant;
+import gdsc.binaryho.imhere.util.SeoulDateTime;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 public class AttendanceFixture {
 
@@ -20,6 +19,6 @@ public class AttendanceFixture {
         STUDENT, LECTURE, DISTANCE, ACCURACY, LOCAL_DATE_TIME);
 
     private static LocalDateTime getLocalDateTime() {
-        return LocalDateTime.ofInstant(Instant.ofEpochMilli(MILLISECONDS), ZoneId.of("Asia/Seoul"));
+        return SeoulDateTime.from(MILLISECONDS);
     }
 }

@@ -1,13 +1,12 @@
 package gdsc.binaryho.imhere.security.jwt;
 
+import gdsc.binaryho.imhere.util.SeoulDateTime;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.time.Duration;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,21 +24,16 @@ public class TokenService {
         Claims claims = Jwts.claims().setSubject(univId);
         claims.put("role", roleKey);
 
-        long timeNowByMillis = getSeoulTimeNowByMillis();
+        long seoulTimeNow = SeoulDateTime.getMillisecondsNow();
 
         String jwt = Jwts.builder()
             .setClaims(claims)
-            .setIssuedAt(new Date(timeNowByMillis))
-            .setExpiration(new Date(timeNowByMillis + ACCESS_TOKEN_EXPIRATION_TIME.toMillis()))
+            .setIssuedAt(new Date(seoulTimeNow))
+            .setExpiration(new Date(seoulTimeNow + ACCESS_TOKEN_EXPIRATION_TIME.toMillis()))
             .signWith(SignatureAlgorithm.HS256, secretHolder.getSecret())
             .compact();
 
         return new Token(jwt);
-    }
-
-    private long getSeoulTimeNowByMillis() {
-        ZonedDateTime seoulTimeNow = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
-        return seoulTimeNow.toInstant().toEpochMilli();
     }
 
     public boolean validateTokenExpirationTimeNotExpired(String token) {

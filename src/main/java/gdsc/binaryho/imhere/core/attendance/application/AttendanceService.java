@@ -19,9 +19,8 @@ import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
-import java.time.Instant;
+import gdsc.binaryho.imhere.util.SeoulDateTime;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -54,12 +53,13 @@ public class AttendanceService {
     }
 
     private void attend(AttendanceRequest attendanceRequest, EnrollmentInfo enrollmentInfo) {
+
         Attendance attendance = Attendance.createAttendance(
             enrollmentInfo.getMember(),
             enrollmentInfo.getLecture(),
             attendanceRequest.getDistance(),
             attendanceRequest.getAccuracy(),
-            getLocalDateTime(attendanceRequest.getMilliseconds())
+            SeoulDateTime.from(attendanceRequest.getMilliseconds())
         );
 
         attendanceRepository.save(attendance);
@@ -94,11 +94,6 @@ public class AttendanceService {
         if (actualAttendanceNumber != attendanceNumber) {
             throw AttendanceNumberIncorrectException.EXCEPTION;
         }
-    }
-
-    private LocalDateTime getLocalDateTime(Long milliseconds) {
-        return LocalDateTime
-            .ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("Asia/Seoul"));
     }
 
     @Transactional(readOnly = true)
@@ -141,8 +136,7 @@ public class AttendanceService {
     }
 
     private LocalDateTime getDayLocalDateTime(Long milliseconds) {
-        return LocalDateTime
-            .ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("Asia/Seoul"))
+        return SeoulDateTime.from(milliseconds)
             .withHour(0).withMinute(0).withSecond(0);
     }
 }
