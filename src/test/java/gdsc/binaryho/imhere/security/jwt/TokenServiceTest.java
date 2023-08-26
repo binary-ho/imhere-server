@@ -1,10 +1,11 @@
 package gdsc.binaryho.imhere.security.jwt;
 
-import static gdsc.binaryho.imhere.fixture.MemberFixture.ROLE;
-import static gdsc.binaryho.imhere.fixture.MemberFixture.UNIV_ID;
+import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.MOCK_STUDENT;
+import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.UNIV_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.mock.TestSecretHolder;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
 
 public class TokenServiceTest {
 
+    private static final Role ROLE = MOCK_STUDENT.getRole();
     private static final String SECRET = "TEST_SECRET";
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000L * 60L * 20L;
     private static final long TIME_NOW = getTimeNowByMillis();

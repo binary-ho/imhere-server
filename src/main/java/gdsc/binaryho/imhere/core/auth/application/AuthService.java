@@ -1,6 +1,5 @@
 package gdsc.binaryho.imhere.core.auth.application;
 
-import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordFormatMismatchException;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthService {
 
     private final MemberRepository memberRepository;
-    private final VerificationCodeRepository verificationCodeRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private static final String PASSWORD_REGEX = "^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]{8,20}$";
@@ -34,7 +32,7 @@ public class AuthService {
 
         Member newMember = Member.createMember(univId, name, bCryptPasswordEncoder.encode(password), Role.STUDENT);
         log.info("[회원가입] univId : {}, name : {}, role : {}"
-            , () -> newMember.getUnivId(), () -> newMember.getName(), () -> newMember.getRoleKey());
+            , newMember::getUnivId, newMember::getName, newMember::getRoleKey);
         memberRepository.save(newMember);
     }
 

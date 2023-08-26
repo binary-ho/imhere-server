@@ -64,7 +64,7 @@ class AuthenticationHelperTest {
     @MockSecurityContextMember(role = Role.LECTURER)
     void 현재_로그인된_유저가_Admin이_아닌_경우_예외를_던진다() {
         assertThatThrownBy(
-            () -> authenticationHelper.verifyMemberHasAdminRole()
+            authenticationHelper::verifyMemberHasAdminRole
         ).isInstanceOf(PermissionDeniedException.class);
     }
 }

@@ -117,7 +117,7 @@ public class LectureService {
         cacheAttendee(lecture);
 
         log.info("[강의 OPEN] {} ({}), 출석 번호 : " + attendanceNumber
-            , () -> lecture.getLectureName(), () -> lecture.getId());
+            , lecture::getLectureName, lecture::getId);
 
         return new AttendanceNumberResponse(attendanceNumber);
     }
@@ -147,7 +147,7 @@ public class LectureService {
         lecture.setLectureState(LectureState.CLOSED);
 
         log.info("[강의 CLOSE] {} ({})"
-            , () -> lecture.getLectureName(), () -> lecture.getId());
+            , lecture::getLectureName, lecture::getId);
     }
 
     private Integer generateRandomNumber() {

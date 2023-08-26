@@ -11,8 +11,11 @@ import org.springframework.data.jpa.repository.Query;
 public interface LectureRepository extends JpaRepository<Lecture, Long> {
 
     Optional<Lecture> findById(Long id);
+
     List<Lecture> findAllByMemberId(Long id);
+
     List<Lecture> findAllByLectureStateNot(LectureState lectureState);
+
     @Query("SELECT e.lecture FROM EnrollmentInfo e WHERE e.member.id = :memberId AND e.enrollmentState = 'APPROVAL' AND e.lecture.lectureState = 'OPEN'")
     List<Lecture> findOpenAndApprovalLecturesByMemberId(@Param("memberId") Long memberId);
 }

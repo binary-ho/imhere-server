@@ -29,7 +29,8 @@ public class MemberService {
         Role newRole = Role.valueOf(roleChangeRequest.getRole());
         targetMember.setRole(newRole);
 
-        log.info("[권한 변경] " + univId + "의 권한이 {} 로 변경. ({})",
-            () -> roleChangeRequest.getRole(), () -> authenticationHelper.getCurrentMember().getUnivId());
+        Member admin = authenticationHelper.getCurrentMember();
+        log.info("[권한 변경] " + univId + "의 권한이 {} 로 변경. 변경자 : ({})",
+            roleChangeRequest::getRole, admin::getUnivId);
     }
 }

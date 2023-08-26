@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.core.auth.application;
 
-import static gdsc.binaryho.imhere.fixture.MemberFixture.STUDENT;
+import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.MOCK_STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -61,7 +61,7 @@ class AuthServiceTest {
 
     @Test
     void 중복된_UnivId로_회원가입_시도시_중복_예외를_던진다() {
-        given(memberRepository.findByUnivId(UNIV_ID)).willReturn(Optional.of(STUDENT));
+        given(memberRepository.findByUnivId(UNIV_ID)).willReturn(Optional.of(MOCK_STUDENT));
 
         // when
         // then
@@ -95,7 +95,7 @@ class AuthServiceTest {
     @Test
     void 로그인_요청_검증시_비밀번호가_틀린_경우_예외를_던진다() {
         // given
-        given(memberRepository.findByUnivId(UNIV_ID)).willReturn(Optional.of(STUDENT));
+        given(memberRepository.findByUnivId(UNIV_ID)).willReturn(Optional.of(MOCK_STUDENT));
 
         // when
         // then
@@ -107,13 +107,13 @@ class AuthServiceTest {
     @Test
     void 로그인_요청을_검증할_수_있다() {
         // given
-        given(memberRepository.findByUnivId(UNIV_ID)).willReturn(Optional.of(STUDENT));
+        given(memberRepository.findByUnivId(UNIV_ID)).willReturn(Optional.of(MOCK_STUDENT));
 
         // when
         SignInRequestValidationResult signInRequestValidationResult =
             authService.validateSignInRequest(new SignInRequest(UNIV_ID, PASSWORD));
 
         // then
-        assertThat(signInRequestValidationResult.getRoleKey()).isEqualTo(STUDENT.getRoleKey());
+        assertThat(signInRequestValidationResult.getRoleKey()).isEqualTo(MOCK_STUDENT.getRoleKey());
     }
 }

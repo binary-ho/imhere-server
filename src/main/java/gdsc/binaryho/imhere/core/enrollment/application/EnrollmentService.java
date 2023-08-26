@@ -57,9 +57,11 @@ public class EnrollmentService {
 
         cacheStudentIfLectureIsOpen(lectureId, enrollmentInfo);
 
+        Lecture lecture = enrollmentInfo.getLecture();
+        Member student = enrollmentInfo.getMember();
         log.info("[수강신청 승인] 강의 : {} ({}) 학생 : {} ({})"
-            , () -> enrollmentInfo.getLecture().getLectureName(), () -> enrollmentInfo.getLecture().getLecturerName()
-            , () -> enrollmentInfo.getMember().getUnivId(), () -> enrollmentInfo.getMember().getName());
+            , lecture::getLectureName, lecture::getLecturerName
+            , student::getUnivId, student::getName);
     }
 
     private void cacheStudentIfLectureIsOpen(Long lectureId, EnrollmentInfo enrollmentInfo) {
@@ -85,9 +87,11 @@ public class EnrollmentService {
 
         enrollmentInfo.setEnrollmentState(EnrollmentState.REJECTION);
 
+        Lecture lecture = enrollmentInfo.getLecture();
+        Member student = enrollmentInfo.getMember();
         log.info("[수강신청 거절] 강의 : {} ({}) 학생 : {} ({})"
-            , () -> enrollmentInfo.getLecture().getLectureName(), () -> enrollmentInfo.getLecture().getLecturerName()
-            , () -> enrollmentInfo.getMember().getUnivId(), () -> enrollmentInfo.getMember().getName());
+            , lecture::getLectureName, lecture::getLecturerName
+            , student::getUnivId, student::getName);
     }
 
     @Transactional(readOnly = true)
@@ -104,15 +108,23 @@ public class EnrollmentService {
         Optional<EnrollmentInfo> enrollmentInfo = enrollmentInfoRepository
             .findByMemberIdAndLectureId(student.getId(), lectureId);
 
-        if (enrollmentInfo.isPresent()) {
-            EnrollmentInfo enrollment = enrollmentInfo.get();
-
-            log.info("[수강신청 중복] 학생 : {}, 강의 : {} ({})"
-                , () -> enrollment.getMember().getUnivId()
-                , () -> enrollment.getLecture().getLectureName()
-                , () -> enrollment.getLecture().getId());
-            throw EnrollmentDuplicatedException.EXCEPTION;
+        if (enrollmentInfo.isEmpty()) {
+            return;
         }
+
+        logDuplicatedEnrollment(enrollmentInfo.get());
+
+        throw EnrollmentDuplicatedException.EXCEPTION;
+    }
+
+    private void logDuplicatedEnrollment(EnrollmentInfo enrollmentInfo) {
+        Member student = enrollmentInfo.getMember();
+        Lecture lecture = enrollmentInfo.getLecture();
+
+        log.info("[수강신청 중복] 학생 : {}, 강의 : {} ({})"
+            , student::getUnivId
+            , lecture::getLectureName
+            , lecture::getId);
     }
 
     private void validateLecturerOwnLecture(Lecture lecture) {

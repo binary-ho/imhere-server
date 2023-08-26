@@ -1,14 +1,15 @@
 package gdsc.binaryho.imhere.core.attendance.application;
 
-import static gdsc.binaryho.imhere.fixture.AttendanceFixture.ACCURACY;
-import static gdsc.binaryho.imhere.fixture.AttendanceFixture.ATTENDANCE;
-import static gdsc.binaryho.imhere.fixture.AttendanceFixture.ATTENDANCE_NUMBER;
-import static gdsc.binaryho.imhere.fixture.AttendanceFixture.DISTANCE;
-import static gdsc.binaryho.imhere.fixture.AttendanceFixture.MILLISECONDS;
-import static gdsc.binaryho.imhere.fixture.EnrollmentInfoFixture.ENROLLMENT_INFO;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.CLOSED_STATE_LECTURE;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.LECTURE;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.OPEN_STATE_LECTURE;
+import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.ACCURACY;
+import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.ATTENDANCE_NUMBER;
+import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.DISTANCE;
+import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.MILLISECONDS;
+import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.MOCK_ATTENDANCE;
+import static gdsc.binaryho.imhere.mock.fixture.EnrollmentInfoFixture.MOCK_ENROLLMENT_INFO;
+import static gdsc.binaryho.imhere.mock.fixture.LectureFixture.MOCK_CLOSED_LECTURE;
+import static gdsc.binaryho.imhere.mock.fixture.LectureFixture.MOCK_LECTURE;
+import static gdsc.binaryho.imhere.mock.fixture.LectureFixture.MOCK_OPEN_LECTURE;
+import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.MOCK_STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -34,13 +35,11 @@ import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Role;
-import gdsc.binaryho.imhere.fixture.MemberFixture;
 import gdsc.binaryho.imhere.mock.TestContainer;
 import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
-import java.time.Instant;
+import gdsc.binaryho.imhere.util.SeoulDateTime;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -81,16 +80,17 @@ public class AttendanceServiceTest {
     void 저장된_출석_번호와_학생이_제출한_출석번호가_일치하는_경우_학생은_출석된다() {
         // given
         given(enrollmentRepository
-            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(OPEN_STATE_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
-            .willReturn(Optional.of(ENROLLMENT_INFO));
+            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(MOCK_OPEN_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
+            .willReturn(Optional.of(MOCK_ENROLLMENT_INFO));
 
         // when
-        AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
+        AttendanceRequest request =
+            new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
 
-        openLectureCacheRepository.cache(new OpenLecture(OPEN_STATE_LECTURE.getId(), OPEN_STATE_LECTURE.getLectureName(),
-            OPEN_STATE_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
+        openLectureCacheRepository.cache(new OpenLecture(MOCK_OPEN_LECTURE.getId(), MOCK_OPEN_LECTURE.getLectureName(),
+            MOCK_OPEN_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
-        attendanceService.takeAttendance(request, OPEN_STATE_LECTURE.getId());
+        attendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId());
 
         // then
         verify(attendanceRepository, times(1)).save(any());
@@ -101,21 +101,21 @@ public class AttendanceServiceTest {
     void 학생이_출석을_시도한_수업이_열려있지_않은_경우_예외가_발생한다() {
         // given
         EnrollmentInfo closeLectureEnrollmentInfo = EnrollmentInfo
-            .createEnrollmentInfo(CLOSED_STATE_LECTURE, MemberFixture.STUDENT, EnrollmentState.APPROVAL);
+            .createEnrollmentInfo(MOCK_CLOSED_LECTURE, MOCK_STUDENT, EnrollmentState.APPROVAL);
 
         given(enrollmentRepository
-            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(CLOSED_STATE_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
+            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(MOCK_CLOSED_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
             .willReturn(Optional.of(closeLectureEnrollmentInfo));
 
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
 
-        openLectureCacheRepository.cache(new OpenLecture(CLOSED_STATE_LECTURE.getId(), CLOSED_STATE_LECTURE.getLectureName(),
-            CLOSED_STATE_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
+        openLectureCacheRepository.cache(new OpenLecture(MOCK_CLOSED_LECTURE.getId(), MOCK_CLOSED_LECTURE.getLectureName(),
+            MOCK_CLOSED_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
         // then
         assertThatThrownBy(
-            () -> attendanceService.takeAttendance(request, CLOSED_STATE_LECTURE.getId()))
+            () -> attendanceService.takeAttendance(request, MOCK_CLOSED_LECTURE.getId()))
             .isInstanceOf(LectureNotOpenException.class);
     }
 
@@ -124,18 +124,18 @@ public class AttendanceServiceTest {
     void 수업에_저장된_출석_번호가_없는_경우_예외를_발생시킨다() {
         // given
         given(enrollmentRepository
-            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(OPEN_STATE_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
-            .willReturn(Optional.of(ENROLLMENT_INFO));
+            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(MOCK_OPEN_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
+            .willReturn(Optional.of(MOCK_ENROLLMENT_INFO));
 
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
-        Integer attendanceNumber = openLectureService.findAttendanceNumber(OPEN_STATE_LECTURE.getId());
+        Integer attendanceNumber = openLectureService.findAttendanceNumber(MOCK_OPEN_LECTURE.getId());
 
         // then
         assertAll(
             () -> assertThat(attendanceNumber).isEqualTo(null),
             () -> assertThatThrownBy(
-                () -> attendanceService.takeAttendance(request, OPEN_STATE_LECTURE.getId()))
+                () -> attendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId()))
                 .isInstanceOf(AttendanceTimeExceededException.class)
         );
     }
@@ -145,18 +145,18 @@ public class AttendanceServiceTest {
     void 저장된_출석_번호와_학생이_제출한_출석번호가_다른_경우_예외를_발생시킨다() {
         // given
         given(enrollmentRepository
-            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(OPEN_STATE_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
-            .willReturn(Optional.of(ENROLLMENT_INFO));
+            .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(MOCK_OPEN_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))
+            .willReturn(Optional.of(MOCK_ENROLLMENT_INFO));
 
         // when
         AttendanceRequest request = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE, ACCURACY, MILLISECONDS);
         int wrongNumber = ATTENDANCE_NUMBER + 7;
-        openLectureCacheRepository.cache(new OpenLecture(OPEN_STATE_LECTURE.getId(), OPEN_STATE_LECTURE.getLectureName(),
-            OPEN_STATE_LECTURE.getLecturerName(), wrongNumber));
+        openLectureCacheRepository.cache(new OpenLecture(MOCK_OPEN_LECTURE.getId(), MOCK_OPEN_LECTURE.getLectureName(),
+            MOCK_OPEN_LECTURE.getLecturerName(), wrongNumber));
 
         // then
         assertThatThrownBy(
-            () -> attendanceService.takeAttendance(request, OPEN_STATE_LECTURE.getId()))
+            () -> attendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId()))
             .isInstanceOf(AttendanceNumberIncorrectException.class);
     }
 
@@ -164,22 +164,22 @@ public class AttendanceServiceTest {
     @MockSecurityContextMember(id = 2L, role = Role.LECTURER)
     void 강사는_자신의_수업의_모든_출석_정보를_가져올_수_있다() {
         // given
-        given(attendanceRepository.findAllByLectureId(LECTURE.getId()))
-            .willReturn(List.of(ATTENDANCE));
+        given(attendanceRepository.findAllByLectureId(MOCK_LECTURE.getId()))
+            .willReturn(Collections.singletonList(MOCK_ATTENDANCE));
 
         // when
-        AttendanceResponse response = attendanceService.getAttendances(LECTURE.getId());
+        AttendanceResponse response = attendanceService.getAttendances(MOCK_LECTURE.getId());
 
         // then
         AttendanceInfo attendanceInfo = response.getAttendanceInfos().get(0);
         assertAll(
-            () -> assertThat(response.getLectureName()).isEqualTo(LECTURE.getLectureName()),
-            () -> assertThat(response.getLecturerName()).isEqualTo(LECTURE.getLecturerName()),
-            () -> assertThat(attendanceInfo.getUnivId()).isEqualTo(ATTENDANCE.getMember().getUnivId()),
-            () -> assertThat(attendanceInfo.getName()).isEqualTo(ATTENDANCE.getMember().getName()),
-            () -> assertThat(attendanceInfo.getAccuracy()).isEqualTo(ATTENDANCE.getAccuracy()),
-            () -> assertThat(attendanceInfo.getDistance()).isEqualTo(ATTENDANCE.getDistance()),
-            () -> assertThat(attendanceInfo.getTimestamp()).isEqualTo(ATTENDANCE.getTimestamp())
+            () -> assertThat(response.getLectureName()).isEqualTo(MOCK_LECTURE.getLectureName()),
+            () -> assertThat(response.getLecturerName()).isEqualTo(MOCK_LECTURE.getLecturerName()),
+            () -> assertThat(attendanceInfo.getUnivId()).isEqualTo(MOCK_ATTENDANCE.getMember().getUnivId()),
+            () -> assertThat(attendanceInfo.getName()).isEqualTo(MOCK_ATTENDANCE.getMember().getName()),
+            () -> assertThat(attendanceInfo.getAccuracy()).isEqualTo(MOCK_ATTENDANCE.getAccuracy()),
+            () -> assertThat(attendanceInfo.getDistance()).isEqualTo(MOCK_ATTENDANCE.getDistance()),
+            () -> assertThat(attendanceInfo.getTimestamp()).isEqualTo(MOCK_ATTENDANCE.getTimestamp())
         );
     }
 
@@ -187,19 +187,19 @@ public class AttendanceServiceTest {
     @MockSecurityContextMember(id = 2L, role = Role.LECTURER)
     void 강사는_자신의_수업의_출석_번호가_없는_경우_빈_응답을_받을_수_있다() {
         // given
-        given(attendanceRepository.findAllByLectureId(LECTURE.getId()))
-            .willReturn(List.of());
+        given(attendanceRepository.findAllByLectureId(MOCK_LECTURE.getId()))
+            .willReturn(Collections.emptyList());
 
-        given(lectureRepository.findById(LECTURE.getId()))
-            .willReturn(Optional.of(LECTURE));
+        given(lectureRepository.findById(MOCK_LECTURE.getId()))
+            .willReturn(Optional.of(MOCK_LECTURE));
 
         // when
-        AttendanceResponse response = attendanceService.getAttendances(LECTURE.getId());
+        AttendanceResponse response = attendanceService.getAttendances(MOCK_LECTURE.getId());
 
         // then
         assertAll(
-            () -> assertThat(response.getLectureName()).isEqualTo(LECTURE.getLectureName()),
-            () -> assertThat(response.getLecturerName()).isEqualTo(LECTURE.getLecturerName()),
+            () -> assertThat(response.getLectureName()).isEqualTo(MOCK_LECTURE.getLectureName()),
+            () -> assertThat(response.getLecturerName()).isEqualTo(MOCK_LECTURE.getLecturerName()),
             () -> assertThat(response.getAttendanceInfos().isEmpty()).isTrue()
         );
     }
@@ -208,13 +208,13 @@ public class AttendanceServiceTest {
     @MockSecurityContextMember(id = 3L, role = Role.LECTURER)
     void 강사가_자신의_수업이_아닌_수업의_출석_정보를_요청하는_경우_예외가_발생한다() {
         // given
-        given(attendanceRepository.findAllByLectureId(LECTURE.getId()))
-            .willReturn(List.of(ATTENDANCE));
+        given(attendanceRepository.findAllByLectureId(MOCK_LECTURE.getId()))
+            .willReturn(Collections.singletonList(MOCK_ATTENDANCE));
 
         // when
         // then
         assertThatThrownBy(
-            () -> attendanceService.getAttendances(LECTURE.getId()))
+            () -> attendanceService.getAttendances(MOCK_LECTURE.getId()))
             .isInstanceOf(RequestMemberIdMismatchException.class);
     }
 
@@ -222,11 +222,11 @@ public class AttendanceServiceTest {
     void 출석_번호를_강의_아이디와_함께_저장할_수_있다() {
         // given
         // when
-        openLectureCacheRepository.cache(new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
-            LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
+        openLectureCacheRepository.cache(new OpenLecture(MOCK_LECTURE.getId(), MOCK_LECTURE.getLectureName(),
+            MOCK_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
         // then
-        assertThat(openLectureService.findAttendanceNumber(LECTURE.getId()))
+        assertThat(openLectureService.findAttendanceNumber(MOCK_LECTURE.getId()))
             .isEqualTo(ATTENDANCE_NUMBER);
     }
 
@@ -234,28 +234,27 @@ public class AttendanceServiceTest {
     @MockSecurityContextMember(id = 2L, role = Role.LECTURER)
     void 강사는_지정_날짜의_출석_정보를_가져올_수_있다() {
         // given
-        LocalDateTime dayLocalDateTime = LocalDateTime
-            .ofInstant(Instant.ofEpochMilli(MILLISECONDS), ZoneId.of("Asia/Seoul"))
+        LocalDateTime dayLocalDateTime = SeoulDateTime.from(MILLISECONDS)
             .withHour(0).withMinute(0).withSecond(0);
 
         // 위에서 구한 LocalDateTime 이용
         given(attendanceRepository
-            .findByLectureIdAndTimestampBetween(LECTURE.getId(), dayLocalDateTime, dayLocalDateTime.plusDays(1)))
-            .willReturn(List.of(ATTENDANCE));
+            .findByLectureIdAndTimestampBetween(MOCK_LECTURE.getId(), dayLocalDateTime, dayLocalDateTime.plusDays(1)))
+            .willReturn(Collections.singletonList(MOCK_ATTENDANCE));
 
         // when
-        AttendanceResponse response = attendanceService.getDayAttendances(LECTURE.getId(), MILLISECONDS);
+        AttendanceResponse response = attendanceService.getDayAttendances(MOCK_LECTURE.getId(), MILLISECONDS);
 
         // then
         AttendanceInfo attendanceInfo = response.getAttendanceInfos().get(0);
         assertAll(
-            () -> assertThat(response.getLectureName()).isEqualTo(LECTURE.getLectureName()),
-            () -> assertThat(response.getLecturerName()).isEqualTo(LECTURE.getLecturerName()),
-            () -> assertThat(attendanceInfo.getUnivId()).isEqualTo(ATTENDANCE.getMember().getUnivId()),
-            () -> assertThat(attendanceInfo.getName()).isEqualTo(ATTENDANCE.getMember().getName()),
-            () -> assertThat(attendanceInfo.getAccuracy()).isEqualTo(ATTENDANCE.getAccuracy()),
-            () -> assertThat(attendanceInfo.getDistance()).isEqualTo(ATTENDANCE.getDistance()),
-            () -> assertThat(attendanceInfo.getTimestamp()).isEqualTo(ATTENDANCE.getTimestamp())
+            () -> assertThat(response.getLectureName()).isEqualTo(MOCK_LECTURE.getLectureName()),
+            () -> assertThat(response.getLecturerName()).isEqualTo(MOCK_LECTURE.getLecturerName()),
+            () -> assertThat(attendanceInfo.getUnivId()).isEqualTo(MOCK_ATTENDANCE.getMember().getUnivId()),
+            () -> assertThat(attendanceInfo.getName()).isEqualTo(MOCK_ATTENDANCE.getMember().getName()),
+            () -> assertThat(attendanceInfo.getAccuracy()).isEqualTo(MOCK_ATTENDANCE.getAccuracy()),
+            () -> assertThat(attendanceInfo.getDistance()).isEqualTo(MOCK_ATTENDANCE.getDistance()),
+            () -> assertThat(attendanceInfo.getTimestamp()).isEqualTo(MOCK_ATTENDANCE.getTimestamp())
         );
     }
 }

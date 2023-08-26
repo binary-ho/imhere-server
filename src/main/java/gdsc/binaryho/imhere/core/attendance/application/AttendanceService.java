@@ -19,12 +19,10 @@ import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
-import java.time.Instant;
+import gdsc.binaryho.imhere.util.SeoulDateTime;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -55,20 +53,22 @@ public class AttendanceService {
     }
 
     private void attend(AttendanceRequest attendanceRequest, EnrollmentInfo enrollmentInfo) {
+
         Attendance attendance = Attendance.createAttendance(
             enrollmentInfo.getMember(),
             enrollmentInfo.getLecture(),
             attendanceRequest.getDistance(),
             attendanceRequest.getAccuracy(),
-            getLocalDateTime(attendanceRequest.getMilliseconds())
+            SeoulDateTime.from(attendanceRequest.getMilliseconds())
         );
 
         attendanceRepository.save(attendance);
 
+        Lecture lecture = attendance.getLecture();
         Member attendMember = enrollmentInfo.getMember();
         log.info("[출석 완료] {}({}) , 학생 : {} ({})",
-            () -> attendance.getLecture().getLectureName(), () -> attendance.getLecture().getId(),
-            () -> attendMember.getUnivId(), () -> attendMember.getName());
+            lecture::getLectureName, lecture::getId,
+            attendMember::getUnivId, attendMember::getName);
     }
 
     private void validateLectureOpen(EnrollmentInfo enrollmentInfo) {
@@ -86,7 +86,7 @@ public class AttendanceService {
     }
 
     private void validateAttendanceNumberNotTimeOut(Integer attendanceNumber) {
-        if (Objects.isNull(attendanceNumber)) {
+        if (attendanceNumber == null) {
             throw AttendanceTimeExceededException.EXCEPTION;
         }
     }
@@ -95,11 +95,6 @@ public class AttendanceService {
         if (actualAttendanceNumber != attendanceNumber) {
             throw AttendanceNumberIncorrectException.EXCEPTION;
         }
-    }
-
-    private LocalDateTime getLocalDateTime(Long milliseconds) {
-        return LocalDateTime
-            .ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("Asia/Seoul"));
     }
 
     @Transactional(readOnly = true)
@@ -123,12 +118,12 @@ public class AttendanceService {
     private AttendanceResponse getNullAttendanceDto(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId)
             .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
-        return new AttendanceResponse(lecture, new ArrayList<>());
+        return new AttendanceResponse(lecture, Collections.emptyList());
     }
 
     @Transactional(readOnly = true)
     public AttendanceResponse getDayAttendances(Long lectureId, Long milliseconds) {
-        LocalDateTime timestamp = getDayLocalDateTime(milliseconds);
+        LocalDateTime timestamp = getTodaySeoulDateTime(milliseconds);
         List<Attendance> attendances = attendanceRepository
             .findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
 
@@ -141,9 +136,8 @@ public class AttendanceService {
         return new AttendanceResponse(lecture, attendances);
     }
 
-    private LocalDateTime getDayLocalDateTime(Long milliseconds) {
-        return LocalDateTime
-            .ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("Asia/Seoul"))
+    private LocalDateTime getTodaySeoulDateTime(Long milliseconds) {
+        return SeoulDateTime.from(milliseconds)
             .withHour(0).withMinute(0).withSecond(0);
     }
 }

@@ -27,11 +27,12 @@ public class AttendeeCacheRedisRepository implements AttendeeCacheRepository {
         DataType dataType = redisTemplate.type(queryKey);
 
         AttendeeFindStrategy readStrategy = AttendeeFindStrategy.fromDataType(dataType);
+
         try {
             return readStrategy.findLectureIds(redisTemplate, queryKey);
         } catch (RuntimeException exception) {
             log.info("[캐시 READ 실패] findAllAttendLectureId 실패 studentID : {}, errorMessage : {}",
-                () -> studentId, () -> exception.getMessage());
+                () -> studentId, exception::getMessage);
             return Collections.emptySet();
         }
     }
@@ -49,12 +50,13 @@ public class AttendeeCacheRedisRepository implements AttendeeCacheRepository {
         String key = KEY_PREFIX + studentId;
         DataType dataType = redisTemplate.type(key);
         AttendeeCacheStrategy saveStrategy = AttendeeCacheStrategy.fromDataType(dataType);
+
         try {
             saveStrategy.cache(redisTemplate, key, lectureId);
             redisTemplate.expire(key, LECTURE_STUDENT_EXPIRE_TIME, TimeUnit.MINUTES);
         } catch (RuntimeException exception) {
             log.info("[캐시 WRITE 실패] cacheAttendee 실패 studentID : {}, lectureId : {} errorMessage : {}",
-                () -> studentId, () -> lectureId, () -> exception.getMessage());
+                () -> studentId, () -> lectureId, exception::getMessage);
         }
     }
 }

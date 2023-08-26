@@ -1,6 +1,7 @@
 package gdsc.binaryho.imhere.core.lecture.infrastructure;
 
 import gdsc.binaryho.imhere.core.lecture.exception.UnexpectedRedisDataTypeException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,13 +40,11 @@ public enum AttendeeFindStrategy {
     public abstract Set<Long> findLectureIds(RedisTemplate<String, String> redisTemplate, String key);
 
     public static AttendeeFindStrategy fromDataType(DataType dataType) {
-        for (AttendeeFindStrategy strategy : values()) {
-            if (strategy.dataType == dataType) {
-                return strategy;
-            }
-        }
-
-        throw UnexpectedRedisDataTypeException.EXCEPTION;
+        return Arrays
+            .stream(values())
+            .filter(strategy -> strategy.dataType == dataType)
+            .findAny()
+            .orElseThrow(() -> UnexpectedRedisDataTypeException.EXCEPTION);
     }
 
     AttendeeFindStrategy(DataType dataType) {

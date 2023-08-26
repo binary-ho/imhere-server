@@ -6,7 +6,7 @@ import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
 import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -39,7 +39,7 @@ public class LectureResponse {
     public static LectureResponse from(List<OpenLecture> openLectures) {
         List<LectureInfo> lectureInfos = openLectures.stream()
             .map(openLecture -> new LectureInfo(openLecture.getId(), openLecture.getName(),
-                    openLecture.getLecturerName(), LectureState.OPEN, new ArrayList<>()))
+                openLecture.getLecturerName(), LectureState.OPEN, Collections.emptyList()))
             .collect(Collectors.toList());
         return new LectureResponse(lectureInfos);
     }
@@ -61,7 +61,7 @@ public class LectureResponse {
             this.lectureName = lecture.getLectureName();
             this.lecturerName = lecture.getLecturerName();
             this.lectureState = lecture.getLectureState();
-            this.studentInfos = new ArrayList<>();
+            this.studentInfos = Collections.emptyList();
         }
 
         private LectureInfo(List<EnrollmentInfo> enrollmentInfos) {
