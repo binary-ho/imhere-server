@@ -15,7 +15,7 @@ public class GlobalControllerAdvice {
     public ResponseEntity<ErrorResponse> imhereExceptionHandler(HttpServletRequest request, ImhereException error) {
 
         log.info("[ImhereException] Method : {}, RequestURI : {}, Exception : {}, Message : {}",
-            () -> request.getMethod(), () -> request.getRequestURI(),
+            request::getMethod, request::getRequestURI,
             () -> error.getClass().getSimpleName(), () -> error.getErrorInfo().getMessage());
         return ResponseEntity
             .status(error.getErrorInfo().getHttpStatus())
@@ -26,8 +26,8 @@ public class GlobalControllerAdvice {
     public ResponseEntity<ErrorResponse> runtimeExceptionHandler(HttpServletRequest request, RuntimeException error) {
 
         log.info("[RuntimeException] Method : {}, RequestURI : {}, Exception : {}, Message : {}",
-            () -> request.getMethod(), () -> request.getRequestURI(),
-            () -> error.getClass().getSimpleName(), () -> error.getMessage());
+            request::getMethod, request::getRequestURI,
+            () -> error.getClass().getSimpleName(), error::getMessage);
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
             .body(new ErrorResponse(HttpStatus.NO_CONTENT.value(), error.getMessage()));

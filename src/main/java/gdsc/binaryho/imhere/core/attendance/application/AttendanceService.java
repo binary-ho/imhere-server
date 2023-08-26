@@ -64,10 +64,11 @@ public class AttendanceService {
 
         attendanceRepository.save(attendance);
 
+        Lecture lecture = attendance.getLecture();
         Member attendMember = enrollmentInfo.getMember();
         log.info("[출석 완료] {}({}) , 학생 : {} ({})",
-            () -> attendance.getLecture().getLectureName(), () -> attendance.getLecture().getId(),
-            () -> attendMember.getUnivId(), () -> attendMember.getName());
+            lecture::getLectureName, lecture::getId,
+            attendMember::getUnivId, attendMember::getName);
     }
 
     private void validateLectureOpen(EnrollmentInfo enrollmentInfo) {

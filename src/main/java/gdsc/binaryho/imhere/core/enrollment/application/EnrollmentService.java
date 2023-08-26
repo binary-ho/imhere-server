@@ -112,14 +112,19 @@ public class EnrollmentService {
             return;
         }
 
-        EnrollmentInfo enrollment = enrollmentInfo.get();
-
-        log.info("[수강신청 중복] 학생 : {}, 강의 : {} ({})"
-            , () -> enrollment.getMember().getUnivId()
-            , () -> enrollment.getLecture().getLectureName()
-            , () -> enrollment.getLecture().getId());
+        logDuplicatedEnrollment(enrollmentInfo.get());
 
         throw EnrollmentDuplicatedException.EXCEPTION;
+    }
+
+    private void logDuplicatedEnrollment(EnrollmentInfo enrollmentInfo) {
+        Member student = enrollmentInfo.getMember();
+        Lecture lecture = enrollmentInfo.getLecture();
+
+        log.info("[수강신청 중복] 학생 : {}, 강의 : {} ({})"
+            , student::getUnivId
+            , lecture::getLectureName
+            , lecture::getId);
     }
 
     private void validateLecturerOwnLecture(Lecture lecture) {

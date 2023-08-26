@@ -32,7 +32,7 @@ public class AuthService {
 
         Member newMember = Member.createMember(univId, name, bCryptPasswordEncoder.encode(password), Role.STUDENT);
         log.info("[회원가입] univId : {}, name : {}, role : {}"
-            , () -> newMember.getUnivId(), () -> newMember.getName(), () -> newMember.getRoleKey());
+            , newMember::getUnivId, newMember::getName, newMember::getRoleKey);
         memberRepository.save(newMember);
     }
 

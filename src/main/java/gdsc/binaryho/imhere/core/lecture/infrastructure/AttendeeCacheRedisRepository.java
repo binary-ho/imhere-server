@@ -31,7 +31,7 @@ public class AttendeeCacheRedisRepository implements AttendeeCacheRepository {
             return readStrategy.findLectureIds(redisTemplate, queryKey);
         } catch (RuntimeException exception) {
             log.info("[캐시 READ 실패] findAllAttendLectureId 실패 studentID : {}, errorMessage : {}",
-                () -> studentId, () -> exception.getMessage());
+                () -> studentId, exception::getMessage);
             return Collections.emptySet();
         }
     }
@@ -54,7 +54,7 @@ public class AttendeeCacheRedisRepository implements AttendeeCacheRepository {
             redisTemplate.expire(key, LECTURE_STUDENT_EXPIRE_TIME, TimeUnit.MINUTES);
         } catch (RuntimeException exception) {
             log.info("[캐시 WRITE 실패] cacheAttendee 실패 studentID : {}, lectureId : {} errorMessage : {}",
-                () -> studentId, () -> lectureId, () -> exception.getMessage());
+                () -> studentId, () -> lectureId, exception::getMessage);
         }
     }
 }

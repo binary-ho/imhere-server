@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class TokenService {
 
     private final SecretHolder secretHolder;
-    private static final Duration ACCESS_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(30);;
+    private static final Duration ACCESS_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(30);
 
     public Token createToken(String univId, String roleKey) {
         Claims claims = Jwts.claims().setSubject(univId);
@@ -49,7 +49,7 @@ public class TokenService {
         } catch (ExpiredJwtException exception) {
             return false;
         } catch (JwtException | IllegalArgumentException exception) {
-            log.info("[토큰 에러] {}", () -> exception.getMessage());
+            log.info("[토큰 에러] {}", exception::getMessage);
             return false;
         }
     }
