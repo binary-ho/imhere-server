@@ -15,8 +15,9 @@ public class MemberFixture {
 
     public static final Long STUDENT_ID = 1L;
     public static final Long LECTURER_ID = 2L;
-    public static final Member STUDENT = createMockStudent();
-    public static final Member LECTURER = createMockLecturer();
+
+    public static final Member MOCK_STUDENT = createMockStudent();
+    public static final Member MOCK_LECTURER = createMockLecturer();
 
     private static Member createMockStudent() {
         Member student = Member.createMember(UNIV_ID, NAME, PASSWORD, Role.STUDENT);

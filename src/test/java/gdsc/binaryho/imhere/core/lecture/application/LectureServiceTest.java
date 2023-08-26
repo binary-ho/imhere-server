@@ -1,11 +1,11 @@
 package gdsc.binaryho.imhere.core.lecture.application;
 
 import static gdsc.binaryho.imhere.fixture.AttendanceFixture.ATTENDANCE_NUMBER;
-import static gdsc.binaryho.imhere.fixture.EnrollmentInfoFixture.ENROLLMENT_INFO;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.LECTURE;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.OPEN_STATE_LECTURE;
-import static gdsc.binaryho.imhere.fixture.MemberFixture.LECTURER;
+import static gdsc.binaryho.imhere.fixture.EnrollmentInfoFixture.MOCK_ENROLLMENT_INFO;
+import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_LECTURE;
+import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_OPEN_LECTURE;
 import static gdsc.binaryho.imhere.fixture.MemberFixture.LECTURER_ID;
+import static gdsc.binaryho.imhere.fixture.MemberFixture.MOCK_LECTURER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -103,10 +103,10 @@ class LectureServiceTest {
     void 학생은_수강중인_강의_리스트를_가져올_수_있다() {
         // given
         EnrollmentInfo enrollmentInfo0 = EnrollmentInfo
-            .createEnrollmentInfo(LECTURE, MemberFixture.STUDENT, EnrollmentState.APPROVAL);
+            .createEnrollmentInfo(MOCK_LECTURE, MemberFixture.MOCK_STUDENT, EnrollmentState.APPROVAL);
 
         EnrollmentInfo enrollmentInfo1 = EnrollmentInfo
-            .createEnrollmentInfo(OPEN_STATE_LECTURE, MemberFixture.STUDENT, EnrollmentState.APPROVAL);
+            .createEnrollmentInfo(MOCK_OPEN_LECTURE, MemberFixture.MOCK_STUDENT, EnrollmentState.APPROVAL);
 
         List<EnrollmentInfo> enrollmentInfos = List.of(enrollmentInfo0, enrollmentInfo1);
 
@@ -135,10 +135,10 @@ class LectureServiceTest {
     void 학생은_수강중인_강의_중_Open된_강의를_가져올_수_있다() {
         // given
         EnrollmentInfo enrollmentInfo = EnrollmentInfo
-            .createEnrollmentInfo(OPEN_STATE_LECTURE, MemberFixture.STUDENT, EnrollmentState.APPROVAL);
+            .createEnrollmentInfo(MOCK_OPEN_LECTURE, MemberFixture.MOCK_STUDENT, EnrollmentState.APPROVAL);
 
         given(lectureRepository.findOpenAndApprovalLecturesByMemberId(any()))
-            .willReturn(List.of(OPEN_STATE_LECTURE));
+            .willReturn(List.of(MOCK_OPEN_LECTURE));
 
         Long expectedOpenLectureId = enrollmentInfo.getLecture().getId();
 
@@ -154,11 +154,11 @@ class LectureServiceTest {
     @MockSecurityContextMember
     void 학생은_수강중인_강의_중_Open된_강의를_찾을_때_캐싱된_데이터를_먼저_확인한다() {
         // given
-        OpenLecture openLecture = new OpenLecture(OPEN_STATE_LECTURE.getId(),
-            OPEN_STATE_LECTURE.getLectureName(), OPEN_STATE_LECTURE.getLecturerName(), ATTENDANCE_NUMBER);
+        OpenLecture openLecture = new OpenLecture(MOCK_OPEN_LECTURE.getId(),
+            MOCK_OPEN_LECTURE.getLectureName(), MOCK_OPEN_LECTURE.getLecturerName(), ATTENDANCE_NUMBER);
 
         openLectureCacheRepository.cache(openLecture);
-        attendeeCacheRepository.cache(OPEN_STATE_LECTURE.getId(), new StudentIds(1L));
+        attendeeCacheRepository.cache(MOCK_OPEN_LECTURE.getId(), new StudentIds(1L));
 
 
         // when
@@ -181,12 +181,12 @@ class LectureServiceTest {
     void 강사는_자신이_개설한_강의_리스트를_가져올_수_있다() {
         // given
         given(lectureRepository.findAllByMemberId(LECTURER_ID))
-            .willReturn(List.of(LECTURE));
+            .willReturn(List.of(MOCK_LECTURE));
 
         given(enrollmentInfoRepository
             .findAllApprovedByLectureId(any()))
-            .willReturn(List.of(ENROLLMENT_INFO));
-        String expectedLecturerName = LECTURE.getLecturerName();
+            .willReturn(List.of(MOCK_ENROLLMENT_INFO));
+        String expectedLecturerName = MOCK_LECTURE.getLecturerName();
 
         // when
         LectureResponse lectureResponse = lectureService.getOwnedLectures();
@@ -202,13 +202,13 @@ class LectureServiceTest {
         // given
         Lecture mockLecture = mock(Lecture.class);
         given(mockLecture.getMember())
-            .willReturn(LECTURER);
+            .willReturn(MOCK_LECTURER);
 
-        given(lectureRepository.findById(LECTURER.getId()))
+        given(lectureRepository.findById(MOCK_LECTURER.getId()))
             .willReturn(Optional.of(mockLecture));
 
         // when
-        lectureService.openLectureAndGenerateAttendanceNumber(LECTURER.getId());
+        lectureService.openLectureAndGenerateAttendanceNumber(MOCK_LECTURER.getId());
 
         // then
         verify(mockLecture, times(1)).setLectureState(LectureState.OPEN);
@@ -218,15 +218,17 @@ class LectureServiceTest {
     @MockSecurityContextMember(id = 2L, role = Role.LECTURER)
     void 강사가_강의를_열_때_출석_번호가_발급되고_저장된다() {
         // given
-        given(lectureRepository.findById(LECTURER.getId()))
-            .willReturn(Optional.of(LECTURE));
+        given(lectureRepository.findById(MOCK_LECTURER.getId()))
+            .willReturn(Optional.of(MOCK_LECTURE));
 
         // when
-        AttendanceNumberResponse response = lectureService.openLectureAndGenerateAttendanceNumber(LECTURER.getId());
+        AttendanceNumberResponse response = lectureService.openLectureAndGenerateAttendanceNumber(
+            MOCK_LECTURER.getId());
         int generatedAttendanceNumber = response.getAttendanceNumber();
 
         // then
-        Integer savedAttendanceNumber = openLectureCacheRepository.findAttendanceNumber(LECTURE.getId());
+        Integer savedAttendanceNumber = openLectureCacheRepository.findAttendanceNumber(
+            MOCK_LECTURE.getId());
 
         assertThat(generatedAttendanceNumber).isEqualTo(savedAttendanceNumber);
     }
@@ -235,20 +237,21 @@ class LectureServiceTest {
     @MockSecurityContextMember(id = 2L, role = Role.LECTURER)
     void 강사가_강의를_열_때_강의_정보가_캐싱된다() {
         // given
-        given(lectureRepository.findById(LECTURER.getId()))
-            .willReturn(Optional.of(LECTURE));
+        given(lectureRepository.findById(MOCK_LECTURER.getId()))
+            .willReturn(Optional.of(MOCK_LECTURE));
 
         // when
-        AttendanceNumberResponse response = lectureService.openLectureAndGenerateAttendanceNumber(LECTURER.getId());
+        AttendanceNumberResponse response = lectureService.openLectureAndGenerateAttendanceNumber(
+            MOCK_LECTURER.getId());
 
         // then
-        Optional<OpenLecture> savedOpenLecture = openLectureCacheRepository.find(LECTURE.getId());
+        Optional<OpenLecture> savedOpenLecture = openLectureCacheRepository.find(MOCK_LECTURE.getId());
 
         assertAll(
             () -> assertThat(savedOpenLecture.isPresent()).isTrue(),
-            () -> assertThat(savedOpenLecture.get().getId()).isEqualTo(LECTURE.getId()),
-            () -> assertThat(savedOpenLecture.get().getName()).isEqualTo(LECTURE.getLectureName()),
-            () -> assertThat(savedOpenLecture.get().getLecturerName()).isEqualTo(LECTURE.getLecturerName()),
+            () -> assertThat(savedOpenLecture.get().getId()).isEqualTo(MOCK_LECTURE.getId()),
+            () -> assertThat(savedOpenLecture.get().getName()).isEqualTo(MOCK_LECTURE.getLectureName()),
+            () -> assertThat(savedOpenLecture.get().getLecturerName()).isEqualTo(MOCK_LECTURE.getLecturerName()),
             () -> assertThat(savedOpenLecture.get().getAttendanceNumber()).isEqualTo(response.getAttendanceNumber())
         );
     }
@@ -257,11 +260,11 @@ class LectureServiceTest {
     @MockSecurityContextMember(id = 2L, role = Role.LECTURER)
     void 강사가_강의를_열면_AttendeeCacheEvent_이벤트가_발행된다() {
         // given
-        given(lectureRepository.findById(LECTURER.getId()))
-            .willReturn(Optional.of(LECTURE));
+        given(lectureRepository.findById(MOCK_LECTURER.getId()))
+            .willReturn(Optional.of(MOCK_LECTURE));
 
         // when
-        lectureService.openLectureAndGenerateAttendanceNumber(LECTURER.getId());
+        lectureService.openLectureAndGenerateAttendanceNumber(MOCK_LECTURER.getId());
 
         // then
         assertThat(events.stream(AttendeeCacheEvent.class).count()).isEqualTo(1);
@@ -273,13 +276,13 @@ class LectureServiceTest {
         // given
         Lecture mockLecture = mock(Lecture.class);
         given(mockLecture.getMember())
-            .willReturn(LECTURER);
+            .willReturn(MOCK_LECTURER);
 
-        given(lectureRepository.findById(LECTURER.getId()))
+        given(lectureRepository.findById(MOCK_LECTURER.getId()))
             .willReturn(Optional.of(mockLecture));
 
         // when
-        lectureService.closeLecture(LECTURER.getId());
+        lectureService.closeLecture(MOCK_LECTURER.getId());
 
         // then
         verify(mockLecture, times(1)).setLectureState(LectureState.CLOSED);
@@ -291,9 +294,9 @@ class LectureServiceTest {
         // given
         Lecture mockLecture = mock(Lecture.class);
         given(mockLecture.getMember())
-            .willReturn(LECTURER);
+            .willReturn(MOCK_LECTURER);
 
-        Long lectureId = LECTURE.getId();
+        Long lectureId = MOCK_LECTURE.getId();
         given(lectureRepository.findById(lectureId))
             .willReturn(Optional.of(mockLecture));
 

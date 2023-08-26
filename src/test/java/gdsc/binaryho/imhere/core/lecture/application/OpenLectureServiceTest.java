@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.lecture.application;
 
 import static gdsc.binaryho.imhere.fixture.AttendanceFixture.ATTENDANCE_NUMBER;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.LECTURE;
+import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_LECTURE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -29,18 +29,18 @@ public class OpenLectureServiceTest {
     @Test
     void 저장된_OpenLecture를_조회할_수_있다() {
         // given
-        OpenLecture openLecture = new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
-            LECTURE.getLecturerName(), ATTENDANCE_NUMBER);
+        OpenLecture openLecture = new OpenLecture(MOCK_LECTURE.getId(), MOCK_LECTURE.getLectureName(),
+            MOCK_LECTURE.getLecturerName(), ATTENDANCE_NUMBER);
         openLectureCacheRepository.cache(openLecture);
 
         // when
-        Optional<OpenLecture> actualOpenLecture = openLectureService.find(LECTURE.getId());
+        Optional<OpenLecture> actualOpenLecture = openLectureService.find(MOCK_LECTURE.getId());
 
         // then
         assertAll(
-            () -> assertThat(actualOpenLecture.get().getId()).isEqualTo(LECTURE.getId()),
-            () -> assertThat(actualOpenLecture.get().getName()).isEqualTo(LECTURE.getLectureName()),
-            () -> assertThat(actualOpenLecture.get().getLecturerName()).isEqualTo(LECTURE.getLecturerName()),
+            () -> assertThat(actualOpenLecture.get().getId()).isEqualTo(MOCK_LECTURE.getId()),
+            () -> assertThat(actualOpenLecture.get().getName()).isEqualTo(MOCK_LECTURE.getLectureName()),
+            () -> assertThat(actualOpenLecture.get().getLecturerName()).isEqualTo(MOCK_LECTURE.getLecturerName()),
             () -> assertThat(actualOpenLecture.get().getAttendanceNumber()).isEqualTo(ATTENDANCE_NUMBER)
         );
     }
@@ -48,12 +48,12 @@ public class OpenLectureServiceTest {
     @Test
     void 저장된_AttendanceNumber를_조회할_수_있다() {
         // given
-        OpenLecture openLecture = new OpenLecture(LECTURE.getId(), LECTURE.getLectureName(),
-            LECTURE.getLecturerName(), ATTENDANCE_NUMBER);
+        OpenLecture openLecture = new OpenLecture(MOCK_LECTURE.getId(), MOCK_LECTURE.getLectureName(),
+            MOCK_LECTURE.getLecturerName(), ATTENDANCE_NUMBER);
         openLectureCacheRepository.cache(openLecture);
 
         // when
-        Integer actualAttendanceNumber = openLectureService.findAttendanceNumber(LECTURE.getId());
+        Integer actualAttendanceNumber = openLectureService.findAttendanceNumber(MOCK_LECTURE.getId());
 
         // then
         assertThat(actualAttendanceNumber).isEqualTo(ATTENDANCE_NUMBER);

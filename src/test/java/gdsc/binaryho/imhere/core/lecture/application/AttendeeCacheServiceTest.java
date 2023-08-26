@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.lecture.application;
 
-import static gdsc.binaryho.imhere.fixture.LectureFixture.LECTURE;
-import static gdsc.binaryho.imhere.fixture.MemberFixture.STUDENT;
+import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_LECTURE;
+import static gdsc.binaryho.imhere.fixture.MemberFixture.MOCK_STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gdsc.binaryho.imhere.core.lecture.application.port.AttendeeCacheRepository;
@@ -27,13 +27,13 @@ public class AttendeeCacheServiceTest {
     @Test
     void Attendee_정보를_저장할_수_있다() {
         // given
-        StudentIds studentIds = new StudentIds(STUDENT.getId());
-        attendeeCacheService.cache(new AttendeeCacheEvent(LECTURE.getId(), studentIds));
+        StudentIds studentIds = new StudentIds(MOCK_STUDENT.getId());
+        attendeeCacheService.cache(new AttendeeCacheEvent(MOCK_LECTURE.getId(), studentIds));
 
         // when
-        Set<Long> lectureIds = attendeeCacheRepository.findAllAttendLectureId(STUDENT.getId());
+        Set<Long> lectureIds = attendeeCacheRepository.findAllAttendLectureId(MOCK_STUDENT.getId());
 
         // then
-        assertThat(lectureIds.stream().findAny().get()).isEqualTo(LECTURE.getId());
+        assertThat(lectureIds.stream().findAny().get()).isEqualTo(MOCK_LECTURE.getId());
     }
 }

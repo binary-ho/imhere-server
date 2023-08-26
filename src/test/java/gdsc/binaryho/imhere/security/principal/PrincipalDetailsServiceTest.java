@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.security.principal;
 
-import static gdsc.binaryho.imhere.fixture.MemberFixture.STUDENT;
+import static gdsc.binaryho.imhere.fixture.MemberFixture.MOCK_STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -30,10 +30,10 @@ class PrincipalDetailsServiceTest {
 
     @Test
     void UnivId가_일치하는_유저의_PrincipalDetails을_생성할_수_있다() {
-        given(memberRepository.findByUnivId("UNIV_ID")).willReturn(Optional.of(STUDENT));
+        given(memberRepository.findByUnivId("UNIV_ID")).willReturn(Optional.of(MOCK_STUDENT));
 
         UserDetails userDetails = principalDetailsService.loadUserByUsername("UNIV_ID");
-        UserDetails principalDetails = new PrincipalDetails(STUDENT);
+        UserDetails principalDetails = new PrincipalDetails(MOCK_STUDENT);
 
         assertAll(
             () -> assertThat(userDetails.getUsername()).isEqualTo(principalDetails.getUsername()),

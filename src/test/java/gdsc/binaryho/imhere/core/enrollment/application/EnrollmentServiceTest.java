@@ -1,9 +1,9 @@
 package gdsc.binaryho.imhere.core.enrollment.application;
 
-import static gdsc.binaryho.imhere.fixture.EnrollmentInfoFixture.ENROLLMENT_INFO;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.LECTURE;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.OPEN_STATE_LECTURE;
-import static gdsc.binaryho.imhere.fixture.MemberFixture.STUDENT;
+import static gdsc.binaryho.imhere.fixture.EnrollmentInfoFixture.MOCK_ENROLLMENT_INFO;
+import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_LECTURE;
+import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_OPEN_LECTURE;
+import static gdsc.binaryho.imhere.fixture.MemberFixture.MOCK_STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -76,14 +76,14 @@ class EnrollmentServiceTest {
     void 학생은_수강신청_할_수_있다() {
         // given
         given(enrollmentInfoRepository
-            .findByMemberIdAndLectureId(STUDENT.getId(), LECTURE.getId()))
+            .findByMemberIdAndLectureId(MOCK_STUDENT.getId(), MOCK_LECTURE.getId()))
             .willReturn(Optional.empty());
 
-        given(lectureRepository.findById(LECTURE.getId()))
-            .willReturn(Optional.of(LECTURE));
+        given(lectureRepository.findById(MOCK_LECTURE.getId()))
+            .willReturn(Optional.of(MOCK_LECTURE));
 
         // when
-        enrollmentService.requestEnrollment(LECTURE.getId());
+        enrollmentService.requestEnrollment(MOCK_LECTURE.getId());
 
         // then
         verify(enrollmentInfoRepository, times(1)).save(any());
@@ -94,13 +94,13 @@ class EnrollmentServiceTest {
     void 학생이_중복_수강신청_하는_경우_예외를_발생시킨다() {
         // given
         given(enrollmentInfoRepository
-            .findByMemberIdAndLectureId(STUDENT.getId(), LECTURE.getId()))
-            .willReturn(Optional.of(ENROLLMENT_INFO));
+            .findByMemberIdAndLectureId(MOCK_STUDENT.getId(), MOCK_LECTURE.getId()))
+            .willReturn(Optional.of(MOCK_ENROLLMENT_INFO));
 
         // when
         // then
         assertThatThrownBy(
-            () -> enrollmentService.requestEnrollment(LECTURE.getId())
+            () -> enrollmentService.requestEnrollment(MOCK_LECTURE.getId())
         ).isInstanceOf(EnrollmentDuplicatedException.class);
     }
 
@@ -109,16 +109,16 @@ class EnrollmentServiceTest {
     void 학생이_존재하지_않는_강의에_수강신청_하는_경우_예외를_발생시킨다() {
         // given
         given(enrollmentInfoRepository
-            .findByMemberIdAndLectureId(STUDENT.getId(), LECTURE.getId()))
+            .findByMemberIdAndLectureId(MOCK_STUDENT.getId(), MOCK_LECTURE.getId()))
             .willReturn(Optional.empty());
 
-        given(lectureRepository.findById(LECTURE.getId()))
+        given(lectureRepository.findById(MOCK_LECTURE.getId()))
             .willReturn(Optional.empty());
 
         // when
         // then
         assertThatThrownBy(
-            () -> enrollmentService.requestEnrollment(LECTURE.getId())
+            () -> enrollmentService.requestEnrollment(MOCK_LECTURE.getId())
         ).isInstanceOf(LectureNotFoundException.class);
     }
 
@@ -128,17 +128,17 @@ class EnrollmentServiceTest {
         // given
         EnrollmentInfo enrollmentInfo = mock(EnrollmentInfo.class);
 
-        given(enrollmentInfoRepository.findByMemberIdAndLectureId(STUDENT.getId(), LECTURE.getId()))
+        given(enrollmentInfoRepository.findByMemberIdAndLectureId(MOCK_STUDENT.getId(), MOCK_LECTURE.getId()))
             .willReturn(Optional.of(enrollmentInfo));
 
         given(enrollmentInfo.getLecture())
-            .willReturn(LECTURE);
+            .willReturn(MOCK_LECTURE);
 
         given(enrollmentInfo.getMember())
-            .willReturn(STUDENT);
+            .willReturn(MOCK_STUDENT);
 
         // when
-        enrollmentService.approveStudents(LECTURE.getId(), STUDENT.getId());
+        enrollmentService.approveStudents(MOCK_LECTURE.getId(), MOCK_STUDENT.getId());
 
         // then
         verify(enrollmentInfo, times(1)).setEnrollmentState(EnrollmentState.APPROVAL);
@@ -156,7 +156,7 @@ class EnrollmentServiceTest {
         // when
         // then
         assertThatThrownBy(
-            () -> enrollmentService.approveStudents(LECTURE.getId(), STUDENT.getId())
+            () -> enrollmentService.approveStudents(MOCK_LECTURE.getId(), MOCK_STUDENT.getId())
         ).isInstanceOf(EnrollmentNotFoundException.class);
     }
 
@@ -166,16 +166,16 @@ class EnrollmentServiceTest {
         // given
         EnrollmentInfo enrollmentInfo = mock(EnrollmentInfo.class);
 
-        given(enrollmentInfoRepository.findByMemberIdAndLectureId(STUDENT.getId(), LECTURE.getId()))
+        given(enrollmentInfoRepository.findByMemberIdAndLectureId(MOCK_STUDENT.getId(), MOCK_LECTURE.getId()))
             .willReturn(Optional.of(enrollmentInfo));
 
         given(enrollmentInfo.getLecture())
-            .willReturn(LECTURE);
+            .willReturn(MOCK_LECTURE);
 
         // when
         // then
         assertThatThrownBy(
-            () -> enrollmentService.approveStudents(LECTURE.getId(), STUDENT.getId())
+            () -> enrollmentService.approveStudents(MOCK_LECTURE.getId(), MOCK_STUDENT.getId())
         ).isInstanceOf(RequestMemberIdMismatchException.class);
     }
 
@@ -186,17 +186,17 @@ class EnrollmentServiceTest {
         // given
         EnrollmentInfo enrollmentInfo = mock(EnrollmentInfo.class);
 
-        given(enrollmentInfoRepository.findByMemberIdAndLectureId(STUDENT.getId(), LECTURE.getId()))
+        given(enrollmentInfoRepository.findByMemberIdAndLectureId(MOCK_STUDENT.getId(), MOCK_LECTURE.getId()))
             .willReturn(Optional.of(enrollmentInfo));
 
         given(enrollmentInfo.getLecture())
-            .willReturn(LECTURE);
+            .willReturn(MOCK_LECTURE);
 
         given(enrollmentInfo.getMember())
-            .willReturn(STUDENT);
+            .willReturn(MOCK_STUDENT);
 
         // when
-        enrollmentService.rejectStudents(LECTURE.getId(), STUDENT.getId());
+        enrollmentService.rejectStudents(MOCK_LECTURE.getId(), MOCK_STUDENT.getId());
 
         // then
         verify(enrollmentInfo, times(1)).setEnrollmentState(EnrollmentState.REJECTION);
@@ -207,16 +207,16 @@ class EnrollmentServiceTest {
     void 강사가_학생을_승인할_때_이미_수업이_OPEN_이라면_캐싱한다() {
         // given
         EnrollmentInfo enrollmentInfo = EnrollmentInfo
-            .createEnrollmentInfo(OPEN_STATE_LECTURE, STUDENT, EnrollmentState.AWAIT);
+            .createEnrollmentInfo(MOCK_OPEN_LECTURE, MOCK_STUDENT, EnrollmentState.AWAIT);
         given(enrollmentInfoRepository.findByMemberIdAndLectureId(any(), any()))
             .willReturn(Optional.of(enrollmentInfo));
 
-        OpenLecture openLecture = new OpenLecture(OPEN_STATE_LECTURE.getId(),
-            OPEN_STATE_LECTURE.getLectureName(), OPEN_STATE_LECTURE.getLecturerName(), 7777);
+        OpenLecture openLecture = new OpenLecture(MOCK_OPEN_LECTURE.getId(),
+            MOCK_OPEN_LECTURE.getLectureName(), MOCK_OPEN_LECTURE.getLecturerName(), 7777);
         openLectureCacheRepository.cache(openLecture);
 
         // when
-        enrollmentService.approveStudents(OPEN_STATE_LECTURE.getId(), STUDENT.getId());
+        enrollmentService.approveStudents(MOCK_OPEN_LECTURE.getId(), MOCK_STUDENT.getId());
 
         // then
         assertThat(events.stream(AttendeeCacheEvent.class).count()).isEqualTo(1);
@@ -226,20 +226,20 @@ class EnrollmentServiceTest {
     @MockSecurityContextMember(id = 2L)
     void 강사는_자신이_개설한_강의의_수강신청_리스트를_확인할_수_있다() {
         // given
-        given(lectureRepository.findById(LECTURE.getId()))
-            .willReturn(Optional.of(LECTURE));
+        given(lectureRepository.findById(MOCK_LECTURE.getId()))
+            .willReturn(Optional.of(MOCK_LECTURE));
 
         EnrollmentInfo enrollmentInfo = EnrollmentInfo
-            .createEnrollmentInfo(LECTURE, STUDENT, EnrollmentState.APPROVAL);
+            .createEnrollmentInfo(MOCK_LECTURE, MOCK_STUDENT, EnrollmentState.APPROVAL);
 
         List<EnrollmentInfo> enrollmentInfos = List.of(enrollmentInfo);
 
-        given(enrollmentInfoRepository.findAllByLecture(LECTURE))
+        given(enrollmentInfoRepository.findAllByLecture(MOCK_LECTURE))
             .willReturn(enrollmentInfos);
 
         // when
         EnrollmentInfoResponse response =
-            enrollmentService.getLectureEnrollment(LECTURE.getId());
+            enrollmentService.getLectureEnrollment(MOCK_LECTURE.getId());
 
         // then
         Long responseLectureId = response.getLectureId();
@@ -247,8 +247,8 @@ class EnrollmentServiceTest {
         Long enrollStudentId = responseLectureStudentList.get(0).getId();
 
         assertAll(
-            () -> assertThat(responseLectureId).isEqualTo(LECTURE.getId()),
-            () -> assertThat(enrollStudentId).isEqualTo(STUDENT.getId())
+            () -> assertThat(responseLectureId).isEqualTo(MOCK_LECTURE.getId()),
+            () -> assertThat(enrollStudentId).isEqualTo(MOCK_STUDENT.getId())
         );
     }
 
@@ -256,22 +256,22 @@ class EnrollmentServiceTest {
     @MockSecurityContextMember(id = 2L)
     void 강사는_수강신청이_없는_경우_강의_정보와_함께_빈_수강신청_리스트를_받을_수_있다() {
         // given
-        given(lectureRepository.findById(LECTURE.getId()))
-            .willReturn(Optional.of(LECTURE));
+        given(lectureRepository.findById(MOCK_LECTURE.getId()))
+            .willReturn(Optional.of(MOCK_LECTURE));
 
-        given(enrollmentInfoRepository.findAllByLecture(LECTURE))
+        given(enrollmentInfoRepository.findAllByLecture(MOCK_LECTURE))
             .willReturn(Collections.emptyList());
 
         // when
         EnrollmentInfoResponse response =
-            enrollmentService.getLectureEnrollment(LECTURE.getId());
+            enrollmentService.getLectureEnrollment(MOCK_LECTURE.getId());
 
         // then
         Long responseLectureId = response.getLectureId();
         List<StudentInfo> responseLectureStudentList = response.getStudentInfos();
 
         assertAll(
-            () -> assertThat(responseLectureId).isEqualTo(LECTURE.getId()),
+            () -> assertThat(responseLectureId).isEqualTo(MOCK_LECTURE.getId()),
             () -> assertThat(responseLectureStudentList.isEmpty()).isTrue()
         );
     }
@@ -280,13 +280,13 @@ class EnrollmentServiceTest {
     @MockSecurityContextMember(id = 2L)
     void 강사가_존재하지_않는_수업에_수강신청_리스트를_요청하는_경우_예외가_발생한다() {
         // given
-        given(lectureRepository.findById(LECTURE.getId()))
+        given(lectureRepository.findById(MOCK_LECTURE.getId()))
             .willReturn(Optional.empty());
 
         // when
         // then
         assertThatThrownBy(
-            () -> enrollmentService.getLectureEnrollment(LECTURE.getId())
+            () -> enrollmentService.getLectureEnrollment(MOCK_LECTURE.getId())
         ).isInstanceOf(LectureNotFoundException.class);
     }
 
@@ -294,13 +294,13 @@ class EnrollmentServiceTest {
     @MockSecurityContextMember(id = 3L)
     void 강사가_다른_강사의_수업에_수강신청_리스트를_요청하는_경우_예외가_발생한다() {
         // given
-        given(lectureRepository.findById(LECTURE.getId()))
-            .willReturn(Optional.of(LECTURE));
+        given(lectureRepository.findById(MOCK_LECTURE.getId()))
+            .willReturn(Optional.of(MOCK_LECTURE));
 
         // when
         // then
         assertThatThrownBy(
-            () -> enrollmentService.getLectureEnrollment(LECTURE.getId())
+            () -> enrollmentService.getLectureEnrollment(MOCK_LECTURE.getId())
         ).isInstanceOf(RequestMemberIdMismatchException.class);
     }
 }
