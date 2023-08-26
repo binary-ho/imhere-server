@@ -1,5 +1,6 @@
 package gdsc.binaryho.imhere.core.lecture.model;
 
+import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 
@@ -13,6 +14,6 @@ public class StudentIds {
     }
 
     public StudentIds(Long studentId) {
-        this.studentIds = List.of(studentId);
+        this.studentIds = Collections.singletonList(studentId);
     }
 }

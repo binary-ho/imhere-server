@@ -40,7 +40,6 @@ import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
 import gdsc.binaryho.imhere.util.SeoulDateTime;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -165,7 +164,7 @@ public class AttendanceServiceTest {
     void 강사는_자신의_수업의_모든_출석_정보를_가져올_수_있다() {
         // given
         given(attendanceRepository.findAllByLectureId(MOCK_LECTURE.getId()))
-            .willReturn(List.of(MOCK_ATTENDANCE));
+            .willReturn(Collections.singletonList(MOCK_ATTENDANCE));
 
         // when
         AttendanceResponse response = attendanceService.getAttendances(MOCK_LECTURE.getId());
@@ -209,7 +208,7 @@ public class AttendanceServiceTest {
     void 강사가_자신의_수업이_아닌_수업의_출석_정보를_요청하는_경우_예외가_발생한다() {
         // given
         given(attendanceRepository.findAllByLectureId(MOCK_LECTURE.getId()))
-            .willReturn(List.of(MOCK_ATTENDANCE));
+            .willReturn(Collections.singletonList(MOCK_ATTENDANCE));
 
         // when
         // then
@@ -240,7 +239,7 @@ public class AttendanceServiceTest {
         // 위에서 구한 LocalDateTime 이용
         given(attendanceRepository
             .findByLectureIdAndTimestampBetween(MOCK_LECTURE.getId(), dayLocalDateTime, dayLocalDateTime.plusDays(1)))
-            .willReturn(List.of(MOCK_ATTENDANCE));
+            .willReturn(Collections.singletonList(MOCK_ATTENDANCE));
 
         // when
         AttendanceResponse response = attendanceService.getDayAttendances(MOCK_LECTURE.getId(), MILLISECONDS);

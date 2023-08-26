@@ -39,6 +39,7 @@ import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.mock.TestContainer;
 import gdsc.binaryho.imhere.mock.fixture.MemberFixture;
 import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -138,7 +139,7 @@ class LectureServiceTest {
             .createEnrollmentInfo(MOCK_OPEN_LECTURE, MemberFixture.MOCK_STUDENT, EnrollmentState.APPROVAL);
 
         given(lectureRepository.findOpenAndApprovalLecturesByMemberId(any()))
-            .willReturn(List.of(MOCK_OPEN_LECTURE));
+            .willReturn(Collections.singletonList(MOCK_OPEN_LECTURE));
 
         Long expectedOpenLectureId = enrollmentInfo.getLecture().getId();
 
@@ -181,11 +182,11 @@ class LectureServiceTest {
     void 강사는_자신이_개설한_강의_리스트를_가져올_수_있다() {
         // given
         given(lectureRepository.findAllByMemberId(LECTURER_ID))
-            .willReturn(List.of(MOCK_LECTURE));
+            .willReturn(Collections.singletonList(MOCK_LECTURE));
 
         given(enrollmentInfoRepository
             .findAllApprovedByLectureId(any()))
-            .willReturn(List.of(MOCK_ENROLLMENT_INFO));
+            .willReturn(Collections.singletonList(MOCK_ENROLLMENT_INFO));
         String expectedLecturerName = MOCK_LECTURE.getLecturerName();
 
         // when

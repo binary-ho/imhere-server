@@ -232,7 +232,7 @@ class EnrollmentServiceTest {
         EnrollmentInfo enrollmentInfo = EnrollmentInfo
             .createEnrollmentInfo(MOCK_LECTURE, MOCK_STUDENT, EnrollmentState.APPROVAL);
 
-        List<EnrollmentInfo> enrollmentInfos = List.of(enrollmentInfo);
+        List<EnrollmentInfo> enrollmentInfos = Collections.singletonList(enrollmentInfo);
 
         given(enrollmentInfoRepository.findAllByLecture(MOCK_LECTURE))
             .willReturn(enrollmentInfos);
