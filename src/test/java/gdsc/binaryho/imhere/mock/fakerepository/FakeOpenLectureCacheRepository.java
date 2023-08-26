@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.mock;
+package gdsc.binaryho.imhere.mock.fakerepository;
 
 import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;

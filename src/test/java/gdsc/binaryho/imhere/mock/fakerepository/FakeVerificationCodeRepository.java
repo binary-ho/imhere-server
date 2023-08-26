@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.mock;
+package gdsc.binaryho.imhere.mock.fakerepository;
 
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import java.util.HashMap;

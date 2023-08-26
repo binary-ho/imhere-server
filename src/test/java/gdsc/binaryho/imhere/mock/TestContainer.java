@@ -14,6 +14,9 @@ import gdsc.binaryho.imhere.core.lecture.application.port.AttendeeCacheRepositor
 import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
+import gdsc.binaryho.imhere.mock.fakerepository.FakeAttendeeCacheRepository;
+import gdsc.binaryho.imhere.mock.fakerepository.FakeOpenLectureCacheRepository;
+import gdsc.binaryho.imhere.mock.fakerepository.FakeVerificationCodeRepository;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import lombok.Builder;
 import org.springframework.context.ApplicationEventPublisher;

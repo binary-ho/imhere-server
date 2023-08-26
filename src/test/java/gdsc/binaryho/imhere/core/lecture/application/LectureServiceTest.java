@@ -1,11 +1,11 @@
 package gdsc.binaryho.imhere.core.lecture.application;
 
-import static gdsc.binaryho.imhere.fixture.AttendanceFixture.ATTENDANCE_NUMBER;
-import static gdsc.binaryho.imhere.fixture.EnrollmentInfoFixture.MOCK_ENROLLMENT_INFO;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_LECTURE;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_OPEN_LECTURE;
-import static gdsc.binaryho.imhere.fixture.MemberFixture.LECTURER_ID;
-import static gdsc.binaryho.imhere.fixture.MemberFixture.MOCK_LECTURER;
+import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.ATTENDANCE_NUMBER;
+import static gdsc.binaryho.imhere.mock.fixture.EnrollmentInfoFixture.MOCK_ENROLLMENT_INFO;
+import static gdsc.binaryho.imhere.mock.fixture.LectureFixture.MOCK_LECTURE;
+import static gdsc.binaryho.imhere.mock.fixture.LectureFixture.MOCK_OPEN_LECTURE;
+import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.LECTURER_ID;
+import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.MOCK_LECTURER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -36,8 +36,8 @@ import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse.LectureInfo;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.Role;
-import gdsc.binaryho.imhere.fixture.MemberFixture;
 import gdsc.binaryho.imhere.mock.TestContainer;
+import gdsc.binaryho.imhere.mock.fixture.MemberFixture;
 import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
 import java.util.List;
 import java.util.Optional;

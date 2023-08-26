@@ -2,7 +2,7 @@ package gdsc.binaryho.imhere.security.principal;
 
 import gdsc.binaryho.imhere.core.member.Member;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,9 +22,7 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Collection<GrantedAuthority> authorities = Collections.emptyList();
-        authorities.add((GrantedAuthority) () -> member.getRole().getKey());
-        return authorities;
+        return List.of((GrantedAuthority) () -> member.getRole().getKey());
     }
 
     @Override

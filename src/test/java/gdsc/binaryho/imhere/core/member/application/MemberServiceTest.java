@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.core.member.application;
 
-import static gdsc.binaryho.imhere.fixture.MemberFixture.UNIV_ID;
+import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.UNIV_ID;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;

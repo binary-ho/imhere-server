@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.core.auth.application;
 
-import static gdsc.binaryho.imhere.fixture.MemberFixture.MOCK_STUDENT;
+import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.MOCK_STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;

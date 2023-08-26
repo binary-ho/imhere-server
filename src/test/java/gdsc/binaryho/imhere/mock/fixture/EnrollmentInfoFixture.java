@@ -1,6 +1,4 @@
-package gdsc.binaryho.imhere.fixture;
-
-import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_OPEN_LECTURE;
+package gdsc.binaryho.imhere.mock.fixture;
 
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
@@ -8,5 +6,5 @@ import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 public class EnrollmentInfoFixture {
 
     public static final EnrollmentInfo MOCK_ENROLLMENT_INFO = EnrollmentInfo
-        .createEnrollmentInfo(MOCK_OPEN_LECTURE, MemberFixture.MOCK_STUDENT, EnrollmentState.APPROVAL);
+        .createEnrollmentInfo(LectureFixture.MOCK_OPEN_LECTURE, MemberFixture.MOCK_STUDENT, EnrollmentState.APPROVAL);
 }

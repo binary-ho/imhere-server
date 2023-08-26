@@ -1,14 +1,15 @@
 package gdsc.binaryho.imhere.core.attendance.application;
 
-import static gdsc.binaryho.imhere.fixture.AttendanceFixture.ACCURACY;
-import static gdsc.binaryho.imhere.fixture.AttendanceFixture.ATTENDANCE_NUMBER;
-import static gdsc.binaryho.imhere.fixture.AttendanceFixture.DISTANCE;
-import static gdsc.binaryho.imhere.fixture.AttendanceFixture.MILLISECONDS;
-import static gdsc.binaryho.imhere.fixture.AttendanceFixture.MOCK_ATTENDANCE;
-import static gdsc.binaryho.imhere.fixture.EnrollmentInfoFixture.MOCK_ENROLLMENT_INFO;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_CLOSED_LECTURE;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_LECTURE;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_OPEN_LECTURE;
+import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.ACCURACY;
+import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.ATTENDANCE_NUMBER;
+import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.DISTANCE;
+import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.MILLISECONDS;
+import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.MOCK_ATTENDANCE;
+import static gdsc.binaryho.imhere.mock.fixture.EnrollmentInfoFixture.MOCK_ENROLLMENT_INFO;
+import static gdsc.binaryho.imhere.mock.fixture.LectureFixture.MOCK_CLOSED_LECTURE;
+import static gdsc.binaryho.imhere.mock.fixture.LectureFixture.MOCK_LECTURE;
+import static gdsc.binaryho.imhere.mock.fixture.LectureFixture.MOCK_OPEN_LECTURE;
+import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.MOCK_STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -34,7 +35,6 @@ import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Role;
-import gdsc.binaryho.imhere.fixture.MemberFixture;
 import gdsc.binaryho.imhere.mock.TestContainer;
 import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
 import gdsc.binaryho.imhere.util.SeoulDateTime;
@@ -101,7 +101,7 @@ public class AttendanceServiceTest {
     void 학생이_출석을_시도한_수업이_열려있지_않은_경우_예외가_발생한다() {
         // given
         EnrollmentInfo closeLectureEnrollmentInfo = EnrollmentInfo
-            .createEnrollmentInfo(MOCK_CLOSED_LECTURE, MemberFixture.MOCK_STUDENT, EnrollmentState.APPROVAL);
+            .createEnrollmentInfo(MOCK_CLOSED_LECTURE, MOCK_STUDENT, EnrollmentState.APPROVAL);
 
         given(enrollmentRepository
             .findByMemberIdAndLectureIdAndEnrollmentState(any(), eq(MOCK_CLOSED_LECTURE.getId()), eq(EnrollmentState.APPROVAL)))

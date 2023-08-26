@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.mock.securitycontext;
 
 import gdsc.binaryho.imhere.core.member.Role;
-import gdsc.binaryho.imhere.fixture.MemberFixture;
+import gdsc.binaryho.imhere.mock.fixture.MemberFixture;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import org.springframework.security.test.context.support.WithSecurityContext;

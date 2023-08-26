@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.lecture.application;
 
-import static gdsc.binaryho.imhere.fixture.AttendanceFixture.ATTENDANCE_NUMBER;
-import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_LECTURE;
+import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.ATTENDANCE_NUMBER;
+import static gdsc.binaryho.imhere.mock.fixture.LectureFixture.MOCK_LECTURE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 

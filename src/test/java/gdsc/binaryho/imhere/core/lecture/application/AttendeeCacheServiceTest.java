@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.lecture.application;
 
-import static gdsc.binaryho.imhere.fixture.LectureFixture.MOCK_LECTURE;
-import static gdsc.binaryho.imhere.fixture.MemberFixture.MOCK_STUDENT;
+import static gdsc.binaryho.imhere.mock.fixture.LectureFixture.MOCK_LECTURE;
+import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.MOCK_STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gdsc.binaryho.imhere.core.lecture.application.port.AttendeeCacheRepository;
