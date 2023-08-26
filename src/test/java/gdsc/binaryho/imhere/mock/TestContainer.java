@@ -50,7 +50,7 @@ public class TestContainer {
 
         /* AuthService 초기화 */
         authService = new AuthService(
-            memberRepository, verificationCodeRepository, bCryptPasswordEncoder
+            memberRepository, bCryptPasswordEncoder
         );
 
         /* EmailVerificationService 초기화 */
