@@ -11,6 +11,7 @@ import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
 import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
+import gdsc.binaryho.imhere.core.lecture.model.LectureInfo;
 import gdsc.binaryho.imhere.core.lecture.model.StudentIds;
 import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
 import gdsc.binaryho.imhere.core.lecture.model.response.AttendanceNumberResponse;
@@ -73,7 +74,7 @@ public class LectureService {
         List<OpenLecture> openLectures = findCachedOpenLectures(currentStudent.getId());
 
         if (NotEmpty(openLectures)) {
-            return LectureResponse.from(openLectures);
+            return LectureResponse.fromOpenLectures(openLectures);
         }
 
         List<Lecture> studentOpenLectures = lectureRepository.findOpenAndApprovalLecturesByMemberId(currentStudent.getId());
@@ -97,11 +98,18 @@ public class LectureService {
     public LectureResponse getOwnedLectures() {
         Member currentLecturer = authenticationHelper.getCurrentMember();
         List<Lecture> lectures = lectureRepository.findAllByMemberId(currentLecturer.getId());
-        List<List<EnrollmentInfo>> lecturerEnrollmentInfos = lectures.stream()
-            .map(lecture ->
-                enrollmentInfoRepository.findAllApprovedByLectureId(lecture.getId()))
+        List<LectureInfo> lectureInfos = lectures.stream()
+            .map(this::createLectureInfo)
             .collect(Collectors.toList());
-        return LectureResponse.createLectureResponseFromEnrollmentInfos(lecturerEnrollmentInfos);
+
+        return new LectureResponse(lectureInfos);
+    }
+
+    private LectureInfo createLectureInfo(Lecture lecture) {
+        List<EnrollmentInfo> enrollmentInfos = enrollmentInfoRepository
+            .findAllApprovedByLectureId(lecture.getId());
+
+        return LectureInfo.from(lecture, enrollmentInfos);
     }
 
     @Transactional
