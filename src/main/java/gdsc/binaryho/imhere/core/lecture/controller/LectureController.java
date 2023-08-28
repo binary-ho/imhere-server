@@ -36,8 +36,7 @@ public class LectureController {
     @GetMapping
     public ResponseEntity<LectureResponse> getAllLectures() {
         List<Lecture> lectures = lectureRepository.findAllByLectureStateNot(LectureState.TERMINATED);
-        return ResponseEntity.ok(
-            LectureResponse.createLectureResponseFromLectures(lectures));
+        return ResponseEntity.ok(LectureResponse.from(lectures));
     }
 
     @Operation(summary = "로그인한 학생이 수강중인 강의 리스트를 가져오는 API")

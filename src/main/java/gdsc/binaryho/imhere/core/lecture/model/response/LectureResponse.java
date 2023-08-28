@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.lecture.model.response;
 
 import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
-import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
+import gdsc.binaryho.imhere.core.lecture.domain.OpenLectures;
 import gdsc.binaryho.imhere.core.lecture.model.LectureInfo;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +16,7 @@ public class LectureResponse {
         this.lectureInfos = lectureInfos;
     }
 
-    public static LectureResponse createLectureResponseFromLectures(List<Lecture> lectures) {
+    public static LectureResponse from(List<Lecture> lectures) {
         List<LectureInfo> lectureInfos = lectures.stream()
             .map(LectureInfo::from)
             .collect(Collectors.toList());
@@ -24,8 +24,9 @@ public class LectureResponse {
         return new LectureResponse(lectureInfos);
     }
 
-    public static LectureResponse fromOpenLectures(List<OpenLecture> openLectures) {
-        List<LectureInfo> lectureInfos = openLectures.stream()
+    public static LectureResponse from(OpenLectures openLectures) {
+        List<LectureInfo> lectureInfos = openLectures.getOpenLectures()
+            .stream()
             .map(LectureInfo::from)
             .collect(Collectors.toList());
 
