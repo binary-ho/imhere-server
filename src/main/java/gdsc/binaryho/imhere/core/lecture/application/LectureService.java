@@ -51,7 +51,8 @@ public class LectureService {
     @Transactional
     public void createLecture(LectureCreateRequest request) {
         Member lecturer = authenticationHelper.getCurrentMember();
-        Lecture newLecture = Lecture.createLecture(lecturer, request.getLectureName());
+        Lecture newLecture = Lecture
+            .createLecture(lecturer, request.getLectureName(), seoulTimeHolder.getSeoulDateTime());
         lectureRepository.save(newLecture);
     }
 

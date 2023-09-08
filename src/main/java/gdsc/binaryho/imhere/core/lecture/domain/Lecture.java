@@ -3,7 +3,6 @@ package gdsc.binaryho.imhere.core.lecture.domain;
 
 import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.member.Member;
-import gdsc.binaryho.imhere.util.SeoulDateTime;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,13 +43,13 @@ public class Lecture {
 
     private LocalDateTime lastOpeningTime;
 
-    public static Lecture createLecture(Member lecturer, String lectureName) {
+    public static Lecture createLecture(Member lecturer, String lectureName, LocalDateTime createdAt) {
         Lecture lecture = new Lecture();
         lecture.setMember(lecturer);
         lecture.setLectureName(lectureName);
         lecture.setLecturerName(lecturer.getName());
         lecture.setLectureState(LectureState.CLOSED);
-        lecture.setLastOpeningTime(SeoulDateTime.getSeoulDateTime());
+        lecture.setLastOpeningTime(createdAt);
         return lecture;
     }
 }
