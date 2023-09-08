@@ -13,7 +13,7 @@ public class SeoulDateTime {
         return LocalDateTime.now(SEOUL_ZONE_ID);
     }
 
-    public static long getMillisecondsNow() {
+    public static long getSeoulMilliseconds() {
         LocalDateTime seoulDateTime = LocalDateTime.now(SEOUL_ZONE_ID);
         return getMillisecondsFrom(seoulDateTime);
     }

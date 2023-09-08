@@ -24,7 +24,7 @@ public class TokenService {
         Claims claims = Jwts.claims().setSubject(univId);
         claims.put("role", roleKey);
 
-        long seoulTimeNow = SeoulDateTime.getMillisecondsNow();
+        long seoulTimeNow = SeoulDateTime.getSeoulMilliseconds();
 
         String jwt = Jwts.builder()
             .setClaims(claims)
