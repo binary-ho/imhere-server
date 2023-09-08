@@ -19,6 +19,7 @@ import gdsc.binaryho.imhere.core.lecture.model.response.AttendanceNumberResponse
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
+import gdsc.binaryho.imhere.util.SeoulDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -119,6 +120,7 @@ public class LectureService {
         authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
 
         lecture.setLectureState(LectureState.OPEN);
+        lecture.setLastOpeningTime(SeoulDateTime.getSeoulDateTime());
 
         int attendanceNumber = generateRandomNumber();
         saveOpenLecture(lecture, attendanceNumber);
