@@ -3,6 +3,7 @@ package gdsc.binaryho.imhere.core.lecture.domain;
 
 import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.member.Member;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -40,12 +41,15 @@ public class Lecture {
     @Enumerated(EnumType.STRING)
     private LectureState lectureState;
 
-    public static Lecture createLecture(Member lecturer, String lectureName) {
+    private LocalDateTime lastOpeningTime;
+
+    public static Lecture createLecture(Member lecturer, String lectureName, LocalDateTime createdAt) {
         Lecture lecture = new Lecture();
         lecture.setMember(lecturer);
         lecture.setLectureName(lectureName);
         lecture.setLecturerName(lecturer.getName());
         lecture.setLectureState(LectureState.CLOSED);
+        lecture.setLastOpeningTime(createdAt);
         return lecture;
     }
 }

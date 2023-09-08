@@ -18,6 +18,7 @@ import gdsc.binaryho.imhere.mock.fakerepository.FakeAttendeeCacheRepository;
 import gdsc.binaryho.imhere.mock.fakerepository.FakeOpenLectureCacheRepository;
 import gdsc.binaryho.imhere.mock.fakerepository.FakeVerificationCodeRepository;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
+import gdsc.binaryho.imhere.util.SeoulDateTimeHolder;
 import lombok.Builder;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,6 +40,7 @@ public class TestContainer {
     private final MailSender mailSender = (recipient, verificationCode) -> isMailSent = true;
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
     private final AuthenticationHelper authenticationHelper = new AuthenticationHelper();
+    private final SeoulDateTimeHolder seoulDateTimeHolder = new FixedSeoulTimeHolder();
 
     @Builder
     public TestContainer(
@@ -65,12 +67,12 @@ public class TestContainer {
 
         /* Attendance ervice 초기화 */
         attendanceService = new AttendanceService(
-            authenticationHelper, openLectureService, attendanceRepository, enrollmentInfoRepository, lectureRepository
+            authenticationHelper, openLectureService, attendanceRepository, enrollmentInfoRepository, lectureRepository, seoulDateTimeHolder
         );
 
         /* LectureService 초기화 */
         lectureService = new LectureService(
-            authenticationHelper, lectureRepository, enrollmentInfoRepository, openLectureCacheRepository, attendeeCacheRepository, applicationEventPublisher
+            authenticationHelper, lectureRepository, enrollmentInfoRepository, openLectureCacheRepository, attendeeCacheRepository, applicationEventPublisher, seoulDateTimeHolder
         );
     }
 }

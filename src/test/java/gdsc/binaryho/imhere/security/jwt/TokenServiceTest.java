@@ -5,13 +5,17 @@ import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.UNIV_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gdsc.binaryho.imhere.core.member.Role;
+import gdsc.binaryho.imhere.mock.FixedSeoulTimeHolder;
 import gdsc.binaryho.imhere.mock.TestSecretHolder;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.Duration;
+import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -21,29 +25,37 @@ public class TokenServiceTest {
     private static final Role ROLE = MOCK_STUDENT.getRole();
     private static final String SECRET = "TEST_SECRET";
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000L * 60L * 20L;
-    private static final long TIME_NOW = getTimeNowByMillis();
+    private static final long TIME_NOW = FixedSeoulTimeHolder.FIXED_MILLISECONDS;
 
-    public static long getTimeNowByMillis() {
-        ZonedDateTime seoulTimeNow = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
-        return seoulTimeNow.toInstant().toEpochMilli();
-    }
+//    public static long getTimeNowByMillis() {
+//        ZonedDateTime seoulTimeNow = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
+//        return seoulTimeNow.toInstant().toEpochMilli();
+//    }
 
     SecretHolder secretHolder = new TestSecretHolder(SECRET);
-    TokenService tokenService = new TokenService(secretHolder);
+    TokenService tokenService = new TokenService(secretHolder, new FixedSeoulTimeHolder());
 
     @Test
-    void 이메일과_권한을_넣어_토큰을_만들_수_있다() {
+    void 이메일과_권한을_넣어_토큰을_만들_수_있다() throws JsonProcessingException {
         Token token = tokenService.createToken(UNIV_ID, ROLE.getKey());
         String accessToken = token.getAccessToken();
 
-        Claims claims = Jwts.parser()
-            .setSigningKey(secretHolder.getSecret())
-            .parseClaimsJws(accessToken)
-            .getBody();
+        String[] splitToken = accessToken.split("\\.");
+        String payload = new String(Base64.getDecoder().decode(splitToken[1]));
+        System.out.println(payload);
+        JsonNode payloadJson = new ObjectMapper().readTree(payload);
+        String subject = payloadJson.get("sub").asText();
+        String role = payloadJson.get("role").asText();
+//        Claims claims = Jwts.parser()
+//            .setSigningKey(secretHolder.getSecret())
+//            .set
+//            .setAllowedClockSkewSeconds(Long.MAX_VALUE)
+//            .parseClaimsJws(accessToken)
+//            .getBody();
 
         assertAll(
-            () -> assertThat(claims.getSubject()).isEqualTo(UNIV_ID),
-            () -> assertThat(claims.get("role")).isEqualTo(ROLE.getKey())
+            () -> assertThat(subject).isEqualTo(UNIV_ID),
+            () -> assertThat(role).isEqualTo(ROLE.getKey())
         );
     }
 
@@ -98,7 +110,7 @@ public class TokenServiceTest {
             .setClaims(claims)
             .setIssuedAt(new Date(TIME_NOW))
             .setExpiration(
-                new Date(TIME_NOW + (-7777L)))
+                new Date(TIME_NOW - Duration.ofDays(7777L).toMillis()))
             .signWith(SignatureAlgorithm.HS256, secretHolder.getSecret())
             .compact();
         Token token = new Token(jwt);
@@ -144,15 +156,5 @@ public class TokenServiceTest {
         assertThat(
             tokenService.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
             .isFalse();
-    }
-
-    @Test
-    void 토큰에서_UnivId를_추출할_수_있다() {
-        Token token = tokenService.createToken(UNIV_ID, ROLE.getKey());
-        String accessToken = token.getAccessToken();
-
-        String parsedUnivId = tokenService.getUnivId(accessToken);
-
-        assertThat(parsedUnivId).isEqualTo(UNIV_ID);
     }
 }

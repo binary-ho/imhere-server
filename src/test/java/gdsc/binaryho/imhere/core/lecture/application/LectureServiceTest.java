@@ -36,6 +36,7 @@ import gdsc.binaryho.imhere.core.lecture.model.response.AttendanceNumberResponse
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.Role;
+import gdsc.binaryho.imhere.mock.FixedSeoulTimeHolder;
 import gdsc.binaryho.imhere.mock.TestContainer;
 import gdsc.binaryho.imhere.mock.fixture.MemberFixture;
 import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
@@ -44,6 +45,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -97,6 +99,24 @@ class LectureServiceTest {
 
         // then
         verify(lectureRepository, times(1)).save(any());
+    }
+
+    @Test
+    @MockSecurityContextMember(role = Role.LECTURER)
+    void 강의_생성시_lastOpeningTime이_현재_시간으로_설정된다() {
+        // given
+        LectureCreateRequest lectureCreateRequest = new LectureCreateRequest(LECTURE_NAME);
+
+        // when
+        lectureService.createLecture(lectureCreateRequest);
+
+        // then
+        ArgumentCaptor<Lecture> captor = ArgumentCaptor.forClass(Lecture.class);
+
+        assertAll(
+            () -> verify(lectureRepository, times(1)).save(captor.capture()),
+            () -> assertThat(captor.getValue().getLastOpeningTime()).isEqualTo(FixedSeoulTimeHolder.FIXED_LOCAL_DATE_TIME)
+        );
     }
 
     @Test
@@ -213,6 +233,24 @@ class LectureServiceTest {
 
         // then
         verify(mockLecture, times(1)).setLectureState(LectureState.OPEN);
+    }
+
+    @Test
+    @MockSecurityContextMember(id = 2L, role = Role.LECTURER)
+    void 강사가_강의를_열_때_lastOpeningTime_이_현재_시간으로_변경_된다() {
+        // given
+        Lecture mockLecture = mock(Lecture.class);
+        given(mockLecture.getMember())
+            .willReturn(MOCK_LECTURER);
+
+        given(lectureRepository.findById(MOCK_LECTURER.getId()))
+            .willReturn(Optional.of(mockLecture));
+
+        // when
+        lectureService.openLectureAndGenerateAttendanceNumber(MOCK_LECTURER.getId());
+
+        // then
+        verify(mockLecture, times(1)).setLastOpeningTime(FixedSeoulTimeHolder.FIXED_LOCAL_DATE_TIME);
     }
 
     @Test
