@@ -9,6 +9,10 @@ public class SeoulDateTime {
 
     private static final ZoneId SEOUL_ZONE_ID = ZoneId.of("Asia/Seoul");
 
+    public static LocalDateTime getSeoulDateTime() {
+        return LocalDateTime.now(SEOUL_ZONE_ID);
+    }
+
     public static long getMillisecondsNow() {
         LocalDateTime seoulDateTime = LocalDateTime.now(SEOUL_ZONE_ID);
         return getMillisecondsFrom(seoulDateTime);
