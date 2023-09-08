@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.security.jwt;
 
-import gdsc.binaryho.imhere.util.SeoulDateTime;
+import gdsc.binaryho.imhere.util.SeoulTimeHolder;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -18,13 +18,15 @@ import org.springframework.stereotype.Service;
 public class TokenService {
 
     private final SecretHolder secretHolder;
+    private final SeoulTimeHolder seoulTimeHolder;
+
     private static final Duration ACCESS_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(30);
 
     public Token createToken(String univId, String roleKey) {
         Claims claims = Jwts.claims().setSubject(univId);
         claims.put("role", roleKey);
 
-        long seoulTimeNow = SeoulDateTime.getSeoulMilliseconds();
+        long seoulTimeNow = seoulTimeHolder.getSeoulMilliseconds();
 
         String jwt = Jwts.builder()
             .setClaims(claims)
