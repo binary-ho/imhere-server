@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.mock.fixture;
 
 import gdsc.binaryho.imhere.core.attendance.Attendance;
-import gdsc.binaryho.imhere.util.SeoulDateTime;
+import gdsc.binaryho.imhere.mock.FixedSeoulTimeHolder;
 import java.time.LocalDateTime;
 
 public class AttendanceFixture {
@@ -16,6 +16,6 @@ public class AttendanceFixture {
         MemberFixture.MOCK_STUDENT, LectureFixture.MOCK_LECTURE, DISTANCE, ACCURACY, LOCAL_DATE_TIME);
 
     private static LocalDateTime getLocalDateTime() {
-        return SeoulDateTime.from(MILLISECONDS);
+        return new FixedSeoulTimeHolder().from(MILLISECONDS);
     }
 }

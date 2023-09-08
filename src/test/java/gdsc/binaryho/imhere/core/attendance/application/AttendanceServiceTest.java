@@ -35,9 +35,9 @@ import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Role;
+import gdsc.binaryho.imhere.mock.FixedSeoulTimeHolder;
 import gdsc.binaryho.imhere.mock.TestContainer;
 import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
-import gdsc.binaryho.imhere.util.SeoulDateTime;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
@@ -234,7 +234,7 @@ public class AttendanceServiceTest {
     @MockSecurityContextMember(id = 2L, role = Role.LECTURER)
     void 강사는_지정_날짜의_출석_정보를_가져올_수_있다() {
         // given
-        LocalDateTime dayLocalDateTime = SeoulDateTime.from(MILLISECONDS)
+        LocalDateTime dayLocalDateTime = new FixedSeoulTimeHolder().from(MILLISECONDS)
             .withHour(0).withMinute(0).withSecond(0);
 
         // 위에서 구한 LocalDateTime 이용
