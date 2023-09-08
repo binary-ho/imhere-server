@@ -19,7 +19,7 @@ import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
-import gdsc.binaryho.imhere.util.SeoulTimeHolder;
+import gdsc.binaryho.imhere.util.SeoulDateTimeHolder;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +38,7 @@ public class AttendanceService {
     private final AttendanceRepository attendanceRepository;
     private final EnrollmentInfoRepository enrollmentRepository;
     private final LectureRepository lectureRepository;
-    private final SeoulTimeHolder seoulTimeHolder;
+    private final SeoulDateTimeHolder seoulDateTimeHolder;
 
     @Transactional
     public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) {
@@ -60,7 +60,7 @@ public class AttendanceService {
             enrollmentInfo.getLecture(),
             attendanceRequest.getDistance(),
             attendanceRequest.getAccuracy(),
-            seoulTimeHolder.from(attendanceRequest.getMilliseconds())
+            seoulDateTimeHolder.from(attendanceRequest.getMilliseconds())
         );
 
         attendanceRepository.save(attendance);
@@ -138,7 +138,7 @@ public class AttendanceService {
     }
 
     private LocalDateTime getTodaySeoulDateTime(Long milliseconds) {
-        return seoulTimeHolder.from(milliseconds)
+        return seoulDateTimeHolder.from(milliseconds)
             .withHour(0).withMinute(0).withSecond(0);
     }
 }

@@ -2,7 +2,7 @@ package gdsc.binaryho.imhere.util;
 
 import java.time.LocalDateTime;
 
-public interface SeoulTimeHolder {
+public interface SeoulDateTimeHolder {
 
     LocalDateTime getSeoulDateTime();
 

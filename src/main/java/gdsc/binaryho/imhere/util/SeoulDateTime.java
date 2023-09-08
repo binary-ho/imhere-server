@@ -7,7 +7,7 @@ import java.time.ZoneOffset;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SeoulDateTime implements SeoulTimeHolder {
+public class SeoulDateTime implements SeoulDateTimeHolder {
 
     private static final ZoneId SEOUL_ZONE_ID = ZoneId.of("Asia/Seoul");
 
