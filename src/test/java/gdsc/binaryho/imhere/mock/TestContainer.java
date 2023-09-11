@@ -6,6 +6,7 @@ import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.auth.application.EmailVerificationService;
 import gdsc.binaryho.imhere.core.auth.application.port.MailSender;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
+import gdsc.binaryho.imhere.core.auth.util.EmailFormValidator;
 import gdsc.binaryho.imhere.core.enrollment.application.EnrollmentService;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.lecture.application.LectureService;
@@ -41,6 +42,7 @@ public class TestContainer {
     private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
     private final AuthenticationHelper authenticationHelper = new AuthenticationHelper();
     private final SeoulDateTimeHolder seoulDateTimeHolder = new FixedSeoulTimeHolder();
+    public final EmailFormValidator emailFormValidator = new EmailFormValidator();
 
     @Builder
     public TestContainer(
@@ -56,7 +58,7 @@ public class TestContainer {
         );
 
         /* EmailVerificationService 초기화 */
-        emailVerificationService = new EmailVerificationService(mailSender, verificationCodeRepository);
+        emailVerificationService = new EmailVerificationService(authService, mailSender, emailFormValidator, verificationCodeRepository);
 
         /* OpenLectureService 초기화 */
         openLectureService = new OpenLectureService(openLectureCacheRepository);
