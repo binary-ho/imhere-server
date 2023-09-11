@@ -9,6 +9,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
@@ -21,7 +22,8 @@ public class EmailVerificationService {
 
     private final VerificationCodeRepository verificationCodeRepository;
 
-    public void sendMailAndGetVerificationCode(String recipient) {
+    @Transactional
+    public void sendVerificationCodeByEmail(String recipient) {
         authService.validateMemberNotExist(recipient);
         emailFormValidator.validateEmailForm(recipient);
 
@@ -38,6 +40,7 @@ public class EmailVerificationService {
         verificationCodeRepository.saveWithEmailAsKey(recipient, verificationCode);
     }
 
+    @Transactional(readOnly = true)
     public void verifyCode(String email, String verificationCode) {
         String savedVerificationCode = verificationCodeRepository.getByEmail(email);
         if (!Objects.equals(savedVerificationCode, verificationCode)) {
