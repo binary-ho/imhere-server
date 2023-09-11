@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.member.controller;
 
 import gdsc.binaryho.imhere.core.member.application.MemberService;
-import gdsc.binaryho.imhere.core.member.model.request.RoleChangeRequest;
+import gdsc.binaryho.imhere.core.member.model.request.ChangeRoleRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +22,9 @@ public class AdminController {
 
     @Operation(summary = "유저 권한변경 API")
     @PostMapping("/role/{univ_id}")
-    public ResponseEntity<Void> memberRoleChange(@RequestBody RoleChangeRequest roleChangeRequest,
+    public ResponseEntity<Void> changeMemberRole(@RequestBody ChangeRoleRequest changeRoleRequest,
         @PathVariable("univ_id") String univId) {
-        memberService.memberRoleChange(roleChangeRequest, univId);
+        memberService.changeMemberRole(changeRoleRequest, univId);
         return ResponseEntity.ok().build();
     }
 }
