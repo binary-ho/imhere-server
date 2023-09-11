@@ -27,7 +27,7 @@ public class AuthService {
 
     @Transactional
     public void signUp(String univId, String name, String password) {
-        validateDuplicateMember(univId);
+        validateMemberNotExist(univId);
         validatePasswordForm(password);
 
         Member newMember = Member.createMember(univId, name, bCryptPasswordEncoder.encode(password), Role.STUDENT);
@@ -36,7 +36,7 @@ public class AuthService {
         memberRepository.save(newMember);
     }
 
-    private void validateDuplicateMember(String univId) {
+    public void validateMemberNotExist(String univId) {
         if (memberRepository.findByUnivId(univId).isPresent()) {
             log.info("[회원가입 실패] univId 중복 회원가입 시도 univId : " + univId);
             throw DuplicateEmailException.EXCEPTION;

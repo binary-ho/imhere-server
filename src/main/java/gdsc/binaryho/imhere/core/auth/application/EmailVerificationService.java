@@ -18,10 +18,12 @@ public class EmailVerificationService {
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9]+@(?:(?:g\\.)?hongik\\.ac\\.kr)$";
     private static final String GMAIL_REGEX = "^[a-zA-Z0-9]+@gmail\\.com$";
 
+    private final AuthService authService;
     private final MailSender mailSender;
     private final VerificationCodeRepository verificationCodeRepository;
 
     public void sendMailAndGetVerificationCode(String recipient) {
+        authService.validateMemberNotExist(recipient);
         validateEmailForm(recipient);
 
         String verificationCode = UUID.randomUUID().toString();
