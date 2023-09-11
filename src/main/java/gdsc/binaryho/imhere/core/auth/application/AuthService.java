@@ -4,6 +4,8 @@ import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordIncorrectException;
+import gdsc.binaryho.imhere.core.auth.model.request.SendPasswordChangeEmailRequest;
+import gdsc.binaryho.imhere.core.auth.model.request.SendSignUpEmailRequest;
 import gdsc.binaryho.imhere.core.auth.model.request.SignInRequest;
 import gdsc.binaryho.imhere.core.auth.model.response.SignInRequestValidationResult;
 import gdsc.binaryho.imhere.core.member.Member;
@@ -48,14 +50,28 @@ public class AuthService {
     }
 
     @Transactional
-    public void sendSignUpEmail(String recipient) {
-        validateMemberNotExist(recipient);
-        emailVerificationService.sendVerificationCodeByEmail(recipient);
+    public void sendSignUpEmail(SendSignUpEmailRequest request) {
+        validateMemberNotExist(request.getEmail());
+        emailVerificationService.sendVerificationCodeByEmail(request.getEmail());
+    }
+
+    @Transactional
+    public void sendPasswordChangeEmail(SendPasswordChangeEmailRequest request) {
+        validateMemberExist(request.getEmail());
+        emailVerificationService.sendVerificationCodeByEmail(request.getEmail());
     }
 
     private void validateMemberNotExist(String email) {
         if (memberRepository.findByUnivId(email).isPresent()) {
             log.info("[회원가입 실패] 중복 이메일 회원가입 시도 -> univId : " + email);
+            throw DuplicateEmailException.EXCEPTION;
+        }
+    }
+
+    private void validateMemberExist(String email) {
+        if (memberRepository.findByUnivId(email).isEmpty()) {
+            log.info(
+                "[비밀번호 변경 시도 실패] 가입하지 않은 회원이 비밀번호 변경 요청 -> email : {}" + email);
             throw DuplicateEmailException.EXCEPTION;
         }
     }

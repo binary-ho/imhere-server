@@ -2,6 +2,8 @@ package gdsc.binaryho.imhere.core.auth.controller;
 
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.auth.application.EmailVerificationService;
+import gdsc.binaryho.imhere.core.auth.model.request.SendPasswordChangeEmailRequest;
+import gdsc.binaryho.imhere.core.auth.model.request.SendSignUpEmailRequest;
 import gdsc.binaryho.imhere.core.auth.model.request.SignUpRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,6 +27,10 @@ public class AuthController {
     private final AuthService authService;
     private final EmailVerificationService emailVerificationService;
 
+    private static final String TYPE = "type=";
+    private static final String SIGN_UP = TYPE + "sign-up";
+    private static final String PASSWORD_CHANGE = TYPE + "password-change";
+
     @Operation(summary = "회원가입 API")
     @PostMapping("/new")
     public ResponseEntity<Void> signUp(@RequestBody SignUpRequest signUpRequest) {
@@ -33,10 +39,19 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "특정 이메일로 회원가입 코드를 발급하여 발송하는 API")
-    @PostMapping("/verification/{email}")
-    public ResponseEntity<Void> generateVerificationNumber(@PathVariable("email") String email) {
-        authService.sendSignUpEmail(email);
+    @Operation(summary = "회원가입을 위한 인증 코드와 이메일 발송 API")
+    @PostMapping(value = "/verification", params = SIGN_UP)
+    public ResponseEntity<Void> sendSignUpEmail(
+        @RequestBody SendSignUpEmailRequest sendVerificationEmailRequest) {
+        authService.sendSignUpEmail(sendVerificationEmailRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "비밀번호 변경을 위한 인증 코드와 이메일 발송 API")
+    @PostMapping(value = "/verification", params = PASSWORD_CHANGE)
+    public ResponseEntity<Void> sendPasswordChangeEmail(
+        @RequestBody SendPasswordChangeEmailRequest sendVerificationEmailRequest) {
+        authService.sendPasswordChangeEmail(sendVerificationEmailRequest);
         return ResponseEntity.ok().build();
     }
 
