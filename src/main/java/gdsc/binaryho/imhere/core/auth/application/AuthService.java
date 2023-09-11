@@ -115,7 +115,7 @@ public class AuthService {
     }
 
     private void validateRequestPasswordsAreEqual(String newPassword, String confirmationPassword) {
-        if (Objects.equals(newPassword, confirmationPassword)) {
+        if (!Objects.equals(newPassword, confirmationPassword)) {
             throw PasswordsNotEqualException.EXCEPTION;
         }
     }

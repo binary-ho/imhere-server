@@ -39,9 +39,10 @@ public class TestContainer {
 
     public boolean isMailSent = false;
     private final MailSender mailSender = (recipient, verificationCode) -> isMailSent = true;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
     private final AuthenticationHelper authenticationHelper = new AuthenticationHelper();
     private final SeoulDateTimeHolder seoulDateTimeHolder = new FixedSeoulTimeHolder();
+
+    public final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
     public final EmailFormValidator emailFormValidator = new EmailFormValidator();
 
     @Builder
