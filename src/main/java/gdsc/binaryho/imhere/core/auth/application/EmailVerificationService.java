@@ -16,15 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class EmailVerificationService {
 
-    private final AuthService authService;
     private final MailSender mailSender;
     private final EmailFormValidator emailFormValidator;
 
     private final VerificationCodeRepository verificationCodeRepository;
 
-    @Transactional
     public void sendVerificationCodeByEmail(String recipient) {
-        authService.validateMemberNotExist(recipient);
         emailFormValidator.validateEmailForm(recipient);
 
         String verificationCode = UUID.randomUUID().toString();

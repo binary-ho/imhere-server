@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
 
+    private final EmailVerificationService emailVerificationService;
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -36,19 +37,6 @@ public class AuthService {
         memberRepository.save(newMember);
     }
 
-    public void validateMemberNotExist(String univId) {
-        if (memberRepository.findByUnivId(univId).isPresent()) {
-            log.info("[회원가입 실패] univId 중복 회원가입 시도 univId : " + univId);
-            throw DuplicateEmailException.EXCEPTION;
-        }
-    }
-
-    private void validatePasswordForm(String password) {
-        if (!password.matches(PASSWORD_REGEX)) {
-            throw PasswordFormatMismatchException.EXCEPTION;
-        }
-    }
-
     @Transactional(readOnly = true)
     public SignInRequestValidationResult validateSignInRequest(SignInRequest signInRequest) {
         Member member = memberRepository.findByUnivId(signInRequest.getUnivId())
@@ -57,6 +45,25 @@ public class AuthService {
         validateMatchesPassword(signInRequest.getPassword(), member.getPassword());
 
         return new SignInRequestValidationResult(member.getRoleKey());
+    }
+
+    @Transactional
+    public void sendSignUpEmail(String recipient) {
+        validateMemberNotExist(recipient);
+        emailVerificationService.sendVerificationCodeByEmail(recipient);
+    }
+
+    private void validateMemberNotExist(String email) {
+        if (memberRepository.findByUnivId(email).isPresent()) {
+            log.info("[회원가입 실패] 중복 이메일 회원가입 시도 -> univId : " + email);
+            throw DuplicateEmailException.EXCEPTION;
+        }
+    }
+
+    private void validatePasswordForm(String password) {
+        if (!password.matches(PASSWORD_REGEX)) {
+            throw PasswordFormatMismatchException.EXCEPTION;
+        }
     }
 
     private void validateMatchesPassword(String rawPassword, String encodedPassword) {

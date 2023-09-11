@@ -36,7 +36,7 @@ public class AuthController {
     @Operation(summary = "특정 이메일로 회원가입 코드를 발급하여 발송하는 API")
     @PostMapping("/verification/{email}")
     public ResponseEntity<Void> generateVerificationNumber(@PathVariable("email") String email) {
-        emailVerificationService.sendMailAndGetVerificationCode(email);
+        authService.sendSignUpEmail(email);
         return ResponseEntity.ok().build();
     }
 
