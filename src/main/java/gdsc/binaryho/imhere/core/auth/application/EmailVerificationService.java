@@ -29,7 +29,8 @@ public class EmailVerificationService {
         mailSender.sendEmailWithVerificationCode(recipient, verificationCode);
         saveVerificationCodeWithRecipientAsKey(recipient, verificationCode);
 
-        log.info("[인증 이메일 발송] " + recipient + ", 인증 번호 : " + verificationCode);
+        log.info("[인증 이메일 발송] {}, 인증 번호 : {}",
+            () -> recipient, () -> verificationCode);
     }
 
     private void validateEmailForm(String recipient) {
@@ -43,9 +44,18 @@ public class EmailVerificationService {
     }
 
     public void verifyCode(String email, String verificationCode) {
-        String emailVerificationCode = verificationCodeRepository.getByEmail(email);
-        if (!Objects.equals(emailVerificationCode, verificationCode)) {
+        String savedVerificationCode = verificationCodeRepository.getByEmail(email);
+        if (!Objects.equals(savedVerificationCode, verificationCode)) {
+            logEmailVerificationFail(email, verificationCode, savedVerificationCode);
+
             throw EmailVerificationCodeIncorrectException.EXCEPTION;
         }
+        log.info("[이메일 인증 성공] email : {}", () -> email);
+    }
+
+    private void logEmailVerificationFail(String email, String verificationCode,
+        String savedVerificationCode) {
+        log.info("[이메일 인증 실패] email : {}, 제출 코드 : {}, 저장된 코드 : {}",
+            () -> email, () -> verificationCode, () -> savedVerificationCode);
     }
 }
