@@ -2,8 +2,8 @@ package gdsc.binaryho.imhere.core.auth.application;
 
 import gdsc.binaryho.imhere.core.auth.application.port.MailSender;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
-import gdsc.binaryho.imhere.core.auth.exception.EmailFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
+import gdsc.binaryho.imhere.core.auth.util.EmailFormValidator;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -15,16 +15,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EmailVerificationService {
 
-    private static final String EMAIL_REGEX = "^[a-zA-Z0-9]+@(?:(?:g\\.)?hongik\\.ac\\.kr)$";
-    private static final String GMAIL_REGEX = "^[a-zA-Z0-9]+@gmail\\.com$";
-
     private final AuthService authService;
     private final MailSender mailSender;
+    private final EmailFormValidator emailFormValidator;
+
     private final VerificationCodeRepository verificationCodeRepository;
 
     public void sendMailAndGetVerificationCode(String recipient) {
         authService.validateMemberNotExist(recipient);
-        validateEmailForm(recipient);
+        emailFormValidator.validateEmailForm(recipient);
 
         String verificationCode = UUID.randomUUID().toString();
 
@@ -33,12 +32,6 @@ public class EmailVerificationService {
 
         log.info("[인증 이메일 발송] {}, 인증 번호 : {}",
             () -> recipient, () -> verificationCode);
-    }
-
-    private void validateEmailForm(String recipient) {
-        if (!recipient.matches(EMAIL_REGEX) && !recipient.matches(GMAIL_REGEX)) {
-            throw EmailFormatMismatchException.EXCEPTION;
-        }
     }
 
     private void saveVerificationCodeWithRecipientAsKey(String recipient, String verificationCode) {
