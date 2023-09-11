@@ -3,7 +3,6 @@ package gdsc.binaryho.imhere.core.auth.application;
 import gdsc.binaryho.imhere.core.auth.application.port.MailSender;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
-import gdsc.binaryho.imhere.core.auth.model.request.VerifyEmailRequest;
 import gdsc.binaryho.imhere.core.auth.util.EmailFormValidator;
 import java.util.Objects;
 import java.util.UUID;
@@ -39,11 +38,10 @@ public class EmailVerificationService {
     }
 
     @Transactional(readOnly = true)
-    public void verifyCode(VerifyEmailRequest verifyEmailRequest) {
-        String email = verifyEmailRequest.getEmail();
+    public void verifyCode(String email, String verificationCode) {
         String savedVerificationCode = verificationCodeRepository.getByEmail(email);
 
-        validateEmailCodeMatching(savedVerificationCode, verifyEmailRequest.getVerificationCode(), email);
+        validateEmailCodeMatching(savedVerificationCode, verificationCode, email);
         log.info("[이메일 인증 성공] email : {}", () -> email);
     }
 

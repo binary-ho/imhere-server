@@ -2,6 +2,7 @@ package gdsc.binaryho.imhere.core.auth.controller;
 
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.auth.application.EmailVerificationService;
+import gdsc.binaryho.imhere.core.auth.model.request.ChangePasswordRequest;
 import gdsc.binaryho.imhere.core.auth.model.request.SendPasswordChangeEmailRequest;
 import gdsc.binaryho.imhere.core.auth.model.request.SendSignUpEmailRequest;
 import gdsc.binaryho.imhere.core.auth.model.request.SignUpRequest;
@@ -42,23 +43,31 @@ public class AuthController {
     @Operation(summary = "회원가입을 위한 인증 코드와 이메일 발송 API")
     @PostMapping(value = "/verification", params = SIGN_UP)
     public ResponseEntity<Void> sendSignUpEmail(
-        @RequestBody SendSignUpEmailRequest sendVerificationEmailRequest) {
-        authService.sendSignUpEmail(sendVerificationEmailRequest);
+        @RequestBody SendSignUpEmailRequest sendSignUpEmailRequest) {
+        authService.sendSignUpEmail(sendSignUpEmailRequest);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "비밀번호 변경을 위한 인증 코드와 이메일 발송 API")
     @PostMapping(value = "/verification", params = PASSWORD_CHANGE)
     public ResponseEntity<Void> sendPasswordChangeEmail(
-        @RequestBody SendPasswordChangeEmailRequest sendVerificationEmailRequest) {
-        authService.sendPasswordChangeEmail(sendVerificationEmailRequest);
+        @RequestBody SendPasswordChangeEmailRequest sendPasswordChangeEmailRequest) {
+        authService.sendPasswordChangeEmail(sendPasswordChangeEmailRequest);
         return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "특정 이메일에 발급된 회원가입 코드와 입력된 코드의 일치여부를 확인하는 API")
     @GetMapping("/verification")
     public ResponseEntity<Void> verifyCode(@RequestBody VerifyEmailRequest verifyEmailRequest) {
-        emailVerificationService.verifyCode(verifyEmailRequest);
+        emailVerificationService.verifyCode(
+            verifyEmailRequest.getEmail(), verifyEmailRequest.getVerificationCode());
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "비밀번호 변경 API")
+    @PostMapping("/password")
+    public ResponseEntity<Void> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        authService.changePassword(changePasswordRequest);
         return ResponseEntity.ok().build();
     }
 }
