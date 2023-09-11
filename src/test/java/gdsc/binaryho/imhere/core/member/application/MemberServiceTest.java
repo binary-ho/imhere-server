@@ -12,7 +12,7 @@ import gdsc.binaryho.imhere.core.auth.exception.PermissionDeniedException;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
-import gdsc.binaryho.imhere.core.member.model.request.RoleChangeRequest;
+import gdsc.binaryho.imhere.core.member.model.request.ChangeRoleRequest;
 import gdsc.binaryho.imhere.mock.securitycontext.MockSecurityContextMember;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import java.util.Optional;
@@ -43,8 +43,8 @@ class MemberServiceTest {
         given(memberRepository.findByUnivId(UNIV_ID)).willReturn(Optional.of(mockStudent));
 
         // when
-        RoleChangeRequest roleChangeRequest = new RoleChangeRequest(roleKey);
-        memberService.memberRoleChange(roleChangeRequest, UNIV_ID);
+        ChangeRoleRequest changeRoleRequest = new ChangeRoleRequest(roleKey);
+        memberService.changeMemberRole(changeRoleRequest, UNIV_ID);
 
         // then
         verify(mockStudent, times(1)).setRole(Role.valueOf(roleKey));
@@ -54,11 +54,11 @@ class MemberServiceTest {
     @MockSecurityContextMember(role = Role.STUDENT)
     void Admin이_아닌_경우_다른_회원의_권한_변경을_시도하면_예외가_발생한다() {
         // when
-        RoleChangeRequest roleChangeRequest = new RoleChangeRequest(Role.STUDENT.getKey());
+        ChangeRoleRequest changeRoleRequest = new ChangeRoleRequest(Role.STUDENT.getKey());
 
         // then
         assertThatThrownBy(
-            () ->  memberService.memberRoleChange(roleChangeRequest, UNIV_ID)
+            () ->  memberService.changeMemberRole(changeRoleRequest, UNIV_ID)
         ).isInstanceOf(PermissionDeniedException.class);
     }
 
@@ -68,11 +68,11 @@ class MemberServiceTest {
         given(memberRepository.findByUnivId(UNIV_ID)).willReturn(Optional.empty());
 
         // when
-        RoleChangeRequest roleChangeRequest = new RoleChangeRequest(Role.STUDENT.getKey());
+        ChangeRoleRequest changeRoleRequest = new ChangeRoleRequest(Role.STUDENT.getKey());
 
         // then
         assertThatThrownBy(
-            () ->  memberService.memberRoleChange(roleChangeRequest, UNIV_ID + 777L)
+            () ->  memberService.changeMemberRole(changeRoleRequest, UNIV_ID + 777L)
         ).isInstanceOf(MemberNotFoundException.class);
     }
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class RoleChangeRequest {
+public class ChangeRoleRequest {
 
     @Schema(description = "role을 string으로 표현합니다.", example = "ex) ROLE_STUDENT / ROLE_LECTURER / ROLE_ADMIN 과 같은 String")
     private String role;
