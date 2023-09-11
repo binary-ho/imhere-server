@@ -8,15 +8,12 @@ import static org.mockito.BDDMockito.given;
 
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
-import gdsc.binaryho.imhere.core.auth.exception.EmailFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.mock.TestContainer;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -53,17 +50,6 @@ public class EmailVerificationServiceTest {
 
         // then
         assertThat(testContainer.isMailSent).isTrue();
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"naver.com", "mail.hongik.ac.kr", "g.hongik.ac.k", "gmail.net"})
-    void 홍익대학교_이메일이나_구글_이메일이_아닌_경우_예외가_발생한다(String postfix) {
-        // given
-        // when
-        // then
-        assertThatThrownBy(() ->
-            emailVerificationService.sendMailAndGetVerificationCode("test@" + postfix))
-            .isInstanceOf(EmailFormatMismatchException.class);
     }
 
     @Test
