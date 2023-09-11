@@ -2,29 +2,27 @@ package gdsc.binaryho.imhere.core.auth.application;
 
 import gdsc.binaryho.imhere.core.auth.application.port.MailSender;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
-import gdsc.binaryho.imhere.core.auth.exception.EmailFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
+import gdsc.binaryho.imhere.core.auth.util.EmailFormValidator;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
 @RequiredArgsConstructor
 public class EmailVerificationService {
 
-    private static final String EMAIL_REGEX = "^[a-zA-Z0-9]+@(?:(?:g\\.)?hongik\\.ac\\.kr)$";
-    private static final String GMAIL_REGEX = "^[a-zA-Z0-9]+@gmail\\.com$";
-
-    private final AuthService authService;
     private final MailSender mailSender;
+    private final EmailFormValidator emailFormValidator;
+
     private final VerificationCodeRepository verificationCodeRepository;
 
-    public void sendMailAndGetVerificationCode(String recipient) {
-        authService.validateMemberNotExist(recipient);
-        validateEmailForm(recipient);
+    public void sendVerificationCodeByEmail(String recipient) {
+        emailFormValidator.validateEmailForm(recipient);
 
         String verificationCode = UUID.randomUUID().toString();
 
@@ -35,24 +33,23 @@ public class EmailVerificationService {
             () -> recipient, () -> verificationCode);
     }
 
-    private void validateEmailForm(String recipient) {
-        if (!recipient.matches(EMAIL_REGEX) && !recipient.matches(GMAIL_REGEX)) {
-            throw EmailFormatMismatchException.EXCEPTION;
-        }
-    }
-
     private void saveVerificationCodeWithRecipientAsKey(String recipient, String verificationCode) {
         verificationCodeRepository.saveWithEmailAsKey(recipient, verificationCode);
     }
 
+    @Transactional(readOnly = true)
     public void verifyCode(String email, String verificationCode) {
         String savedVerificationCode = verificationCodeRepository.getByEmail(email);
-        if (!Objects.equals(savedVerificationCode, verificationCode)) {
-            logEmailVerificationFail(email, verificationCode, savedVerificationCode);
 
+        validateEmailCodeMatching(savedVerificationCode, verificationCode, email);
+        log.info("[이메일 인증 성공] email : {}", () -> email);
+    }
+
+    private void validateEmailCodeMatching(String savedVerificationCode, String requestVerificationCode, String email) {
+        if (!Objects.equals(savedVerificationCode, requestVerificationCode)) {
+            logEmailVerificationFail(email, requestVerificationCode, savedVerificationCode);
             throw EmailVerificationCodeIncorrectException.EXCEPTION;
         }
-        log.info("[이메일 인증 성공] email : {}", () -> email);
     }
 
     private void logEmailVerificationFail(String email, String verificationCode,

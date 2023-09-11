@@ -5,15 +5,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordIncorrectException;
+import gdsc.binaryho.imhere.core.auth.exception.PasswordNullException;
+import gdsc.binaryho.imhere.core.auth.exception.PasswordsNotEqualException;
+import gdsc.binaryho.imhere.core.auth.model.request.ChangePasswordRequest;
+import gdsc.binaryho.imhere.core.auth.model.request.SendPasswordChangeEmailRequest;
+import gdsc.binaryho.imhere.core.auth.model.request.SendSignUpEmailRequest;
 import gdsc.binaryho.imhere.core.auth.model.request.SignInRequest;
 import gdsc.binaryho.imhere.core.auth.model.response.SignInRequestValidationResult;
+import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.mock.TestContainer;
 import java.util.Optional;
@@ -23,15 +31,19 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootTest
 class AuthServiceTest {
 
     private static final String UNIV_ID = "UNIV_ID";
+    private static final String EMAIL = "JinhoTest@gmail.com";
     private static final String NAME = "이진호";
     private static final String PASSWORD = "abcd1234";
 
     private AuthService authService;
+    VerificationCodeRepository verificationCodeRepository;
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Mock
     private MemberRepository memberRepository;
@@ -45,6 +57,8 @@ class AuthServiceTest {
             .build();
 
         authService = testContainer.authService;
+        verificationCodeRepository = testContainer.verificationCodeRepository;
+        bCryptPasswordEncoder = testContainer.bCryptPasswordEncoder;
     }
 
     @Test
@@ -115,5 +129,144 @@ class AuthServiceTest {
 
         // then
         assertThat(signInRequestValidationResult.getRoleKey()).isEqualTo(MOCK_STUDENT.getRoleKey());
+    }
+
+    @Test
+    void 회원가입을_위한_인증_이메일_발송을_요청할_수_있다() {
+        // given
+        given(memberRepository.findByUnivId(EMAIL)).willReturn(Optional.empty());
+        testContainer.isMailSent = false;
+
+        // then
+        authService.sendSignUpEmail(new SendSignUpEmailRequest(EMAIL));
+
+        // then
+        assertThat(testContainer.isMailSent).isTrue();
+    }
+
+    @Test
+    void 비밀번호_변경을_위한_인증_이메일_발송을_요청할_수_있다() {
+        // given
+        given(memberRepository.findByUnivId(EMAIL)).willReturn(Optional.of(MOCK_STUDENT));
+        testContainer.isMailSent = false;
+
+        // then
+        authService.sendPasswordChangeEmail(new SendPasswordChangeEmailRequest(EMAIL));
+
+        // then
+        assertThat(testContainer.isMailSent).isTrue();
+    }
+
+    @Test
+    void 이미_가입한_이메일로_회원가입_이메일_발송_요청시_예와가_발생한다() {
+        // given
+        given(memberRepository.findByUnivId(EMAIL)).willReturn(Optional.of(MOCK_STUDENT));
+
+        // then
+        // then
+        assertThatThrownBy(() ->
+            authService.sendSignUpEmail(new SendSignUpEmailRequest(EMAIL)))
+            .isInstanceOf(DuplicateEmailException.class);
+    }
+
+    @Test
+    void 가입하지_않은_회원이_비밀번호_변경을_위한_인증_이메일_발송_요청시_예와가_발생한다() {
+        // given
+        given(memberRepository.findByUnivId(EMAIL)).willReturn(Optional.empty());
+
+        // then
+        // then
+        assertThatThrownBy(() ->
+            authService.sendPasswordChangeEmail(new SendPasswordChangeEmailRequest(EMAIL)))
+            .isInstanceOf(DuplicateEmailException.class);
+    }
+
+    @Test
+    void 비밀번호를_변경할_수_있다() {
+        // given
+        Member mockMember = mock(Member.class);
+        given(memberRepository.findByUnivId(EMAIL)).willReturn(Optional.of(mockMember));
+
+        String verificationCode = "imhereForver";
+        verificationCodeRepository.saveWithEmailAsKey(EMAIL, verificationCode);
+
+        String newPassword = "newPassword1234";
+        ChangePasswordRequest changePasswordRequest =
+            new ChangePasswordRequest(EMAIL, verificationCode, newPassword, newPassword);
+
+        // when
+        authService.changePassword(changePasswordRequest);
+
+        // then
+        verify(mockMember, times(1)).setPassword(any());
+    }
+
+    @Test
+    void 존재하지_않는_회원의_비밀번호_변경을_요청하면_예외를_발생시킨다() {
+        // given
+        String verificationCode = "imhereForver";
+        verificationCodeRepository.saveWithEmailAsKey(EMAIL, verificationCode);
+
+        String newPassword = "newPassword1234";
+        ChangePasswordRequest changePasswordRequest =
+            new ChangePasswordRequest(EMAIL, verificationCode, newPassword, newPassword);
+
+        // when
+        // then
+        assertThatThrownBy(
+            () -> authService.changePassword(changePasswordRequest)
+        ).isInstanceOf(MemberNotFoundException.class);
+    }
+
+    @Test
+    void 비밀번호_변경요청시_빈_입력을_보내면_예외를_발생시킨다() {
+        // given
+        String verificationCode = "imhereForver";
+        verificationCodeRepository.saveWithEmailAsKey(EMAIL, verificationCode);
+
+        String nullPassword = null;
+        ChangePasswordRequest changePasswordRequest =
+            new ChangePasswordRequest(EMAIL, verificationCode, nullPassword, nullPassword);
+
+        // when
+        // then
+        assertThatThrownBy(
+            () -> authService.changePassword(changePasswordRequest)
+        ).isInstanceOf(PasswordNullException.class);
+    }
+
+    @Test
+    void 비밀번호_변경요청시_새_비밀번호와_확인용_비밀번호가_다르면_예외를_발생시킨다() {
+        // given
+        String verificationCode = "imhereForver";
+        verificationCodeRepository.saveWithEmailAsKey(EMAIL, verificationCode);
+
+        String newPassword = "newPassword1234";
+        String confirmationPassword = "confirmationPassword";
+        ChangePasswordRequest changePasswordRequest =
+            new ChangePasswordRequest(EMAIL, verificationCode, newPassword, confirmationPassword);
+
+        // when
+        // then
+        assertThatThrownBy(
+            () -> authService.changePassword(changePasswordRequest)
+        ).isInstanceOf(PasswordsNotEqualException.class);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"abcdabcd", "12341234", "dafadfdafdafdfadfadfadfadafdaf", "a1"})
+    void 비밀번호_변경요청시_비밀번호_형식에_맞지_않으면_예외를_발생시킨다(String newPassword) {
+        // given
+        String verificationCode = "imhereForver";
+        verificationCodeRepository.saveWithEmailAsKey(EMAIL, verificationCode);
+
+        ChangePasswordRequest changePasswordRequest =
+            new ChangePasswordRequest(EMAIL, verificationCode, newPassword, newPassword);
+
+        // when
+        // then
+        assertThatThrownBy(
+            () -> authService.changePassword(changePasswordRequest)
+        ).isInstanceOf(PasswordFormatMismatchException.class);
     }
 }

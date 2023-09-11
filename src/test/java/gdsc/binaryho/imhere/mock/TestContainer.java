@@ -6,6 +6,7 @@ import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.auth.application.EmailVerificationService;
 import gdsc.binaryho.imhere.core.auth.application.port.MailSender;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
+import gdsc.binaryho.imhere.core.auth.util.EmailFormValidator;
 import gdsc.binaryho.imhere.core.enrollment.application.EnrollmentService;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.lecture.application.LectureService;
@@ -38,9 +39,11 @@ public class TestContainer {
 
     public boolean isMailSent = false;
     private final MailSender mailSender = (recipient, verificationCode) -> isMailSent = true;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
     private final AuthenticationHelper authenticationHelper = new AuthenticationHelper();
     private final SeoulDateTimeHolder seoulDateTimeHolder = new FixedSeoulTimeHolder();
+
+    public final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    public final EmailFormValidator emailFormValidator = new EmailFormValidator();
 
     @Builder
     public TestContainer(
@@ -50,13 +53,13 @@ public class TestContainer {
         AttendanceRepository attendanceRepository,
         ApplicationEventPublisher applicationEventPublisher) {
 
+        /* EmailVerificationService 초기화 */
+        emailVerificationService = new EmailVerificationService(mailSender, emailFormValidator, verificationCodeRepository);
+
         /* AuthService 초기화 */
         authService = new AuthService(
-            memberRepository, bCryptPasswordEncoder
+            emailVerificationService, memberRepository, bCryptPasswordEncoder
         );
-
-        /* EmailVerificationService 초기화 */
-        emailVerificationService = new EmailVerificationService(mailSender, verificationCodeRepository);
 
         /* OpenLectureService 초기화 */
         openLectureService = new OpenLectureService(openLectureCacheRepository);
