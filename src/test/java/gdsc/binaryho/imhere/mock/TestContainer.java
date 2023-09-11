@@ -52,13 +52,13 @@ public class TestContainer {
         AttendanceRepository attendanceRepository,
         ApplicationEventPublisher applicationEventPublisher) {
 
+        /* EmailVerificationService 초기화 */
+        emailVerificationService = new EmailVerificationService(mailSender, emailFormValidator, verificationCodeRepository);
+
         /* AuthService 초기화 */
         authService = new AuthService(
-            memberRepository, bCryptPasswordEncoder
+            emailVerificationService, memberRepository, bCryptPasswordEncoder
         );
-
-        /* EmailVerificationService 초기화 */
-        emailVerificationService = new EmailVerificationService(authService, mailSender, emailFormValidator, verificationCodeRepository);
 
         /* OpenLectureService 초기화 */
         openLectureService = new OpenLectureService(openLectureCacheRepository);

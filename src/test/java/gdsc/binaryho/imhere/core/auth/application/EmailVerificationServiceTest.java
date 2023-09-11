@@ -1,17 +1,13 @@
 package gdsc.binaryho.imhere.core.auth.application;
 
-import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.MOCK_STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
 
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
-import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
 import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.mock.TestContainer;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -46,29 +42,17 @@ public class EmailVerificationServiceTest {
         testContainer.isMailSent = false;
 
         // then
-        emailVerificationService.sendMailAndGetVerificationCode(EMAIL);
+        emailVerificationService.sendVerificationCodeByEmail(EMAIL);
 
         // then
         assertThat(testContainer.isMailSent).isTrue();
     }
 
     @Test
-    void 이미_가입한_이메일로_인증_요청시_예와가_발생한다() {
-        // given
-        given(memberRepository.findByUnivId(EMAIL)).willReturn(Optional.of(MOCK_STUDENT));
-
-        // then
-        // then
-        assertThatThrownBy(() ->
-            emailVerificationService.sendMailAndGetVerificationCode(EMAIL))
-            .isInstanceOf(DuplicateEmailException.class);
-    }
-
-    @Test
     void 이메일_발송과_함께_인증_코드가_저장된다() {
         // given
         // when
-        emailVerificationService.sendMailAndGetVerificationCode(EMAIL);
+        emailVerificationService.sendVerificationCodeByEmail(EMAIL);
 
         // then
         assertThat(verificationCodeRepository.getByEmail(EMAIL)).isNotNull();
