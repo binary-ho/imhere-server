@@ -3,6 +3,7 @@ package gdsc.binaryho.imhere.core.auth.application;
 import gdsc.binaryho.imhere.core.auth.application.port.MailSender;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.EmailVerificationCodeIncorrectException;
+import gdsc.binaryho.imhere.core.auth.model.request.VerifyEmailRequest;
 import gdsc.binaryho.imhere.core.auth.util.EmailFormValidator;
 import java.util.Objects;
 import java.util.UUID;
@@ -38,14 +39,19 @@ public class EmailVerificationService {
     }
 
     @Transactional(readOnly = true)
-    public void verifyCode(String email, String verificationCode) {
+    public void verifyCode(VerifyEmailRequest verifyEmailRequest) {
+        String email = verifyEmailRequest.getEmail();
         String savedVerificationCode = verificationCodeRepository.getByEmail(email);
-        if (!Objects.equals(savedVerificationCode, verificationCode)) {
-            logEmailVerificationFail(email, verificationCode, savedVerificationCode);
 
+        validateEmailCodeMatching(savedVerificationCode, verifyEmailRequest.getVerificationCode(), email);
+        log.info("[이메일 인증 성공] email : {}", () -> email);
+    }
+
+    private void validateEmailCodeMatching(String savedVerificationCode, String requestVerificationCode, String email) {
+        if (!Objects.equals(savedVerificationCode, requestVerificationCode)) {
+            logEmailVerificationFail(email, requestVerificationCode, savedVerificationCode);
             throw EmailVerificationCodeIncorrectException.EXCEPTION;
         }
-        log.info("[이메일 인증 성공] email : {}", () -> email);
     }
 
     private void logEmailVerificationFail(String email, String verificationCode,

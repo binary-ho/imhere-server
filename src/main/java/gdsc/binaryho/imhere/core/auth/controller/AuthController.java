@@ -5,13 +5,13 @@ import gdsc.binaryho.imhere.core.auth.application.EmailVerificationService;
 import gdsc.binaryho.imhere.core.auth.model.request.SendPasswordChangeEmailRequest;
 import gdsc.binaryho.imhere.core.auth.model.request.SendSignUpEmailRequest;
 import gdsc.binaryho.imhere.core.auth.model.request.SignUpRequest;
+import gdsc.binaryho.imhere.core.auth.model.request.VerifyEmailRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,10 +56,9 @@ public class AuthController {
     }
 
     @Operation(summary = "특정 이메일에 발급된 회원가입 코드와 입력된 코드의 일치여부를 확인하는 API")
-    @GetMapping("/verification/{email}/{verification-code}")
-    public ResponseEntity<Void> verifyCode(@PathVariable("email") String email,
-        @PathVariable("verification-code") String verificationCode) {
-        emailVerificationService.verifyCode(email, verificationCode);
+    @GetMapping("/verification")
+    public ResponseEntity<Void> verifyCode(@RequestBody VerifyEmailRequest verifyEmailRequest) {
+        emailVerificationService.verifyCode(verifyEmailRequest);
         return ResponseEntity.ok().build();
     }
 }
