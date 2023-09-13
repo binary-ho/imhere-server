@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
+import gdsc.binaryho.imhere.core.auth.exception.PasswordChangeMemberNotExistException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordIncorrectException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordNullException;
@@ -215,7 +216,7 @@ class AuthServiceTest {
         // then
         assertThatThrownBy(
             () -> authService.changePassword(changePasswordRequest)
-        ).isInstanceOf(MemberNotFoundException.class);
+        ).isInstanceOf(PasswordChangeMemberNotExistException.class);
     }
 
     @Test
