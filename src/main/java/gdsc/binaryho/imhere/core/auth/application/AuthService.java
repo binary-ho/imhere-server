@@ -2,6 +2,7 @@ package gdsc.binaryho.imhere.core.auth.application;
 
 import gdsc.binaryho.imhere.core.auth.exception.DuplicateEmailException;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
+import gdsc.binaryho.imhere.core.auth.exception.PasswordChangeMemberNotExistException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordFormatMismatchException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordIncorrectException;
 import gdsc.binaryho.imhere.core.auth.exception.PasswordNullException;
@@ -89,7 +90,7 @@ public class AuthService {
         if (memberRepository.findByUnivId(email).isEmpty()) {
             log.info(
                 "[비밀번호 변경 시도 실패] 가입하지 않은 회원이 비밀번호 변경 요청 -> email : {}" + email);
-            throw DuplicateEmailException.EXCEPTION;
+            throw PasswordChangeMemberNotExistException.EXCEPTION;
         }
     }
 
