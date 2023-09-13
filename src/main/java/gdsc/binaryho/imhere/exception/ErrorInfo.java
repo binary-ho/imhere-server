@@ -18,6 +18,7 @@ public enum ErrorInfo {
     MESSAGING_SERVER_EXCEPTION(HttpStatus.NOT_FOUND, 1008, "Messaging Server 에 연결할 수 없습니다."),
     PASSWORD_NULL_EXCEPTION(HttpStatus.BAD_REQUEST, 1009, "비밀번호 변경 요청시 보내온 비밀번호가 비어 있습니다."),
     PASSWORDS_NOT_EQUAL(HttpStatus.BAD_REQUEST, 1010, "비밀번호 변경 요청시 보내온 새 비밀번호와 확인용 비밀번호가 불일치합니다."),
+    PASSWORD_CHANGE_MEMBER_NOT_EXIST(HttpStatus.NOT_FOUND, 1011, "비밀번호 변경을 시도한 이메일을 소유한 회원이 없습니다."),
 
     LECTURE_NOT_FOUND(HttpStatus.NOT_FOUND, 2001, "강의 정보가 없습니다."),
     LECTURE_NOT_OPEN(HttpStatus.FORBIDDEN, 2002, "강의에 출석 가능한 상태가 아닙니다. (Lecture Not OPEN)"),
