@@ -6,13 +6,13 @@ import gdsc.binaryho.imhere.core.auth.model.request.ChangePasswordRequest;
 import gdsc.binaryho.imhere.core.auth.model.request.SendPasswordChangeEmailRequest;
 import gdsc.binaryho.imhere.core.auth.model.request.SendSignUpEmailRequest;
 import gdsc.binaryho.imhere.core.auth.model.request.SignUpRequest;
-import gdsc.binaryho.imhere.core.auth.model.request.VerifyEmailRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +40,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "회원가입을 위한 인증 코드와 이메일 발송 API")
+    @Operation(summary = "회원가입을 위한 인증 코드와 이메일 발송 API", tags = SIGN_UP)
     @PostMapping(value = "/verification", params = SIGN_UP)
     public ResponseEntity<Void> sendSignUpEmail(
         @RequestBody SendSignUpEmailRequest sendSignUpEmailRequest) {
@@ -48,7 +48,7 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "비밀번호 변경을 위한 인증 코드와 이메일 발송 API")
+    @Operation(summary = "비밀번호 변경을 위한 인증 코드와 이메일 발송 API", tags = PASSWORD_CHANGE)
     @PostMapping(value = "/verification", params = PASSWORD_CHANGE)
     public ResponseEntity<Void> sendPasswordChangeEmail(
         @RequestBody SendPasswordChangeEmailRequest sendPasswordChangeEmailRequest) {
@@ -57,10 +57,10 @@ public class AuthController {
     }
 
     @Operation(summary = "특정 이메일에 발급된 회원가입 코드와 입력된 코드의 일치여부를 확인하는 API")
-    @GetMapping("/verification")
-    public ResponseEntity<Void> verifyCode(@RequestBody VerifyEmailRequest verifyEmailRequest) {
-        emailVerificationService.verifyCode(
-            verifyEmailRequest.getEmail(), verifyEmailRequest.getVerificationCode());
+    @GetMapping("/verification/{email}/{verification-code}")
+    public ResponseEntity<Void> verifyCode(@PathVariable("email") String email,
+        @PathVariable("verification-code") String verificationCode) {
+        emailVerificationService.verifyCode(email, verificationCode);
         return ResponseEntity.ok().build();
     }
 
