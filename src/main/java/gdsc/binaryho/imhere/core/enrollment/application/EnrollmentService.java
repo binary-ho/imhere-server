@@ -65,13 +65,12 @@ public class EnrollmentService {
     }
 
     private void cacheStudentIfLectureIsOpen(Long lectureId, EnrollmentInfo enrollmentInfo) {
-        Optional<OpenLecture> lecture = openLectureService.find(lectureId);
+        Optional<OpenLecture> openLectureOptional = openLectureService.find(lectureId);
 
-        if (lecture.isPresent()) {
+        openLectureOptional.ifPresent(openLecture -> {
             Long studentId = enrollmentInfo.getMember().getId();
-
             eventPublisher.publishEvent(new AttendeeCacheEvent(lectureId, new StudentIds(studentId)));
-        }
+        });
     }
 
     private EnrollmentInfo getEnrollmentInfo(Long lectureId, Long studentId) {
@@ -105,16 +104,13 @@ public class EnrollmentService {
     }
 
     private void validateDuplicated(Member student, Long lectureId) {
-        Optional<EnrollmentInfo> enrollmentInfo = enrollmentInfoRepository
+        Optional<EnrollmentInfo> enrollmentInfoOptional = enrollmentInfoRepository
             .findByMemberIdAndLectureId(student.getId(), lectureId);
 
-        if (enrollmentInfo.isEmpty()) {
-            return;
-        }
-
-        logDuplicatedEnrollment(enrollmentInfo.get());
-
-        throw EnrollmentDuplicatedException.EXCEPTION;
+        enrollmentInfoOptional.ifPresent(enrollmentInfo -> {
+            logDuplicatedEnrollment(enrollmentInfo);
+            throw EnrollmentDuplicatedException.EXCEPTION;
+        });
     }
 
     private void logDuplicatedEnrollment(EnrollmentInfo enrollmentInfo) {
