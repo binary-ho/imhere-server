@@ -26,7 +26,7 @@ public class FakeAttendeeCacheRepository implements AttendeeCacheRepository {
     }
 
     private void putLectureId(Long studentId, Long lectureId) {
-        data.putIfAbsent(studentId, new HashSet<>())
-            .add(lectureId);
+        data.putIfAbsent(studentId, new HashSet<>());
+        data.get(studentId).add(lectureId);
     }
 }
