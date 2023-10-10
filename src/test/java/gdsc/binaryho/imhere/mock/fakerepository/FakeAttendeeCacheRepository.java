@@ -13,13 +13,8 @@ public class FakeAttendeeCacheRepository implements AttendeeCacheRepository {
 
     @Override
     public Set<Long> findAllAttendLectureId(Long studentId) {
-        Set<Long> ids = data.get(studentId);
-
-        if (ids == null) {
-            return Collections.emptySet();
-        }
-
-        return ids;
+        return data.getOrDefault(
+            studentId, Collections.emptySet());
     }
 
     @Override
@@ -30,11 +25,9 @@ public class FakeAttendeeCacheRepository implements AttendeeCacheRepository {
     }
 
     private void putLectureId(Long studentId, Long lectureId) {
-        Set<Long> result = data.get(studentId);
-        if (result == null || result.isEmpty()) {
-            data.put(studentId, Collections.singleton(lectureId));
-        } else {
-            result.add(lectureId);
-        }
+        data.putIfAbsent(studentId, Collections.emptySet());
+
+        data.get(studentId)
+            .add(lectureId);
     }
 }
