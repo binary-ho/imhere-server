@@ -25,12 +25,7 @@ public class OpenLectureRedisCacheRepository implements OpenLectureCacheReposito
         Map<Object, Object> queryResult = redisTemplate.opsForHash()
             .entries(queryKey);
 
-        if (queryResult.isEmpty()) {
-            return Optional.empty();
-        }
-
-        OpenLecture openLecture = getOpenLecture(lectureId, queryResult);
-        return Optional.of(openLecture);
+        return Optional.ofNullable(getOpenLecture(lectureId, queryResult));
     }
 
     @Override
@@ -51,6 +46,10 @@ public class OpenLectureRedisCacheRepository implements OpenLectureCacheReposito
     }
 
     private OpenLecture getOpenLecture(Long id, Map<Object, Object> queryResult) {
+        if (queryResult == null || queryResult.isEmpty()) {
+            return null;
+        }
+
         String name = (String) queryResult.get(OpenLectureFieldKeys.NAME);
         String lecturerName = (String) queryResult.get(OpenLectureFieldKeys.LECTURER_NAME);
         int attendanceNumber = Integer.parseInt(
