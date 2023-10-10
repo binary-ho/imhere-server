@@ -43,8 +43,8 @@ public class FakeOpenLectureCacheRepository implements OpenLectureCacheRepositor
         Map<String, String> hash = Map.of(
             NAME, openLecture.getName(),
             LECTURER_NAME, openLecture.getLecturerName(),
-            ATTENDANCE_NUMBER, String.valueOf(openLecture.getAttendanceNumber()
-            ));
+            ATTENDANCE_NUMBER, String.valueOf(openLecture.getAttendanceNumber())
+        );
 
         data.put(String.valueOf(openLecture.getId()), hash);
     }

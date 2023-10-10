@@ -222,8 +222,14 @@ class LectureServiceTest {
     void 강사는_자신의_강의를_열_수_있다() {
         // given
         Lecture mockLecture = mock(Lecture.class);
+        given(mockLecture.getId())
+            .willReturn(MOCK_LECTURE.getId());
         given(mockLecture.getMember())
             .willReturn(MOCK_LECTURER);
+        given(mockLecture.getLectureName())
+            .willReturn(MOCK_LECTURE.getLectureName());
+        given(mockLecture.getLecturerName())
+            .willReturn(MOCK_LECTURER.getName());
 
         given(lectureRepository.findById(MOCK_LECTURER.getId()))
             .willReturn(Optional.of(mockLecture));
@@ -240,8 +246,14 @@ class LectureServiceTest {
     void 강사가_강의를_열_때_lastOpeningTime_이_현재_시간으로_변경_된다() {
         // given
         Lecture mockLecture = mock(Lecture.class);
+        given(mockLecture.getId())
+            .willReturn(MOCK_LECTURE.getId());
         given(mockLecture.getMember())
             .willReturn(MOCK_LECTURER);
+        given(mockLecture.getLectureName())
+            .willReturn(MOCK_LECTURE.getLectureName());
+        given(mockLecture.getLecturerName())
+            .willReturn(MOCK_LECTURER.getName());
 
         given(lectureRepository.findById(MOCK_LECTURER.getId()))
             .willReturn(Optional.of(mockLecture));
