@@ -16,16 +16,19 @@ public class FakeOpenLectureCacheRepository implements OpenLectureCacheRepositor
     @Override
     public Optional<OpenLecture> find(Long lectureId) {
         Map<String, String> queryResult = data.get(String.valueOf(lectureId));
+        return Optional.ofNullable(getOpenLecture(lectureId, queryResult));
+    }
 
+    private OpenLecture getOpenLecture(Long lectureId, Map<String, String> queryResult) {
         if (queryResult == null || queryResult.isEmpty()) {
-            return Optional.empty();
+            return null;
         }
 
         String name = queryResult.get(NAME);
         String lecturerName = queryResult.get(LECTURER_NAME);
         int attendanceNumber = Integer.parseInt(queryResult.get(ATTENDANCE_NUMBER));
 
-        return Optional.of(new OpenLecture(lectureId, name, lecturerName, attendanceNumber));
+        return new OpenLecture(lectureId, name, lecturerName, attendanceNumber);
     }
 
     @Override
@@ -37,10 +40,11 @@ public class FakeOpenLectureCacheRepository implements OpenLectureCacheRepositor
 
     @Override
     public void cache(OpenLecture openLecture) {
-        Map<String, String> hash = new HashMap<>();
-        hash.put(NAME, openLecture.getName());
-        hash.put(LECTURER_NAME, openLecture.getLecturerName());
-        hash.put(ATTENDANCE_NUMBER, String.valueOf(openLecture.getAttendanceNumber()));
+        Map<String, String> hash = Map.of(
+            NAME, openLecture.getName(),
+            LECTURER_NAME, openLecture.getLecturerName(),
+            ATTENDANCE_NUMBER, String.valueOf(openLecture.getAttendanceNumber())
+        );
 
         data.put(String.valueOf(openLecture.getId()), hash);
     }

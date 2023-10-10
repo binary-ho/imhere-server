@@ -3,7 +3,6 @@ package gdsc.binaryho.imhere.core.lecture.infrastructure;
 import gdsc.binaryho.imhere.config.redis.RedisKeyPrefixes;
 import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -25,12 +24,7 @@ public class OpenLectureRedisCacheRepository implements OpenLectureCacheReposito
         Map<Object, Object> queryResult = redisTemplate.opsForHash()
             .entries(queryKey);
 
-        if (queryResult.isEmpty()) {
-            return Optional.empty();
-        }
-
-        OpenLecture openLecture = getOpenLecture(lectureId, queryResult);
-        return Optional.of(openLecture);
+        return Optional.ofNullable(getOpenLecture(lectureId, queryResult));
     }
 
     @Override
@@ -51,6 +45,10 @@ public class OpenLectureRedisCacheRepository implements OpenLectureCacheReposito
     }
 
     private OpenLecture getOpenLecture(Long id, Map<Object, Object> queryResult) {
+        if (queryResult == null || queryResult.isEmpty()) {
+            return null;
+        }
+
         String name = (String) queryResult.get(OpenLectureFieldKeys.NAME);
         String lecturerName = (String) queryResult.get(OpenLectureFieldKeys.LECTURER_NAME);
         int attendanceNumber = Integer.parseInt(
@@ -60,13 +58,11 @@ public class OpenLectureRedisCacheRepository implements OpenLectureCacheReposito
     }
 
     private Map<String, String> getOpenLectureInfo(OpenLecture openLecture) {
-        Map<String, String> hash = new HashMap<>();
-
-        hash.put(OpenLectureFieldKeys.NAME, openLecture.getName());
-        hash.put(OpenLectureFieldKeys.LECTURER_NAME, openLecture.getLecturerName());
-        hash.put(OpenLectureFieldKeys.ATTENDANCE_NUMBER, String.valueOf(openLecture.getAttendanceNumber()));
-
-        return hash;
+        return Map.of(
+            OpenLectureFieldKeys.NAME, openLecture.getName(),
+            OpenLectureFieldKeys.LECTURER_NAME, openLecture.getLecturerName(),
+            OpenLectureFieldKeys.ATTENDANCE_NUMBER, String.valueOf(openLecture.getAttendanceNumber()
+            ));
     }
 
     private static class OpenLectureFieldKeys {

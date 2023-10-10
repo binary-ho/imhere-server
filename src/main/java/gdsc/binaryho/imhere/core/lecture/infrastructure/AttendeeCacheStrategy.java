@@ -19,8 +19,7 @@ public enum AttendeeCacheStrategy {
         @Override
         public void cache(
             RedisTemplate<String, String> redisTemplate, String key, String value) {
-            String savedValue = redisTemplate.opsForValue().get(key);
-            redisTemplate.delete(key);
+            String savedValue = redisTemplate.opsForValue().getAndDelete(key);
             redisTemplate.opsForSet().add(key, savedValue, value);
         }
     },

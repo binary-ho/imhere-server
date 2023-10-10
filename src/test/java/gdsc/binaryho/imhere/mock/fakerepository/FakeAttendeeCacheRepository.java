@@ -4,6 +4,7 @@ import gdsc.binaryho.imhere.core.lecture.application.port.AttendeeCacheRepositor
 import gdsc.binaryho.imhere.core.lecture.model.StudentIds;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,13 +14,8 @@ public class FakeAttendeeCacheRepository implements AttendeeCacheRepository {
 
     @Override
     public Set<Long> findAllAttendLectureId(Long studentId) {
-        Set<Long> ids = data.get(studentId);
-
-        if (ids == null) {
-            return Collections.emptySet();
-        }
-
-        return ids;
+        return data.getOrDefault(
+            studentId, Collections.emptySet());
     }
 
     @Override
@@ -30,11 +26,7 @@ public class FakeAttendeeCacheRepository implements AttendeeCacheRepository {
     }
 
     private void putLectureId(Long studentId, Long lectureId) {
-        Set<Long> result = data.get(studentId);
-        if (result == null || result.isEmpty()) {
-            data.put(studentId, Collections.singleton(lectureId));
-        } else {
-            result.add(lectureId);
-        }
+        data.putIfAbsent(studentId, new HashSet<>());
+        data.get(studentId).add(lectureId);
     }
 }
