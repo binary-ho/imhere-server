@@ -37,10 +37,11 @@ public class FakeOpenLectureCacheRepository implements OpenLectureCacheRepositor
 
     @Override
     public void cache(OpenLecture openLecture) {
-        Map<String, String> hash = new HashMap<>();
-        hash.put(NAME, openLecture.getName());
-        hash.put(LECTURER_NAME, openLecture.getLecturerName());
-        hash.put(ATTENDANCE_NUMBER, String.valueOf(openLecture.getAttendanceNumber()));
+        Map<String, String> hash = Map.of(
+            NAME, openLecture.getName(),
+            LECTURER_NAME, openLecture.getLecturerName(),
+            ATTENDANCE_NUMBER, String.valueOf(openLecture.getAttendanceNumber()
+            ));
 
         data.put(String.valueOf(openLecture.getId()), hash);
     }
