@@ -75,7 +75,7 @@ public class AuthService {
         validatePasswords(newPassword, changePasswordRequest.getConfirmationPassword());
 
         Member member = memberRepository.findByUnivId(changePasswordRequest.getEmail())
-            .orElseThrow(() -> MemberNotFoundException.EXCEPTION);
+            .orElseThrow(() -> PasswordChangeMemberNotExistException.EXCEPTION);
         member.setPassword(bCryptPasswordEncoder.encode(newPassword));
     }
 

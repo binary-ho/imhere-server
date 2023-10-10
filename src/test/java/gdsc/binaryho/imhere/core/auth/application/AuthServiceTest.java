@@ -179,7 +179,7 @@ class AuthServiceTest {
         // then
         assertThatThrownBy(() ->
             authService.sendPasswordChangeEmail(new SendPasswordChangeEmailRequest(EMAIL)))
-            .isInstanceOf(DuplicateEmailException.class);
+            .isInstanceOf(PasswordChangeMemberNotExistException.class);
     }
 
     @Test
