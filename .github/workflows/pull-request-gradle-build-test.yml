@@ -1,0 +1,37 @@
+name : 풀 리퀘스트 Gradle 빌드 테스트
+
+on:
+  pull_request:
+    types: [opened, reopen, synchronize, closed]
+
+permissions: read-all
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3.0.2
+
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            application:
+              - 'build.gradle'
+              - 'src/**'
+
+      - name: JDK 설치
+        if: steps.changes.outputs.application == 'true'
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 11
+          cache: 'gradle'
+      - name: Gradle Build
+        if: steps.changes.outputs.application == 'true'
+        run: |
+          ./gradlew build --no-build-cache
