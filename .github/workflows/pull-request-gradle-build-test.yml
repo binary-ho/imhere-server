@@ -21,8 +21,8 @@ jobs:
         with:
           filters: |
             application:
-              - 'build.gradle'
-              - 'src/**'
+            - 'build.gradle'
+            - 'src/**'
 
       - name: JDK 설치
         if: steps.changes.outputs.application == 'true'
@@ -31,6 +31,10 @@ jobs:
           distribution: zulu
           java-version: 11
           cache: 'gradle'
+
+      - name: gradlew 권한 부여
+        run: chmod +x ./gradlew
+        
       - name: Gradle Build
         if: steps.changes.outputs.application == 'true'
         run: |
