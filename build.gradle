@@ -54,6 +54,10 @@ dependencies {
 
 	/* swagger */
 	implementation("org.springdoc:springdoc-openapi-ui:1.6.11")
+
+	/* jasypt */
+	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
+
 }
 
 tasks.named('test') {
