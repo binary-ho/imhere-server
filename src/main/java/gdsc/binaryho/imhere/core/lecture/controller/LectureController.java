@@ -1,15 +1,11 @@
 package gdsc.binaryho.imhere.core.lecture.controller;
 
-import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.lecture.application.LectureService;
-import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
-import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.lecture.model.request.LectureCreateRequest;
 import gdsc.binaryho.imhere.core.lecture.model.response.AttendanceNumberResponse;
 import gdsc.binaryho.imhere.core.lecture.model.response.LectureResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -28,15 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class LectureController {
 
     private final LectureService lectureService;
-    private final LectureRepository lectureRepository;
 
     private static final String STATUS = "status=";
 
     @Operation(summary = "학생이 수강신청을 위해 개설된 모든 강의 리스트를 가져오는 API")
     @GetMapping
     public ResponseEntity<LectureResponse> getAllLectures() {
-        List<Lecture> lectures = lectureRepository.findAllByLectureStateNot(LectureState.TERMINATED);
-        return ResponseEntity.ok(LectureResponse.from(lectures));
+        return ResponseEntity.ok(
+            lectureService.getAllEnrollableLectures());
     }
 
     @Operation(summary = "로그인한 학생이 수강중인 강의 리스트를 가져오는 API")

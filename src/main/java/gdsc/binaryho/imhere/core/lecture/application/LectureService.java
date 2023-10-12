@@ -57,6 +57,14 @@ public class LectureService {
     }
 
     @Transactional(readOnly = true)
+    public LectureResponse getAllEnrollableLectures() {
+        List<Lecture> lectures = lectureRepository
+            .findAllByLectureStateNot(LectureState.TERMINATED);
+
+        return LectureResponse.from(lectures);
+    }
+
+    @Transactional(readOnly = true)
     public LectureResponse getStudentLectures() {
         Member currentStudent = authenticationHelper.getCurrentMember();
         List<Lecture> studentLectures = findStudentLectures(currentStudent);
