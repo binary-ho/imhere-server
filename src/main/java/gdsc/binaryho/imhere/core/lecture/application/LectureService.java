@@ -57,7 +57,7 @@ public class LectureService {
     }
 
     @Transactional(readOnly = true)
-    public LectureResponse getAllEnrollableLectures() {
+    public LectureResponse getAllLecturesForEnrollment() {
         List<Lecture> lectures = lectureRepository
             .findAllByLectureStateNot(LectureState.TERMINATED);
 

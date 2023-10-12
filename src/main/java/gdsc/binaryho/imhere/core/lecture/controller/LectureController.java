@@ -31,7 +31,7 @@ public class LectureController {
     @GetMapping
     public ResponseEntity<LectureResponse> getAllLectures() {
         return ResponseEntity.ok(
-            lectureService.getAllEnrollableLectures());
+            lectureService.getAllLecturesForEnrollment());
     }
 
     @Operation(summary = "로그인한 학생이 수강중인 강의 리스트를 가져오는 API")
