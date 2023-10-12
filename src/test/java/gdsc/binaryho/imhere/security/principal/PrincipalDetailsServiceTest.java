@@ -4,18 +4,20 @@ import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.MOCK_STUDENT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class PrincipalDetailsServiceTest {
 
     private PrincipalDetailsService principalDetailsService;
@@ -43,7 +45,7 @@ class PrincipalDetailsServiceTest {
 
     @Test
     void loadUserByUsername호출시_UnivId가_일치하는_유저가_없다면_예외를_던진다() {
-        given(memberRepository.findByUnivId("UNIV_ID")).willReturn(Optional.empty());
+        given(memberRepository.findByUnivId(any())).willReturn(Optional.empty());
 
         assertThatThrownBy(
             () -> principalDetailsService.loadUserByUsername("WRONG")
