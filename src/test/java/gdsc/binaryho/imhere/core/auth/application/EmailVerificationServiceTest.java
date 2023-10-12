@@ -11,9 +11,7 @@ import gdsc.binaryho.imhere.mock.TestContainer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
 public class EmailVerificationServiceTest {
 
     private static final String EMAIL = "dlwlsgh4687@gmail.com";
