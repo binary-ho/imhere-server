@@ -36,4 +36,4 @@ AdminMail:
 jasypt:
   encryptor:
     bean: propertyEncryptor
-  secret-key: ${JASYPT_SECRET_KEY}
+  secret-key: ${JASYPT_ENCRYPTION_PASSWORD}
