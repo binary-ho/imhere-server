@@ -89,6 +89,30 @@ class LectureServiceTest {
     }
 
     @Test
+    void 수강신청이_가능한_강의_리스트를_빈_학생_리스트와_함께_가져올_수_있다() {
+        // given
+        given(lectureRepository
+            .findAllByLectureStateNot(LectureState.TERMINATED))
+            .willReturn(List.of(MOCK_LECTURE));
+
+        // when
+        LectureResponse lectureResponse = lectureService.getAllLecturesForEnrollment();
+        LectureInfo anyLectureInfo = lectureResponse.getLectureInfos()
+            .stream()
+            .findAny()
+            .get();
+
+        // then
+        assertAll(
+            () -> assertThat(MOCK_LECTURE.getId()).isEqualTo(anyLectureInfo.getLectureId()),
+            () -> assertThat(MOCK_LECTURE.getLectureName()).isEqualTo(anyLectureInfo.getLectureName()),
+            () -> assertThat(MOCK_LECTURE.getLecturerName()).isEqualTo(anyLectureInfo.getLecturerName()),
+            () -> assertThat(MOCK_LECTURE.getLectureState()).isEqualTo(anyLectureInfo.getLectureState()),
+            () -> assertThat(anyLectureInfo.getStudentInfos()).isEmpty()
+        );
+    }
+
+    @Test
     @MockSecurityContextMember(role = Role.LECTURER)
     void 강사는_강의를_만들_수_있다() {
         // given
