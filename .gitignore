@@ -35,16 +35,13 @@ out/
 
 ### VS Code ###
 .vscode/
-/src/**/application.yml
-/src/**/application*.yml
-
-### Project ###
-/src/main/java/gdsc/binaryho/imhere/initDB.java
-/docker-compose**
 
 ### logs ###
 /log
 /logs
 
-### test ###
-/src/main/java/gdsc/binaryho/imhere/test/
+### imhere ###
+/src/**/*-original*
+/src/test/java/gdsc/binaryho/imhere/dev
+/src/main/java/gdsc/binaryho/imhere/dev
+/docker-compose**

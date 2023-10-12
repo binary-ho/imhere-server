@@ -1,0 +1,46 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: ENC(SLtFvRkjnLTEOXCKwOWTieAHkexxxxwPbANXTfXgNbYN8lzp/Y67eKcwaECzYrBVZVRfddSnUkOcXR784eB7UA42pTw6UVyJqMIpBSJecniWbyBVpyA7EWWEG65ZJntygxQ/qL2kAdE=)
+    username: ENC(97015VsffcgI0f3/4wkIRF83s66KSbgB)
+    password: ENC(k9/r7urCpjm1zejJNalPZ+CnqEuf3b/r9t+66h8bZVw=)
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+      dialect: -- org.hibernate.dialect.PostgreSQLDialect
+
+    properties:
+      hibernate:
+        format_sql: true
+
+logging.level:
+  org.hibernate.SQL: debug
+
+# mock member data
+mock-member:
+  prefix:
+    id: ENC(6N3LMH1t9ar6rUbXACXPsyPu4aQGwMrR)
+    name: ENC(685ObShtyTVVKv2e6GmGby9qqnT3+pxF)
+    password: ENC(M2kfFT/j6wSbRsOoUDghmBoriIe68D5fnz4pjXPdULw=)
+
+# Cors
+origin:
+  domain: ENC(qEH+jjdnQ3ckzkLvUD4mVK+UkjWtnkTc67x4hQF4ySM=)
+
+# log
+logging:
+  config: classpath:log4j2-dev.xml
