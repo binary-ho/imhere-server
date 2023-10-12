@@ -1,0 +1,39 @@
+spring:
+  redis:
+    host: redis
+    port: 6379
+    password: ENC(QDFGW5huIiRsK9z8tmV6ng==)
+
+  jpa:
+    open-in-view: false
+
+jwt:
+  secret: ENC(Wi5BD1R9VNidIJj2xI10Ww==)
+  prefix: "Bearer "
+  header-string: "Authorization"
+  access-token-prefix: "Token "
+
+# SMTP
+mail:
+  smtp:
+    auth: true
+    starttls:
+      required: true
+      enable: true
+
+    socketFactory:
+      class: javax.net.ssl.SSLSocketFactory
+      fallback: false
+      port: 465
+
+    port: 465
+
+# admin 구글 계정
+AdminMail:
+  id: ENC(wPQnA6wFGpeuODHjXHm/eyKNUXNq694VH2G97+jWDSU=)
+  password: ENC(aRfl+HHF9UNK0z2TRkQ53cuUw/3OcYElfHNMWTCD51Q=)
+
+jasypt:
+  encryptor:
+    bean: propertyEncryptor
+  secret-key: ${JASYPT_SECRET_KEY}

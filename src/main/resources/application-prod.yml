@@ -1,0 +1,36 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ENC(5zqShAjVmyJ2d45bahY29W9iJjjlaopZCiHWBQDmnGsysvfNPhV+8r1iA2w18NWLVUfctiS5Z4a/l3/QLay6MEIdE1DUkhsATbpZrDyy7lrHCGX/r2KxIhzEwE093+dadkERKLhDtIs=)
+    username: ENC(97015VsffcgI0f3/4wkIRF83s66KSbgB)
+    password: ENC(k9/r7urCpjm1zejJNalPZ+CnqEuf3b/r9t+66h8bZVw=)
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+      dialect: -- org.hibernate.dialect.PostgreSQLDialect
+
+admin:
+  univ-id: END(MnnJJNaW4by9rR1oo90AfA==)
+  name: END(74r3AHMoJBHegbbayNVTRbM3GACH/df5)
+  password: END(syprHyAFiPy50LqxoNeK5B3dPZ3g4tZdgslnAjARey8=)
+
+# cors
+origin:
+  domain: END(QLDNT2IEA8b20N6/HcY+7CltriZvLqwaG8AWh24TZ0E=)
+
+logging:
+  config: classpath:log4j2-prod.xml
