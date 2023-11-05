@@ -37,3 +37,23 @@ jasypt:
   encryptor:
     bean: propertyEncryptor
   secret-key: ${JASYPT_ENCRYPTION_PASSWORD}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: /system/actuator
+  endpoint:
+    health:
+      show-details: always
+
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
+
+actuator:
+  username: ENC(QrTY/DXdFpQxYe6AEmcwjzwCiatUHeym)
+  password: ENC(x3q+XW2ivp/FlEpQnRJIGw2gAehDnLwk)
+  role: ENC(wjFg82eV2hT4ElsuFkon2KIi8apIzP31)
