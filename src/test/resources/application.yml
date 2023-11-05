@@ -71,3 +71,8 @@ jasypt:
   encryptor:
     bean: propertyEncryptor
   secret-key: ${JASYPT_ENCRYPTION_PASSWORD}
+
+actuator:
+  username: ENC(QrTY/DXdFpQxYe6AEmcwjzwCiatUHeym)
+  password: ENC(x3q+XW2ivp/FlEpQnRJIGw2gAehDnLwk)
+  role: ENC(wjFg82eV2hT4ElsuFkon2KIi8apIzP31)
