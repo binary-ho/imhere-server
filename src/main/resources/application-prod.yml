@@ -30,7 +30,7 @@ admin:
 
 # cors
 origin:
-  domain: END(QLDNT2IEA8b20N6/HcY+7CltriZvLqwaG8AWh24TZ0E=)
+  domain: ENC(oT5JIgnR3+8hZdo1yl3lwn7AwB+AZIinDX9Xnb0Fzss=)
 
 logging:
   config: classpath:log4j2-prod.xml

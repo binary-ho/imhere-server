@@ -39,7 +39,7 @@ mock-member:
 
 # Cors
 origin:
-  domain: ENC(qEH+jjdnQ3ckzkLvUD4mVK+UkjWtnkTc67x4hQF4ySM=)
+  domain: ENC(kiPSG6oZQSa6JTxpxoGRjeyh8cfHWJTWyOqOeOEHZyA=)
 
 # log
 logging:
