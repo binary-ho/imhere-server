@@ -3,6 +3,7 @@ package gdsc.binaryho.imhere.core.member;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -27,8 +28,13 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
+    // TODO : nullable false 조건 제거
     @Column(unique = true, nullable = false)
     private String univId;
+
+    @Embedded
+    private GitHubResource gitHubResource;
+
     @Column(nullable = false)
     private String name;
     private String password;
@@ -41,10 +47,6 @@ public class Member {
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public String getRoleKey() {
-        return role.getKey();
-    }
-
     public static Member createMember(String univId, String name, String password, Role role) {
         Member member = new Member();
         member.setUnivId(univId);
@@ -52,5 +54,13 @@ public class Member {
         member.setPassword(password);
         member.setRole(role);
         return member;
+    }
+
+    public void updateGitHubHandle(String gitHubHandle) {
+        this.gitHubResource.updateHandle(gitHubHandle);
+    }
+
+    public String getRoleKey() {
+        return role.getKey();
     }
 }
