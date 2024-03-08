@@ -47,6 +47,14 @@ public class Member {
     @CreatedDate
     private LocalDateTime createdAt;
 
+    public static Member createGuestMember(String gitHubId, String gitHubHandle, String gitHubProfile) {
+        Member member = new Member();
+        member.gitHubResource = new GitHubResource(gitHubId, gitHubHandle, gitHubProfile);
+        member.setRole(Role.GUEST);
+        return member;
+    }
+
+    // TODO : OAUth2 도입 이후 사용하지 않을 기능
     public static Member createMember(String univId, String name, String password, Role role) {
         Member member = new Member();
         member.setUnivId(univId);
