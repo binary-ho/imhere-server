@@ -30,8 +30,8 @@ public class TokenService {
         return createToken(claims, roleKey);
     }
 
-    public Token createToken(Long id, Role role) {
-        Claims claims = Jwts.claims().setSubject(id.toString());
+    public Token createToken(Long memberId, Role role) {
+        Claims claims = Jwts.claims().setSubject(memberId.toString());
         return createToken(claims, role.getKey());
     }
 
