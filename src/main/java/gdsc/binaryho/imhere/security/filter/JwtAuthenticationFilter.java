@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+// TODO : 사용하지 않을 예정인 클래스
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -59,7 +60,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public void successfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, FilterChain chain, Authentication authResult) {
 
-        String grantedAuthority = authResult.getAuthorities().stream().findAny().orElseThrow().toString();
+        String grantedAuthority = authResult.getAuthorities()
+            .stream()
+            .findAny()
+            .orElseThrow()
+            .toString();
+
         Token jwtToken = tokenService.createToken(authResult.getPrincipal().toString(), grantedAuthority);
 
         response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.AUTHORIZATION);
