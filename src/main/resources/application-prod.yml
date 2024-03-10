@@ -23,6 +23,14 @@ spring:
       ddl-auto: none
       dialect: -- org.hibernate.dialect.PostgreSQLDialect
 
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ENC(18FNZ6cjSHBH889DgERn3ZscMgAY8R02b6DBg9l47Xs=)
+            client-secret: ENC(hUvBA0g45hgzXQ2Ia/ovO8dQWDR67BsVt6Um0h1cSh/qrwKaWdVND06XApXIJMSaZy5Kem6nJx4=)
+
 admin:
   univ-id: END(MnnJJNaW4by9rR1oo90AfA==)
   name: END(74r3AHMoJBHegbbayNVTRbM3GACH/df5)
