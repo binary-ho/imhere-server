@@ -51,12 +51,15 @@ public class TokenService {
         }
     }
 
-    public String getUnivId(String token) {
-        return Jwts.parser()
+    public Long getId(String token) {
+        String subject = Jwts.parser()
             .setSigningKey(secretHolder.getSecret())
             .parseClaimsJws(token)
             .getBody()
             .getSubject();
+
+        // TODO : Exception Check
+        return Long.parseLong(subject);
     }
 
     private Token createToken(Claims claims, String roleKey) {
