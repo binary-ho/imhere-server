@@ -56,8 +56,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     private void setAuthentication(String jwtToken) {
-        String univId = tokenService.getUnivId(jwtToken);
-        Member member = memberRepository.findByUnivId(univId)
+        Long id = tokenService.getId(jwtToken);
+        Member member = memberRepository.findById(id)
             .orElseThrow(() -> MemberNotFoundException.EXCEPTION);
 
         PrincipalDetails principalDetails = new PrincipalDetails(member);
