@@ -101,7 +101,7 @@ public class SecurityConfig {
             )
 
             .authorizeRequests()
-            .antMatchers("/login", "/logout", "/member/**",
+            .antMatchers("/login/**", "/logout", "/member/**",
                 "/swagger*/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**")
             .permitAll()
 
