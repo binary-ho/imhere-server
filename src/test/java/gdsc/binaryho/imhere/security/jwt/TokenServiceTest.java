@@ -27,11 +27,6 @@ public class TokenServiceTest {
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000L * 60L * 20L;
     private static final long TIME_NOW = FixedSeoulTimeHolder.FIXED_MILLISECONDS;
 
-//    public static long getTimeNowByMillis() {
-//        ZonedDateTime seoulTimeNow = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
-//        return seoulTimeNow.toInstant().toEpochMilli();
-//    }
-
     SecretHolder secretHolder = new TestSecretHolder(SECRET);
     TokenService tokenService = new TokenService(secretHolder, new FixedSeoulTimeHolder());
 
@@ -46,15 +41,28 @@ public class TokenServiceTest {
         JsonNode payloadJson = new ObjectMapper().readTree(payload);
         String subject = payloadJson.get("sub").asText();
         String role = payloadJson.get("role").asText();
-//        Claims claims = Jwts.parser()
-//            .setSigningKey(secretHolder.getSecret())
-//            .set
-//            .setAllowedClockSkewSeconds(Long.MAX_VALUE)
-//            .parseClaimsJws(accessToken)
-//            .getBody();
 
         assertAll(
             () -> assertThat(subject).isEqualTo(UNIV_ID),
+            () -> assertThat(role).isEqualTo(ROLE.getKey())
+        );
+    }
+
+    @Test
+    void 맴버_아이디와_권한을_넣어_토큰을_만들_수_있다() throws JsonProcessingException {
+        Long id = MOCK_STUDENT.getId();
+        Token token = tokenService.createToken(id, ROLE);
+        String accessToken = token.getAccessToken();
+
+        String[] splitToken = accessToken.split("\\.");
+        String payload = new String(Base64.getDecoder().decode(splitToken[1]));
+        System.out.println(payload);
+        JsonNode payloadJson = new ObjectMapper().readTree(payload);
+        Long subject = payloadJson.get("sub").asLong();
+        String role = payloadJson.get("role").asText();
+
+        assertAll(
+            () -> assertThat(subject).isEqualTo(id),
             () -> assertThat(role).isEqualTo(ROLE.getKey())
         );
     }
