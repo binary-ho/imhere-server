@@ -2,6 +2,7 @@ package gdsc.binaryho.imhere.security.oauth;
 
 import gdsc.binaryho.imhere.security.SignUpProcessRedirectionPath;
 import gdsc.binaryho.imhere.security.jwt.Token;
+import gdsc.binaryho.imhere.security.jwt.TokenPropertyHolder;
 import gdsc.binaryho.imhere.security.jwt.TokenService;
 import gdsc.binaryho.imhere.util.ClientUrlUtil;
 import java.io.IOException;
@@ -18,10 +19,10 @@ import org.springframework.stereotype.Component;
 public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private static final String HEADER_STRING = HttpHeaders.AUTHORIZATION;
-    private static final String ACCESS_TOKEN_PREFIX = "Token ";
 
     private final TokenService tokenService;
     private final ClientUrlUtil clientUrlUtil;
+    private final TokenPropertyHolder tokenPropertyHolder;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -39,8 +40,10 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     }
 
     private void setAccessToken(HttpServletResponse response, CustomOAuth2User oAuthUser) {
-        Token jwtToken = tokenService.createToken(oAuthUser.getMemberId(), oAuthUser.getRole());
         response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.AUTHORIZATION);
-        response.addHeader(HEADER_STRING, ACCESS_TOKEN_PREFIX + jwtToken.getAccessToken());
+
+        String accessTokenPrefix = tokenPropertyHolder.getAccessTokenPrefix();
+        Token jwtToken = tokenService.createToken(oAuthUser.getMemberId(), oAuthUser.getRole());
+        response.addHeader(HEADER_STRING, accessTokenPrefix + jwtToken.getAccessToken());
     }
 }

@@ -3,6 +3,7 @@ package gdsc.binaryho.imhere.security.filter;
 import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
+import gdsc.binaryho.imhere.security.jwt.TokenPropertyHolder;
 import gdsc.binaryho.imhere.security.jwt.TokenService;
 import gdsc.binaryho.imhere.security.principal.PrincipalDetails;
 import java.io.IOException;
@@ -21,21 +22,24 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private static final String TOKEN_HEADER_STRING = HttpHeaders.AUTHORIZATION;
-    private static final String ACCESS_TOKEN_PREFIX = "Token ";
 
     private final TokenService tokenService;
     private final MemberRepository memberRepository;
+    private final TokenPropertyHolder tokenPropertyHolder;
 
     public JwtAuthorizationFilter(
         AuthenticationManager authenticationManager,
-        TokenService tokenService, MemberRepository memberRepository) {
+        TokenService tokenService, MemberRepository memberRepository,
+        TokenPropertyHolder tokenPropertyHolder) {
         super(authenticationManager);
         this.tokenService = tokenService;
         this.memberRepository = memberRepository;
+        this.tokenPropertyHolder = tokenPropertyHolder;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+        FilterChain chain)
         throws ServletException, IOException {
         String jwtToken = request.getHeader(TOKEN_HEADER_STRING);
         if (isTokenNullOrInvalidate(jwtToken)) {
@@ -43,7 +47,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             return;
         }
 
-        String tokenValue = jwtToken.replace(ACCESS_TOKEN_PREFIX, "");
+        String accessTokenPrefix = tokenPropertyHolder.getAccessTokenPrefix();
+        String tokenValue = jwtToken.replace(accessTokenPrefix, "");
         if (tokenService.validateTokenExpirationTimeNotExpired(tokenValue)) {
             setAuthentication(tokenValue);
         }
@@ -51,8 +56,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     private boolean isTokenNullOrInvalidate(String token) {
+        String accessTokenPrefix = tokenPropertyHolder.getAccessTokenPrefix();
         return Objects.isNull(token)
-            || (!token.startsWith(ACCESS_TOKEN_PREFIX));
+            || (!token.startsWith(accessTokenPrefix));
     }
 
     private void setAuthentication(String jwtToken) {
@@ -62,7 +68,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         PrincipalDetails principalDetails = new PrincipalDetails(member);
         Authentication authentication =
-            new UsernamePasswordAuthenticationToken(principalDetails, "", principalDetails.getAuthorities());
+            new UsernamePasswordAuthenticationToken(principalDetails, "",
+                principalDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }

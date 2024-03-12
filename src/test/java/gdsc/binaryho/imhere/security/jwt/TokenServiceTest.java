@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.mock.FixedSeoulTimeHolder;
-import gdsc.binaryho.imhere.mock.TestSecretHolder;
+import gdsc.binaryho.imhere.mock.FakeTokenPropertyHolder;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -27,8 +27,8 @@ public class TokenServiceTest {
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000L * 60L * 20L;
     private static final long TIME_NOW = FixedSeoulTimeHolder.FIXED_MILLISECONDS;
 
-    SecretHolder secretHolder = new TestSecretHolder(SECRET);
-    TokenService tokenService = new TokenService(secretHolder, new FixedSeoulTimeHolder());
+    TokenPropertyHolder tokenPropertyHolder = new FakeTokenPropertyHolder(SECRET, Duration.ofDays(999L));
+    TokenService tokenService = new TokenService(new FixedSeoulTimeHolder(), tokenPropertyHolder);
 
     @Test
     void 이메일과_권한을_넣어_토큰을_만들_수_있다() throws JsonProcessingException {
@@ -77,7 +77,7 @@ public class TokenServiceTest {
             .setIssuedAt(new Date(TIME_NOW))
             .setExpiration(
                 new Date(TIME_NOW + ACCESS_TOKEN_EXPIRATION_TIME))
-            .signWith(SignatureAlgorithm.HS256, secretHolder.getSecret())
+            .signWith(SignatureAlgorithm.HS256, tokenPropertyHolder.getSecret())
             .compact();
         Token token = new Token(jwt);
 
@@ -98,7 +98,7 @@ public class TokenServiceTest {
             .setIssuedAt(new Date(TIME_NOW))
             .setExpiration(
                 new Date(TIME_NOW + ACCESS_TOKEN_EXPIRATION_TIME))
-            .signWith(SignatureAlgorithm.HS256, secretHolder.getSecret())
+            .signWith(SignatureAlgorithm.HS256, tokenPropertyHolder.getSecret())
             .compact();
         Token token = new Token(jwt);
 
@@ -119,7 +119,7 @@ public class TokenServiceTest {
             .setIssuedAt(new Date(TIME_NOW))
             .setExpiration(
                 new Date(TIME_NOW - Duration.ofDays(7777L).toMillis()))
-            .signWith(SignatureAlgorithm.HS256, secretHolder.getSecret())
+            .signWith(SignatureAlgorithm.HS256, tokenPropertyHolder.getSecret())
             .compact();
         Token token = new Token(jwt);
 

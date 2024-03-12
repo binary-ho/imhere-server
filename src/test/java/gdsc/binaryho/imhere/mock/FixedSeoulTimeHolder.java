@@ -7,8 +7,6 @@ import java.time.ZoneOffset;
 public class FixedSeoulTimeHolder implements SeoulDateTimeHolder {
 
     public static final LocalDateTime FIXED_LOCAL_DATE_TIME = LocalDateTime.now();
-//        LocalDateTime
-//        .of(2023, Month.MAY, 6, 11, 0, 0);
 
     public static final Long FIXED_MILLISECONDS = FIXED_LOCAL_DATE_TIME
         .toInstant(ZoneOffset.UTC).toEpochMilli();

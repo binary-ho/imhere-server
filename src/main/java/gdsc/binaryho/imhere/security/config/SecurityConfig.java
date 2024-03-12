@@ -2,10 +2,11 @@ package gdsc.binaryho.imhere.security.config;
 
 
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
+import gdsc.binaryho.imhere.security.filter.JwtAuthorizationFilter;
+import gdsc.binaryho.imhere.security.jwt.TokenPropertyHolder;
+import gdsc.binaryho.imhere.security.jwt.TokenService;
 import gdsc.binaryho.imhere.security.oauth.CustomOAuth2SuccessHandler;
 import gdsc.binaryho.imhere.security.oauth.CustomOAuth2UserService;
-import gdsc.binaryho.imhere.security.filter.JwtAuthorizationFilter;
-import gdsc.binaryho.imhere.security.jwt.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +42,7 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
 
     private final TokenService tokenService;
+    private final TokenPropertyHolder tokenPropertyHolder;
 
     @Value("${actuator.username}")
     private String ACTUATOR_USERNAME;
@@ -94,7 +96,8 @@ public class SecurityConfig {
             .httpBasic().disable()
 
             .oauth2Login(configurer -> {
-                    configurer.userInfoEndpoint(endpoint -> endpoint.userService(customOAuth2UserService));
+                    configurer.userInfoEndpoint(
+                        endpoint -> endpoint.userService(customOAuth2UserService));
                     configurer.successHandler(customOAuth2SuccessHandler);
                     configurer.failureHandler(setStatusUnauthorized());
                 }
@@ -114,7 +117,9 @@ public class SecurityConfig {
             .anyRequest().authenticated();
 
         http.addFilterBefore(new JwtAuthorizationFilter(
-            authenticationManager(authenticationConfiguration), tokenService, memberRepository), BasicAuthenticationFilter.class);
+                authenticationManager(authenticationConfiguration),
+                tokenService, memberRepository, tokenPropertyHolder),
+            BasicAuthenticationFilter.class);
 
         return http.build();
     }

@@ -18,11 +18,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TokenService {
 
-    private final SecretHolder secretHolder;
     private final SeoulDateTimeHolder seoulDateTimeHolder;
+    private final TokenPropertyHolder tokenPropertyHolder;
 
     private static final String ROLE_KEY = "role";
-    private static final Duration ACCESS_TOKEN_EXPIRATION_TIME = Duration.ofMinutes(30);
 
     // TODO : 기존 토큰 생성 방식은 삭제할 예정
     public Token createToken(String univId, String roleKey) {
@@ -52,8 +51,9 @@ public class TokenService {
     }
 
     public Long getId(String token) {
+        String tokenSecret = tokenPropertyHolder.getSecret();
         String subject = Jwts.parser()
-            .setSigningKey(secretHolder.getSecret())
+            .setSigningKey(tokenSecret)
             .parseClaimsJws(token)
             .getBody()
             .getSubject();
@@ -75,17 +75,21 @@ public class TokenService {
 
     private String buildJwtToken(Claims claims) {
         long seoulTimeNow = seoulDateTimeHolder.getSeoulMilliseconds();
+        Duration accessTokenExpiration = tokenPropertyHolder.getAccessTokenExpiration();
+        String tokenSecret = tokenPropertyHolder.getSecret();
+
         return Jwts.builder()
             .setClaims(claims)
             .setIssuedAt(new Date(seoulTimeNow))
-            .setExpiration(new Date(seoulTimeNow + ACCESS_TOKEN_EXPIRATION_TIME.toMillis()))
-            .signWith(SignatureAlgorithm.HS256, secretHolder.getSecret())
+            .setExpiration(new Date(seoulTimeNow + accessTokenExpiration.toMillis()))
+            .signWith(SignatureAlgorithm.HS256, tokenSecret)
             .compact();
     }
 
     private void parseToValidateToken(String token) {
+        String tokenSecret = tokenPropertyHolder.getSecret();
         Jwts.parser()
-            .setSigningKey(secretHolder.getSecret())
+            .setSigningKey(tokenSecret)
             .parseClaimsJws(token);
     }
 }

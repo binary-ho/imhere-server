@@ -38,11 +38,12 @@ spring:
     port: 6378
     password: ENC(t9qeZ6WjZb8nTCX6USgT0Q==)
 
-jwt:
+token:
   secret: ENC(Wi5BD1R9VNidIJj2xI10Ww==)
-  prefix: "Bearer "
-  header-string: "Authorization"
-  access-token-prefix: "Token "
+  prefix: ""
+  header-string: ""
+  access-token-prefix: ""
+  access-token-expire-minute: 1
 
 admin:
   univ-id: ENC(MnnJJNaW4by9rR1oo90AfA==)
