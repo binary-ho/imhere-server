@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.mock.FixedSeoulTimeHolder;
-import gdsc.binaryho.imhere.mock.FakeTokenPropertyHolder;
+import gdsc.binaryho.imhere.security.FakeTokenPropertyHolder;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -27,7 +27,7 @@ public class TokenUtilTest {
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000L * 60L * 20L;
     private static final long TIME_NOW = FixedSeoulTimeHolder.FIXED_MILLISECONDS;
 
-    TokenPropertyHolder tokenPropertyHolder = new FakeTokenPropertyHolder(SECRET, Duration.ofDays(999L));
+    TokenPropertyHolder tokenPropertyHolder = new FakeTokenPropertyHolder(SECRET, Duration.ofDays(999L), "prefix");
     TokenUtil tokenUtil = new TokenUtil(new FixedSeoulTimeHolder(), tokenPropertyHolder);
 
     @Test

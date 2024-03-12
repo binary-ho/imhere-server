@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.security.jwt.Token;
-import gdsc.binaryho.imhere.security.jwt.TokenPropertyHolder;
 import gdsc.binaryho.imhere.security.jwt.TokenUtil;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -40,9 +39,6 @@ public class SecurityConfigTest {
     @MockBean
     private MemberRepository memberRepository;
 
-    @Autowired
-    private TokenPropertyHolder tokenPropertyHolder;
-
     @Test
     public void 인증이_필요한_경로에_접근하면_깃허브_로그인_페이지로_Redirection_된다() throws Exception {
         mockMvc.perform(post("/")
@@ -58,10 +54,9 @@ public class SecurityConfigTest {
             .willReturn(Optional.of(MOCK_STUDENT));
         Token token = tokenUtil.createToken(MOCK_STUDENT.getId(), Role.LECTURER);
 
-        String accessTokenPrefix = tokenPropertyHolder.getAccessTokenPrefix();
         mockMvc.perform(get("/api/lecture")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, accessTokenPrefix + token.getAccessToken())
+                .header(HttpHeaders.AUTHORIZATION, token.getAccessToken())
             )
             .andExpect(status().is2xxSuccessful());
     }
@@ -72,10 +67,9 @@ public class SecurityConfigTest {
             .willReturn(Optional.of(MOCK_STUDENT));
         Token token = tokenUtil.createToken(1L, Role.STUDENT);
 
-        String accessTokenPrefix = tokenPropertyHolder.getAccessTokenPrefix();
         mockMvc.perform(post("/api/admin/role/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, accessTokenPrefix + token.getAccessToken())
+                .header(HttpHeaders.AUTHORIZATION, token.getAccessToken())
             )
             .andExpect(status().isForbidden());
     }
