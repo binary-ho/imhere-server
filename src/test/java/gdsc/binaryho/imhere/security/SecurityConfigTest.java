@@ -56,7 +56,7 @@ public class SecurityConfigTest {
     public void 토큰을_통해_인가_할_수_있다() throws Exception {
         given(memberRepository.findById(any()))
             .willReturn(Optional.of(MOCK_STUDENT));
-        Token token = tokenUtil.createToken(1L, Role.LECTURER);
+        Token token = tokenUtil.createToken(MOCK_STUDENT.getId(), Role.LECTURER);
 
         String accessTokenPrefix = tokenPropertyHolder.getAccessTokenPrefix();
         mockMvc.perform(get("/api/lecture")
