@@ -58,7 +58,7 @@ public class SecurityConfigTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token.getAccessToken())
             )
-            .andExpect(status().is2xxSuccessful());
+            .andExpect(status().is3xxRedirection());
     }
 
     @Test
