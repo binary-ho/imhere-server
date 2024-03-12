@@ -43,7 +43,7 @@ token:
   prefix: ""
   header-string: ""
   access-token-prefix: ""
-  access-token-expire-minute: 1
+  access-token-expire-minute: 9999
 
 admin:
   univ-id: ENC(MnnJJNaW4by9rR1oo90AfA==)

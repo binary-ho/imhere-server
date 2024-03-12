@@ -3,7 +3,7 @@ package gdsc.binaryho.imhere.security.oauth;
 import gdsc.binaryho.imhere.security.SignUpProcessRedirectionPath;
 import gdsc.binaryho.imhere.security.jwt.Token;
 import gdsc.binaryho.imhere.security.jwt.TokenPropertyHolder;
-import gdsc.binaryho.imhere.security.jwt.TokenService;
+import gdsc.binaryho.imhere.security.jwt.TokenUtil;
 import gdsc.binaryho.imhere.util.ClientUrlUtil;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +20,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
     private static final String HEADER_STRING = HttpHeaders.AUTHORIZATION;
 
-    private final TokenService tokenService;
+    private final TokenUtil tokenUtil;
     private final ClientUrlUtil clientUrlUtil;
     private final TokenPropertyHolder tokenPropertyHolder;
 
@@ -43,7 +43,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.AUTHORIZATION);
 
         String accessTokenPrefix = tokenPropertyHolder.getAccessTokenPrefix();
-        Token jwtToken = tokenService.createToken(oAuthUser.getMemberId(), oAuthUser.getRole());
+        Token jwtToken = tokenUtil.createToken(oAuthUser.getMemberId(), oAuthUser.getRole());
         response.addHeader(HEADER_STRING, accessTokenPrefix + jwtToken.getAccessToken());
     }
 }

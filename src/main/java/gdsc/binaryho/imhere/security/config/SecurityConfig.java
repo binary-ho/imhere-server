@@ -4,7 +4,7 @@ package gdsc.binaryho.imhere.security.config;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.security.filter.JwtAuthorizationFilter;
 import gdsc.binaryho.imhere.security.jwt.TokenPropertyHolder;
-import gdsc.binaryho.imhere.security.jwt.TokenService;
+import gdsc.binaryho.imhere.security.jwt.TokenUtil;
 import gdsc.binaryho.imhere.security.oauth.CustomOAuth2SuccessHandler;
 import gdsc.binaryho.imhere.security.oauth.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +41,7 @@ public class SecurityConfig {
     private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
 
-    private final TokenService tokenService;
+    private final TokenUtil tokenUtil;
     private final TokenPropertyHolder tokenPropertyHolder;
 
     @Value("${actuator.username}")
@@ -118,7 +118,7 @@ public class SecurityConfig {
 
         http.addFilterBefore(new JwtAuthorizationFilter(
                 authenticationManager(authenticationConfiguration),
-                tokenService, memberRepository, tokenPropertyHolder),
+                tokenUtil, memberRepository, tokenPropertyHolder),
             BasicAuthenticationFilter.class);
 
         return http.build();

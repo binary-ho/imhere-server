@@ -11,12 +11,12 @@ import java.time.Duration;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 @Log4j2
-@Service
+@Component
 @RequiredArgsConstructor
-public class TokenService {
+public class TokenUtil {
 
     private final SeoulDateTimeHolder seoulDateTimeHolder;
     private final TokenPropertyHolder tokenPropertyHolder;

@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
-public class TokenServiceTest {
+public class TokenUtilTest {
 
     private static final Role ROLE = MOCK_STUDENT.getRole();
     private static final String SECRET = "TEST_SECRET";
@@ -28,11 +28,11 @@ public class TokenServiceTest {
     private static final long TIME_NOW = FixedSeoulTimeHolder.FIXED_MILLISECONDS;
 
     TokenPropertyHolder tokenPropertyHolder = new FakeTokenPropertyHolder(SECRET, Duration.ofDays(999L));
-    TokenService tokenService = new TokenService(new FixedSeoulTimeHolder(), tokenPropertyHolder);
+    TokenUtil tokenUtil = new TokenUtil(new FixedSeoulTimeHolder(), tokenPropertyHolder);
 
     @Test
     void 이메일과_권한을_넣어_토큰을_만들_수_있다() throws JsonProcessingException {
-        Token token = tokenService.createToken(UNIV_ID, ROLE.getKey());
+        Token token = tokenUtil.createToken(UNIV_ID, ROLE.getKey());
         String accessToken = token.getAccessToken();
 
         String[] splitToken = accessToken.split("\\.");
@@ -51,7 +51,7 @@ public class TokenServiceTest {
     @Test
     void 맴버_아이디와_권한을_넣어_토큰을_만들_수_있다() throws JsonProcessingException {
         Long id = MOCK_STUDENT.getId();
-        Token token = tokenService.createToken(id, ROLE);
+        Token token = tokenUtil.createToken(id, ROLE);
         String accessToken = token.getAccessToken();
 
         String[] splitToken = accessToken.split("\\.");
@@ -84,7 +84,7 @@ public class TokenServiceTest {
         // when
         // then
         assertThat(
-            tokenService.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
+            tokenUtil.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
             .isNotNull();
     }
 
@@ -105,7 +105,7 @@ public class TokenServiceTest {
         // when
         // then
         assertThat(
-            tokenService.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
+            tokenUtil.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
             .isTrue();
     }
 
@@ -126,7 +126,7 @@ public class TokenServiceTest {
         // when
         // then
         assertThat(
-            tokenService.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
+            tokenUtil.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
             .isFalse();
     }
 
@@ -138,7 +138,7 @@ public class TokenServiceTest {
         // when
         // then
         assertThat(
-            tokenService.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
+            tokenUtil.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
             .isFalse();
     }
 
@@ -150,7 +150,7 @@ public class TokenServiceTest {
         // when
         // then
         assertThat(
-            tokenService.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
+            tokenUtil.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
             .isFalse();
     }
 
@@ -162,7 +162,7 @@ public class TokenServiceTest {
         // when
         // then
         assertThat(
-            tokenService.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
+            tokenUtil.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
             .isFalse();
     }
 }

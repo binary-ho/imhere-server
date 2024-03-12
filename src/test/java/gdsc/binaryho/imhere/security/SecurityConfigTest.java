@@ -13,7 +13,7 @@ import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.security.jwt.Token;
 import gdsc.binaryho.imhere.security.jwt.TokenPropertyHolder;
-import gdsc.binaryho.imhere.security.jwt.TokenService;
+import gdsc.binaryho.imhere.security.jwt.TokenUtil;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +35,7 @@ public class SecurityConfigTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private TokenService tokenService;
+    private TokenUtil tokenUtil;
 
     @MockBean
     private MemberRepository memberRepository;
@@ -56,7 +56,7 @@ public class SecurityConfigTest {
     public void 토큰을_통해_인가_할_수_있다() throws Exception {
         given(memberRepository.findById(any()))
             .willReturn(Optional.of(MOCK_STUDENT));
-        Token token = tokenService.createToken(1L, Role.STUDENT);
+        Token token = tokenUtil.createToken(1L, Role.LECTURER);
 
         String accessTokenPrefix = tokenPropertyHolder.getAccessTokenPrefix();
         mockMvc.perform(get("/api/lecture")
@@ -70,7 +70,7 @@ public class SecurityConfigTest {
     public void 권한이_없는_토큰_요청은_403_응답을_반환한다() throws Exception {
         given(memberRepository.findById(any()))
             .willReturn(Optional.of(MOCK_STUDENT));
-        Token token = tokenService.createToken(1L, Role.STUDENT);
+        Token token = tokenUtil.createToken(1L, Role.STUDENT);
 
         String accessTokenPrefix = tokenPropertyHolder.getAccessTokenPrefix();
         mockMvc.perform(post("/api/admin/role/1")

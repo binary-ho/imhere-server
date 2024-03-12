@@ -4,7 +4,7 @@ import gdsc.binaryho.imhere.core.auth.exception.MemberNotFoundException;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.security.jwt.TokenPropertyHolder;
-import gdsc.binaryho.imhere.security.jwt.TokenService;
+import gdsc.binaryho.imhere.security.jwt.TokenUtil;
 import gdsc.binaryho.imhere.security.principal.PrincipalDetails;
 import java.io.IOException;
 import java.util.Objects;
@@ -23,16 +23,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private static final String TOKEN_HEADER_STRING = HttpHeaders.AUTHORIZATION;
 
-    private final TokenService tokenService;
+    private final TokenUtil tokenUtil;
     private final MemberRepository memberRepository;
     private final TokenPropertyHolder tokenPropertyHolder;
 
     public JwtAuthorizationFilter(
         AuthenticationManager authenticationManager,
-        TokenService tokenService, MemberRepository memberRepository,
+        TokenUtil tokenUtil, MemberRepository memberRepository,
         TokenPropertyHolder tokenPropertyHolder) {
         super(authenticationManager);
-        this.tokenService = tokenService;
+        this.tokenUtil = tokenUtil;
         this.memberRepository = memberRepository;
         this.tokenPropertyHolder = tokenPropertyHolder;
     }
@@ -49,7 +49,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         String accessTokenPrefix = tokenPropertyHolder.getAccessTokenPrefix();
         String tokenValue = jwtToken.replace(accessTokenPrefix, "");
-        if (tokenService.validateTokenExpirationTimeNotExpired(tokenValue)) {
+        if (tokenUtil.validateTokenExpirationTimeNotExpired(tokenValue)) {
             setAuthentication(tokenValue);
         }
         chain.doFilter(request, response);
@@ -62,7 +62,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     private void setAuthentication(String jwtToken) {
-        Long id = tokenService.getId(jwtToken);
+        Long id = tokenUtil.getId(jwtToken);
         Member member = memberRepository.findById(id)
             .orElseThrow(() -> MemberNotFoundException.EXCEPTION);
 

@@ -3,7 +3,7 @@ package gdsc.binaryho.imhere.security.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gdsc.binaryho.imhere.security.jwt.Token;
 import gdsc.binaryho.imhere.security.jwt.TokenPropertyHolder;
-import gdsc.binaryho.imhere.security.jwt.TokenService;
+import gdsc.binaryho.imhere.security.jwt.TokenUtil;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private static final String HEADER_STRING = HttpHeaders.AUTHORIZATION;
 
     private final AuthenticationManager authenticationManager;
-    private final TokenService tokenService;
+    private final TokenUtil tokenUtil;
     private final TokenPropertyHolder tokenPropertyHolder;
 
     @Override
@@ -67,7 +67,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             .orElseThrow()
             .toString();
 
-        Token jwtToken = tokenService.createToken(authResult.getPrincipal().toString(), grantedAuthority);
+        Token jwtToken = tokenUtil.createToken(authResult.getPrincipal().toString(), grantedAuthority);
 
         String accessTokenPrefix = tokenPropertyHolder.getAccessTokenPrefix();
         response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.AUTHORIZATION);
