@@ -15,8 +15,6 @@ import gdsc.binaryho.imhere.security.jwt.Token;
 import gdsc.binaryho.imhere.security.jwt.TokenUtil;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +24,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
-@ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 public class SecurityConfigTest {
 
@@ -58,7 +55,7 @@ public class SecurityConfigTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, token.getAccessToken())
             )
-            .andExpect(status().is3xxRedirection());
+            .andExpect(status().is2xxSuccessful());
     }
 
     @Test
