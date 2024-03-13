@@ -53,6 +53,34 @@ public class AttendanceService {
         attend(attendanceRequest, enrollmentInfo);
     }
 
+    @Transactional(readOnly = true)
+    public AttendanceResponse getAttendances(Long lectureId) {
+        List<Attendance> attendances = attendanceRepository.findAllByLectureId(lectureId);
+
+        if (attendances.isEmpty()) {
+            return getNullAttendanceDto(lectureId);
+        }
+
+        Lecture lecture = attendances.get(0).getLecture();
+        verifyRequestMemberLogInMember(lecture.getMember());
+        return new AttendanceResponse(lecture, attendances);
+    }
+
+    @Transactional(readOnly = true)
+    public AttendanceResponse getDayAttendances(Long lectureId, Long milliseconds) {
+        LocalDateTime timestamp = getTodaySeoulDateTime(milliseconds);
+        List<Attendance> attendances = attendanceRepository
+            .findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
+
+        if (attendances.isEmpty()) {
+            return getNullAttendanceDto(lectureId);
+        }
+
+        Lecture lecture = attendances.get(0).getLecture();
+        verifyRequestMemberLogInMember(lecture.getMember());
+        return new AttendanceResponse(lecture, attendances);
+    }
+
     private void attend(AttendanceRequest attendanceRequest, EnrollmentInfo enrollmentInfo) {
 
         Attendance attendance = Attendance.createAttendance(
@@ -98,20 +126,6 @@ public class AttendanceService {
         }
     }
 
-    @Transactional(readOnly = true)
-    public AttendanceResponse getAttendances(Long lectureId) {
-        List<Attendance> attendances = attendanceRepository.findAllByLectureId(lectureId);
-
-        if (attendances.isEmpty()) {
-            return getNullAttendanceDto(lectureId);
-        }
-
-        Lecture lecture = attendances.get(0).getLecture();
-        verifyRequestMemberLogInMember(lecture.getMember());
-
-        return new AttendanceResponse(lecture, attendances);
-    }
-
     private void verifyRequestMemberLogInMember(Member lecturer) {
         authenticationHelper.verifyRequestMemberLogInMember(lecturer.getId());
     }
@@ -120,21 +134,6 @@ public class AttendanceService {
         Lecture lecture = lectureRepository.findById(lectureId)
             .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
         return new AttendanceResponse(lecture, Collections.emptyList());
-    }
-
-    @Transactional(readOnly = true)
-    public AttendanceResponse getDayAttendances(Long lectureId, Long milliseconds) {
-        LocalDateTime timestamp = getTodaySeoulDateTime(milliseconds);
-        List<Attendance> attendances = attendanceRepository
-            .findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
-
-        if (attendances.isEmpty()) {
-            return getNullAttendanceDto(lectureId);
-        }
-
-        Lecture lecture = attendances.get(0).getLecture();
-        verifyRequestMemberLogInMember(lecture.getMember());
-        return new AttendanceResponse(lecture, attendances);
     }
 
     private LocalDateTime getTodaySeoulDateTime(Long milliseconds) {
