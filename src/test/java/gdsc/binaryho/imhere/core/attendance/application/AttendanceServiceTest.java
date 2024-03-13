@@ -175,8 +175,8 @@ public class AttendanceServiceTest {
         assertAll(
             () -> assertThat(response.getLectureName()).isEqualTo(MOCK_LECTURE.getLectureName()),
             () -> assertThat(response.getLecturerName()).isEqualTo(MOCK_LECTURE.getLecturerName()),
-            () -> assertThat(attendanceInfo.getUnivId()).isEqualTo(MOCK_ATTENDANCE.getMember().getUnivId()),
-            () -> assertThat(attendanceInfo.getName()).isEqualTo(MOCK_ATTENDANCE.getMember().getName()),
+            () -> assertThat(attendanceInfo.getUnivId()).isEqualTo(MOCK_ATTENDANCE.getStudent().getUnivId()),
+            () -> assertThat(attendanceInfo.getName()).isEqualTo(MOCK_ATTENDANCE.getStudent().getName()),
             () -> assertThat(attendanceInfo.getAccuracy()).isEqualTo(MOCK_ATTENDANCE.getAccuracy()),
             () -> assertThat(attendanceInfo.getDistance()).isEqualTo(MOCK_ATTENDANCE.getDistance()),
             () -> assertThat(attendanceInfo.getTimestamp()).isEqualTo(MOCK_ATTENDANCE.getTimestamp())
@@ -250,8 +250,8 @@ public class AttendanceServiceTest {
         assertAll(
             () -> assertThat(response.getLectureName()).isEqualTo(MOCK_LECTURE.getLectureName()),
             () -> assertThat(response.getLecturerName()).isEqualTo(MOCK_LECTURE.getLecturerName()),
-            () -> assertThat(attendanceInfo.getUnivId()).isEqualTo(MOCK_ATTENDANCE.getMember().getUnivId()),
-            () -> assertThat(attendanceInfo.getName()).isEqualTo(MOCK_ATTENDANCE.getMember().getName()),
+            () -> assertThat(attendanceInfo.getUnivId()).isEqualTo(MOCK_ATTENDANCE.getStudent().getUnivId()),
+            () -> assertThat(attendanceInfo.getName()).isEqualTo(MOCK_ATTENDANCE.getStudent().getName()),
             () -> assertThat(attendanceInfo.getAccuracy()).isEqualTo(MOCK_ATTENDANCE.getAccuracy()),
             () -> assertThat(attendanceInfo.getDistance()).isEqualTo(MOCK_ATTENDANCE.getDistance()),
             () -> assertThat(attendanceInfo.getTimestamp()).isEqualTo(MOCK_ATTENDANCE.getTimestamp())

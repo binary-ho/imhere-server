@@ -80,8 +80,8 @@ public class AttendanceControllerTest {
             .andExpect(jsonPath("$.lecturerName").value(MOCK_LECTURE.getLecturerName()))
 
             .andExpect(jsonPath("$.attendanceInfos").isNotEmpty())
-            .andExpect(jsonPath("$.attendanceInfos[0].univId").value(MOCK_ATTENDANCE.getMember().getUnivId()))
-            .andExpect(jsonPath("$.attendanceInfos[0].name").value(MOCK_ATTENDANCE.getMember().getName()))
+            .andExpect(jsonPath("$.attendanceInfos[0].univId").value(MOCK_ATTENDANCE.getStudent().getUnivId()))
+            .andExpect(jsonPath("$.attendanceInfos[0].name").value(MOCK_ATTENDANCE.getStudent().getName()))
             .andExpect(jsonPath("$.attendanceInfos[0].distance").value(MOCK_ATTENDANCE.getDistance()))
             .andExpect(jsonPath("$.attendanceInfos[0].accuracy").value(MOCK_ATTENDANCE.getAccuracy()))
             .andExpect(result -> {
@@ -113,8 +113,8 @@ public class AttendanceControllerTest {
             .andExpect(jsonPath("$.lecturerName").value(MOCK_LECTURE.getLecturerName()))
 
             .andExpect(jsonPath("$.attendanceInfos").isNotEmpty())
-            .andExpect(jsonPath("$.attendanceInfos[0].univId").value(MOCK_ATTENDANCE.getMember().getUnivId()))
-            .andExpect(jsonPath("$.attendanceInfos[0].name").value(MOCK_ATTENDANCE.getMember().getName()))
+            .andExpect(jsonPath("$.attendanceInfos[0].univId").value(MOCK_ATTENDANCE.getStudent().getUnivId()))
+            .andExpect(jsonPath("$.attendanceInfos[0].name").value(MOCK_ATTENDANCE.getStudent().getName()))
             .andExpect(jsonPath("$.attendanceInfos[0].distance").value(MOCK_ATTENDANCE.getDistance()))
             .andExpect(jsonPath("$.attendanceInfos[0].accuracy").value(MOCK_ATTENDANCE.getAccuracy()))
 

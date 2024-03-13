@@ -41,8 +41,8 @@ public class AttendanceResponse {
         private final LocalDateTime timestamp;
 
         private AttendanceInfo(Attendance attendance) {
-            this.univId = attendance.getMember().getUnivId();
-            this.name = attendance.getMember().getName();
+            this.univId = attendance.getStudent().getUnivId();
+            this.name = attendance.getStudent().getName();
             this.distance = attendance.getDistance();
             this.accuracy = attendance.getAccuracy();
             this.timestamp = attendance.getTimestamp();
