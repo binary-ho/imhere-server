@@ -6,7 +6,7 @@ import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectE
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
-import gdsc.binaryho.imhere.core.attendance.model.response.AttendancesResponse;
+import gdsc.binaryho.imhere.core.attendance.model.response.LecturerAttendanceResponse;
 import gdsc.binaryho.imhere.core.attendance.model.response.StudentAttendanceResponse;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
@@ -15,14 +15,12 @@ import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoReposit
 import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.lecture.application.OpenLectureService;
 import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
-import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.util.SeoulDateTimeHolder;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -45,7 +43,8 @@ public class AttendanceService {
     public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) {
         Member currentStudent = authenticationHelper.getCurrentMember();
         EnrollmentInfo enrollmentInfo = enrollmentRepository
-            .findByMemberIdAndLectureIdAndEnrollmentState(currentStudent.getId(), lectureId, EnrollmentState.APPROVAL)
+            .findByMemberIdAndLectureIdAndEnrollmentState(currentStudent.getId(), lectureId,
+                EnrollmentState.APPROVAL)
             .orElseThrow(() -> EnrollmentNotApprovedException.EXCEPTION);
 
         validateLectureOpen(enrollmentInfo);
@@ -59,38 +58,26 @@ public class AttendanceService {
         LocalDateTime timestamp = getTodaySeoulDateTime(milliseconds);
         Long studentId = authenticationHelper.getCurrentMember().getId();
         List<Attendance> attendances = attendanceRepository
-            .findByLectureIdAndStudentIdAndTimestampBetween(lectureId, studentId, timestamp, timestamp.plusDays(1));
+            .findByLectureIdAndStudentIdAndTimestampBetween(lectureId, studentId,
+                timestamp, timestamp.plusDays(1));
 
         return new StudentAttendanceResponse(attendances);
     }
 
     @Transactional(readOnly = true)
-    public AttendancesResponse getAttendances(Long lectureId) {
+    public LecturerAttendanceResponse getLecturerAttendances(Long lectureId) {
         List<Attendance> attendances = attendanceRepository.findAllByLectureId(lectureId);
-
-        if (attendances.isEmpty()) {
-            return getNullAttendanceResponse(lectureId);
-        }
-
-        Lecture lecture = attendances.get(0).getLecture();
-        verifyRequestMemberLogInMember(lecture.getMember());
-        return new AttendancesResponse(lecture, attendances);
+        // TODO : 강사 권한 체크
+        return new LecturerAttendanceResponse(attendances);
     }
 
     @Transactional(readOnly = true)
-    public AttendancesResponse getDayAttendances(Long lectureId, Long milliseconds) {
+    public LecturerAttendanceResponse getLecturerDayAttendances(Long lectureId, Long milliseconds) {
         LocalDateTime timestamp = getTodaySeoulDateTime(milliseconds);
         List<Attendance> attendances = attendanceRepository
             .findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
-
-        // 그러지 말고 있냐 없냐에 따라서 가져오는 방식만 다르면 될 것 같아.
-        if (attendances.isEmpty()) {
-            return getNullAttendanceResponse(lectureId);
-        }
-
-        Lecture lecture = attendances.get(0).getLecture();
-        verifyRequestMemberLogInMember(lecture.getMember());
-        return new AttendancesResponse(lecture, attendances);
+        // TODO : 강사 권한 체크
+        return new LecturerAttendanceResponse(attendances);
     }
 
     private void attend(AttendanceRequest attendanceRequest, EnrollmentInfo enrollmentInfo) {
@@ -132,20 +119,11 @@ public class AttendanceService {
         }
     }
 
-    private void validateAttendanceNumberCorrect(Integer actualAttendanceNumber, int attendanceNumber) {
+    private void validateAttendanceNumberCorrect(Integer actualAttendanceNumber,
+        int attendanceNumber) {
         if (actualAttendanceNumber != attendanceNumber) {
             throw AttendanceNumberIncorrectException.EXCEPTION;
         }
-    }
-
-    private void verifyRequestMemberLogInMember(Member lecturer) {
-        authenticationHelper.verifyRequestMemberLogInMember(lecturer.getId());
-    }
-
-    private AttendancesResponse getNullAttendanceResponse(Long lectureId) {
-        Lecture lecture = lectureRepository.findById(lectureId)
-            .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
-        return new AttendancesResponse(lecture, Collections.emptyList());
     }
 
     private LocalDateTime getTodaySeoulDateTime(Long milliseconds) {

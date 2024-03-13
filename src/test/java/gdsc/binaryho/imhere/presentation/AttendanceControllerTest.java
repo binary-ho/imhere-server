@@ -20,7 +20,7 @@ import com.jayway.jsonpath.JsonPath;
 import gdsc.binaryho.imhere.core.attendance.application.AttendanceService;
 import gdsc.binaryho.imhere.core.attendance.controller.AttendanceController;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
-import gdsc.binaryho.imhere.core.attendance.model.response.AttendancesResponse;
+import gdsc.binaryho.imhere.core.attendance.model.response.LecturerAttendanceResponse;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -67,9 +67,9 @@ public class AttendanceControllerTest {
     @WithMockUser
     void 강의의_전체_출석_정보를_조회한다() throws Exception {
         long lectureId = 7L;
-        AttendancesResponse attendancesResponse = new AttendancesResponse(MOCK_LECTURE,
+        LecturerAttendanceResponse lecturerAttendanceResponse = new LecturerAttendanceResponse(
             List.of(MOCK_ATTENDANCE));
-        given(attendanceService.getAttendances(lectureId)).willReturn(attendancesResponse);
+        given(attendanceService.getLecturerAttendances(lectureId)).willReturn(lecturerAttendanceResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/attendance/" + lectureId)
                 .with(csrf())
@@ -80,12 +80,17 @@ public class AttendanceControllerTest {
             .andExpect(jsonPath("$.lecturerName").value(MOCK_LECTURE.getLecturerName()))
 
             .andExpect(jsonPath("$.attendanceInfos").isNotEmpty())
-            .andExpect(jsonPath("$.attendanceInfos[0].univId").value(MOCK_ATTENDANCE.getStudent().getUnivId()))
-            .andExpect(jsonPath("$.attendanceInfos[0].name").value(MOCK_ATTENDANCE.getStudent().getName()))
-            .andExpect(jsonPath("$.attendanceInfos[0].distance").value(MOCK_ATTENDANCE.getDistance()))
-            .andExpect(jsonPath("$.attendanceInfos[0].accuracy").value(MOCK_ATTENDANCE.getAccuracy()))
+            .andExpect(jsonPath("$.attendanceInfos[0].univId").value(
+                MOCK_ATTENDANCE.getStudent().getUnivId()))
+            .andExpect(
+                jsonPath("$.attendanceInfos[0].name").value(MOCK_ATTENDANCE.getStudent().getName()))
+            .andExpect(
+                jsonPath("$.attendanceInfos[0].distance").value(MOCK_ATTENDANCE.getDistance()))
+            .andExpect(
+                jsonPath("$.attendanceInfos[0].accuracy").value(MOCK_ATTENDANCE.getAccuracy()))
             .andExpect(result -> {
-                String timestamp = JsonPath.read(result.getResponse().getContentAsString(), "$.attendanceInfos[0].timestamp");
+                String timestamp = JsonPath.read(result.getResponse().getContentAsString(),
+                    "$.attendanceInfos[0].timestamp");
                 assertThat(MOCK_ATTENDANCE.getTimestamp().toString()).contains(timestamp);
             });
     }
@@ -100,13 +105,14 @@ public class AttendanceControllerTest {
     void 특정_날짜의_출석_정보를_조회한다() throws Exception {
         long lectureId = 7L;
         long milliseconds = MOCK_ATTENDANCE.getTimestamp().toInstant(ZoneOffset.UTC).toEpochMilli();
-        AttendancesResponse attendancesResponse = new AttendancesResponse(MOCK_LECTURE,
+        LecturerAttendanceResponse lecturerAttendanceResponse = new LecturerAttendanceResponse(
             List.of(MOCK_ATTENDANCE));
-        given(attendanceService.getDayAttendances(lectureId, milliseconds)).willReturn(
-            attendancesResponse);
+        given(attendanceService.getLecturerDayAttendances(lectureId, milliseconds)).willReturn(
+            lecturerAttendanceResponse);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/attendance/" + lectureId + "/" + milliseconds)
-                .with(csrf())
+        mockMvc.perform(
+                MockMvcRequestBuilders.get("/api/attendance/" + lectureId + "/" + milliseconds)
+                    .with(csrf())
             )
             .andDo(print())
             .andExpect(status().isOk())
@@ -114,13 +120,18 @@ public class AttendanceControllerTest {
             .andExpect(jsonPath("$.lecturerName").value(MOCK_LECTURE.getLecturerName()))
 
             .andExpect(jsonPath("$.attendanceInfos").isNotEmpty())
-            .andExpect(jsonPath("$.attendanceInfos[0].univId").value(MOCK_ATTENDANCE.getStudent().getUnivId()))
-            .andExpect(jsonPath("$.attendanceInfos[0].name").value(MOCK_ATTENDANCE.getStudent().getName()))
-            .andExpect(jsonPath("$.attendanceInfos[0].distance").value(MOCK_ATTENDANCE.getDistance()))
-            .andExpect(jsonPath("$.attendanceInfos[0].accuracy").value(MOCK_ATTENDANCE.getAccuracy()))
+            .andExpect(jsonPath("$.attendanceInfos[0].univId").value(
+                MOCK_ATTENDANCE.getStudent().getUnivId()))
+            .andExpect(
+                jsonPath("$.attendanceInfos[0].name").value(MOCK_ATTENDANCE.getStudent().getName()))
+            .andExpect(
+                jsonPath("$.attendanceInfos[0].distance").value(MOCK_ATTENDANCE.getDistance()))
+            .andExpect(
+                jsonPath("$.attendanceInfos[0].accuracy").value(MOCK_ATTENDANCE.getAccuracy()))
 
             .andExpect(result -> {
-                String timestamp = JsonPath.read(result.getResponse().getContentAsString(), "$.attendanceInfos[0].timestamp");
+                String timestamp = JsonPath.read(result.getResponse().getContentAsString(),
+                    "$.attendanceInfos[0].timestamp");
                 assertThat(MOCK_ATTENDANCE.getTimestamp().toString()).contains(timestamp);
             });
     }

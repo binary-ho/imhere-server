@@ -2,7 +2,7 @@ package gdsc.binaryho.imhere.core.attendance.controller;
 
 import gdsc.binaryho.imhere.core.attendance.application.AttendanceService;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
-import gdsc.binaryho.imhere.core.attendance.model.response.AttendancesResponse;
+import gdsc.binaryho.imhere.core.attendance.model.response.LecturerAttendanceResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,17 +37,17 @@ public class AttendanceController {
 
     @Operation(summary = "특정 강의의 출석 정보 전체를 가져오는 API")
     @GetMapping("/{lecture_id}")
-    public ResponseEntity<AttendancesResponse> getAttendance(@PathVariable("lecture_id") Long lectureId) {
+    public ResponseEntity<LecturerAttendanceResponse> getAttendance(@PathVariable("lecture_id") Long lectureId) {
         return ResponseEntity
-            .ok(attendanceService.getAttendances(lectureId));
+            .ok(attendanceService.getLecturerAttendances(lectureId));
     }
 
     @Operation(summary = "특정 강의의 지정 날짜 출석 리스트를 가져오는 API")
     @GetMapping("/{lecture_id}/{day_milliseconds}")
-    public ResponseEntity<AttendancesResponse> getTodayAttendance(@PathVariable("lecture_id") Long lectureId,
+    public ResponseEntity<LecturerAttendanceResponse> getTodayAttendance(@PathVariable("lecture_id") Long lectureId,
         @Parameter(description = "js Date 객체의 getTime 메서드로 만든 milliseconds 현재 시각")
         @PathVariable("day_milliseconds") Long milliseconds) {
         return ResponseEntity
-            .ok(attendanceService.getDayAttendances(lectureId, milliseconds));
+            .ok(attendanceService.getLecturerDayAttendances(lectureId, milliseconds));
     }
 }

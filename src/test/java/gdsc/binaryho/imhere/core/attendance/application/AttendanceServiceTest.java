@@ -23,8 +23,8 @@ import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectE
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
-import gdsc.binaryho.imhere.core.attendance.model.response.AttendancesResponse;
-import gdsc.binaryho.imhere.core.attendance.model.response.AttendancesResponse.AttendanceInfo;
+import gdsc.binaryho.imhere.core.attendance.model.response.LecturerAttendanceResponse;
+import gdsc.binaryho.imhere.core.attendance.model.response.LecturerAttendanceResponse.AttendanceHistory;
 import gdsc.binaryho.imhere.core.auth.exception.RequestMemberIdMismatchException;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
@@ -168,18 +168,16 @@ public class AttendanceServiceTest {
             .willReturn(Collections.singletonList(MOCK_ATTENDANCE));
 
         // when
-        AttendancesResponse response = attendanceService.getAttendances(MOCK_LECTURE.getId());
+        LecturerAttendanceResponse response = attendanceService.getLecturerAttendances(MOCK_LECTURE.getId());
 
         // then
-        AttendanceInfo attendanceInfo = response.getAttendanceInfos().get(0);
+        AttendanceHistory attendanceHistory = response.getAttendances().get(0);
         assertAll(
-            () -> assertThat(response.getLectureName()).isEqualTo(MOCK_LECTURE.getLectureName()),
-            () -> assertThat(response.getLecturerName()).isEqualTo(MOCK_LECTURE.getLecturerName()),
-            () -> assertThat(attendanceInfo.getUnivId()).isEqualTo(MOCK_ATTENDANCE.getStudent().getUnivId()),
-            () -> assertThat(attendanceInfo.getName()).isEqualTo(MOCK_ATTENDANCE.getStudent().getName()),
-            () -> assertThat(attendanceInfo.getAccuracy()).isEqualTo(MOCK_ATTENDANCE.getAccuracy()),
-            () -> assertThat(attendanceInfo.getDistance()).isEqualTo(MOCK_ATTENDANCE.getDistance()),
-            () -> assertThat(attendanceInfo.getTimestamp()).isEqualTo(MOCK_ATTENDANCE.getTimestamp())
+            () -> assertThat(attendanceHistory.getUnivId()).isEqualTo(MOCK_ATTENDANCE.getStudent().getUnivId()),
+            () -> assertThat(attendanceHistory.getName()).isEqualTo(MOCK_ATTENDANCE.getStudent().getName()),
+            () -> assertThat(attendanceHistory.getAccuracy()).isEqualTo(MOCK_ATTENDANCE.getAccuracy()),
+            () -> assertThat(attendanceHistory.getDistance()).isEqualTo(MOCK_ATTENDANCE.getDistance()),
+            () -> assertThat(attendanceHistory.getTimestamp()).isEqualTo(MOCK_ATTENDANCE.getTimestamp())
         );
     }
 
@@ -194,13 +192,11 @@ public class AttendanceServiceTest {
             .willReturn(Optional.of(MOCK_LECTURE));
 
         // when
-        AttendancesResponse response = attendanceService.getAttendances(MOCK_LECTURE.getId());
+        LecturerAttendanceResponse response = attendanceService.getLecturerAttendances(MOCK_LECTURE.getId());
 
         // then
         assertAll(
-            () -> assertThat(response.getLectureName()).isEqualTo(MOCK_LECTURE.getLectureName()),
-            () -> assertThat(response.getLecturerName()).isEqualTo(MOCK_LECTURE.getLecturerName()),
-            () -> assertThat(response.getAttendanceInfos().isEmpty()).isTrue()
+            () -> assertThat(response.getAttendances().isEmpty()).isTrue()
         );
     }
 
@@ -214,7 +210,7 @@ public class AttendanceServiceTest {
         // when
         // then
         assertThatThrownBy(
-            () -> attendanceService.getAttendances(MOCK_LECTURE.getId()))
+            () -> attendanceService.getLecturerAttendances(MOCK_LECTURE.getId()))
             .isInstanceOf(RequestMemberIdMismatchException.class);
     }
 
@@ -243,18 +239,16 @@ public class AttendanceServiceTest {
             .willReturn(Collections.singletonList(MOCK_ATTENDANCE));
 
         // when
-        AttendancesResponse response = attendanceService.getDayAttendances(MOCK_LECTURE.getId(), MILLISECONDS);
+        LecturerAttendanceResponse response = attendanceService.getLecturerDayAttendances(MOCK_LECTURE.getId(), MILLISECONDS);
 
         // then
-        AttendanceInfo attendanceInfo = response.getAttendanceInfos().get(0);
+        AttendanceHistory attendanceHistory = response.getAttendances().get(0);
         assertAll(
-            () -> assertThat(response.getLectureName()).isEqualTo(MOCK_LECTURE.getLectureName()),
-            () -> assertThat(response.getLecturerName()).isEqualTo(MOCK_LECTURE.getLecturerName()),
-            () -> assertThat(attendanceInfo.getUnivId()).isEqualTo(MOCK_ATTENDANCE.getStudent().getUnivId()),
-            () -> assertThat(attendanceInfo.getName()).isEqualTo(MOCK_ATTENDANCE.getStudent().getName()),
-            () -> assertThat(attendanceInfo.getAccuracy()).isEqualTo(MOCK_ATTENDANCE.getAccuracy()),
-            () -> assertThat(attendanceInfo.getDistance()).isEqualTo(MOCK_ATTENDANCE.getDistance()),
-            () -> assertThat(attendanceInfo.getTimestamp()).isEqualTo(MOCK_ATTENDANCE.getTimestamp())
+            () -> assertThat(attendanceHistory.getUnivId()).isEqualTo(MOCK_ATTENDANCE.getStudent().getUnivId()),
+            () -> assertThat(attendanceHistory.getName()).isEqualTo(MOCK_ATTENDANCE.getStudent().getName()),
+            () -> assertThat(attendanceHistory.getAccuracy()).isEqualTo(MOCK_ATTENDANCE.getAccuracy()),
+            () -> assertThat(attendanceHistory.getDistance()).isEqualTo(MOCK_ATTENDANCE.getDistance()),
+            () -> assertThat(attendanceHistory.getTimestamp()).isEqualTo(MOCK_ATTENDANCE.getTimestamp())
         );
     }
 }
