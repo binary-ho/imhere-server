@@ -8,7 +8,6 @@ import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectE
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
-import gdsc.binaryho.imhere.core.attendance.model.response.LecturerAttendanceResponse;
 import gdsc.binaryho.imhere.core.attendance.model.response.StudentAttendanceResponse;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
@@ -19,7 +18,6 @@ import gdsc.binaryho.imhere.core.lecture.application.OpenLectureService;
 import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.member.Member;
-import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.util.SeoulDateTimeHolder;
 import java.time.Duration;
@@ -36,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class AttendanceService {
+public class StudentAttendanceService {
 
     private final OpenLectureService openLectureService;
     private final AttendanceRepository attendanceRepository;
@@ -79,6 +77,17 @@ public class AttendanceService {
         return StudentRecentAttendanceResponse.of(timestamps);
     }
 
+    @Transactional(readOnly = true)
+    public StudentAttendanceResponse getStudentDayAttendance(Long lectureId, Long milliseconds) {
+        LocalDateTime timestamp = getTodaySeoulDateTime(milliseconds);
+        Long studentId = authenticationHelper.getCurrentMember().getId();
+        List<Attendance> attendances = attendanceRepository
+            .findByLectureIdAndStudentIdAndTimestampBetween(
+                lectureId, studentId, timestamp, timestamp.plusDays(1));
+
+        return new StudentAttendanceResponse(attendances);
+    }
+
     private List<String> getRecentAttendanceTimestamps(Long lectureId, Long studentId) {
         List<Attendance> attendances = findRecentAttendances(lectureId, studentId);
         List<String> timestamps = attendances.stream()
@@ -105,33 +114,19 @@ public class AttendanceService {
             .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
-    public StudentAttendanceResponse getStudentDayAttendance(Long lectureId, Long milliseconds) {
-        LocalDateTime timestamp = getTodaySeoulDateTime(milliseconds);
-        Long studentId = authenticationHelper.getCurrentMember().getId();
-        List<Attendance> attendances = attendanceRepository
-            .findByLectureIdAndStudentIdAndTimestampBetween(
-                lectureId, studentId, timestamp, timestamp.plusDays(1));
 
-        return new StudentAttendanceResponse(attendances);
+    private void validateLectureOpen(EnrollmentInfo enrollmentInfo) {
+        if (enrollmentInfo.getLecture().getLectureState() != LectureState.OPEN) {
+            throw LectureNotOpenException.EXCEPTION;
+        }
     }
 
-    @Transactional(readOnly = true)
-    public LecturerAttendanceResponse getLecturerAttendances(Long lectureId) {
-        authenticationHelper.verifyMemberHasRole(Role.LECTURER);
+    private void validateAttendanceNumber(EnrollmentInfo enrollmentInfo, int attendanceNumber) {
+        long lectureId = enrollmentInfo.getLecture().getId();
+        Integer actualAttendanceNumber = openLectureService.findAttendanceNumber(lectureId);
 
-        List<Attendance> attendances = attendanceRepository.findAllByLectureId(lectureId);
-        return new LecturerAttendanceResponse(attendances);
-    }
-
-    @Transactional(readOnly = true)
-    public LecturerAttendanceResponse getLecturerDayAttendances(Long lectureId, Long milliseconds) {
-        authenticationHelper.verifyMemberHasRole(Role.LECTURER);
-
-        LocalDateTime timestamp = getTodaySeoulDateTime(milliseconds);
-        List<Attendance> attendances = attendanceRepository
-            .findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
-        return new LecturerAttendanceResponse(attendances);
+        validateAttendanceNumberNotTimeOut(actualAttendanceNumber);
+        validateAttendanceNumberCorrect(actualAttendanceNumber, attendanceNumber);
     }
 
     private void attend(AttendanceRequest attendanceRequest, EnrollmentInfo enrollmentInfo) {
@@ -162,20 +157,6 @@ public class AttendanceService {
         log.info("[출석 완료] {}({}) , 학생 : {} ({})",
             lecture::getLectureName, lecture::getId,
             attendMember::getUnivId, attendMember::getName);
-    }
-
-    private void validateLectureOpen(EnrollmentInfo enrollmentInfo) {
-        if (enrollmentInfo.getLecture().getLectureState() != LectureState.OPEN) {
-            throw LectureNotOpenException.EXCEPTION;
-        }
-    }
-
-    private void validateAttendanceNumber(EnrollmentInfo enrollmentInfo, int attendanceNumber) {
-        long lectureId = enrollmentInfo.getLecture().getId();
-        Integer actualAttendanceNumber = openLectureService.findAttendanceNumber(lectureId);
-
-        validateAttendanceNumberNotTimeOut(actualAttendanceNumber);
-        validateAttendanceNumberCorrect(actualAttendanceNumber, attendanceNumber);
     }
 
     private void validateAttendanceNumberNotTimeOut(Integer attendanceNumber) {

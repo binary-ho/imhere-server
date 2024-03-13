@@ -47,7 +47,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class AttendanceServiceTest {
+public class LecturerAttendanceServiceTest {
 
     @Mock
     AttendanceRepository attendanceRepository;
@@ -59,7 +59,7 @@ public class AttendanceServiceTest {
     OpenLectureCacheRepository openLectureCacheRepository;
 
     OpenLectureService openLectureService;
-    AttendanceService attendanceService;
+    LecturerAttendanceService lecturerAttendanceService;
 
     TestContainer testContainer;
 
@@ -71,7 +71,7 @@ public class AttendanceServiceTest {
             .lectureRepository(lectureRepository)
             .build();
         openLectureCacheRepository = testContainer.openLectureCacheRepository;
-        attendanceService = testContainer.attendanceService;
+        lecturerAttendanceService = testContainer.lecturerAttendanceService;
         openLectureService = testContainer.openLectureService;
     }
 
@@ -90,7 +90,7 @@ public class AttendanceServiceTest {
         openLectureCacheRepository.cache(new OpenLecture(MOCK_OPEN_LECTURE.getId(), MOCK_OPEN_LECTURE.getLectureName(),
             MOCK_OPEN_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
-        attendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId());
+        lecturerAttendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId());
 
         // then
         verify(attendanceRepository, times(1)).save(any());
@@ -115,7 +115,7 @@ public class AttendanceServiceTest {
 
         // then
         assertThatThrownBy(
-            () -> attendanceService.takeAttendance(request, MOCK_CLOSED_LECTURE.getId()))
+            () -> lecturerAttendanceService.takeAttendance(request, MOCK_CLOSED_LECTURE.getId()))
             .isInstanceOf(LectureNotOpenException.class);
     }
 
@@ -135,7 +135,7 @@ public class AttendanceServiceTest {
         assertAll(
             () -> assertThat(attendanceNumber).isEqualTo(null),
             () -> assertThatThrownBy(
-                () -> attendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId()))
+                () -> lecturerAttendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId()))
                 .isInstanceOf(AttendanceTimeExceededException.class)
         );
     }
@@ -156,7 +156,7 @@ public class AttendanceServiceTest {
 
         // then
         assertThatThrownBy(
-            () -> attendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId()))
+            () -> lecturerAttendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId()))
             .isInstanceOf(AttendanceNumberIncorrectException.class);
     }
 
@@ -168,7 +168,7 @@ public class AttendanceServiceTest {
             .willReturn(Collections.singletonList(MOCK_ATTENDANCE));
 
         // when
-        LecturerAttendanceResponse response = attendanceService.getLecturerAttendances(MOCK_LECTURE.getId());
+        LecturerAttendanceResponse response = lecturerAttendanceService.getLecturerAttendances(MOCK_LECTURE.getId());
 
         // then
         AttendanceHistory attendanceHistory = response.getAttendances().get(0);
@@ -192,7 +192,7 @@ public class AttendanceServiceTest {
             .willReturn(Optional.of(MOCK_LECTURE));
 
         // when
-        LecturerAttendanceResponse response = attendanceService.getLecturerAttendances(MOCK_LECTURE.getId());
+        LecturerAttendanceResponse response = lecturerAttendanceService.getLecturerAttendances(MOCK_LECTURE.getId());
 
         // then
         assertAll(
@@ -210,7 +210,7 @@ public class AttendanceServiceTest {
         // when
         // then
         assertThatThrownBy(
-            () -> attendanceService.getLecturerAttendances(MOCK_LECTURE.getId()))
+            () -> lecturerAttendanceService.getLecturerAttendances(MOCK_LECTURE.getId()))
             .isInstanceOf(RequestMemberIdMismatchException.class);
     }
 
@@ -239,7 +239,7 @@ public class AttendanceServiceTest {
             .willReturn(Collections.singletonList(MOCK_ATTENDANCE));
 
         // when
-        LecturerAttendanceResponse response = attendanceService.getLecturerDayAttendances(MOCK_LECTURE.getId(), MILLISECONDS);
+        LecturerAttendanceResponse response = lecturerAttendanceService.getLecturerDayAttendances(MOCK_LECTURE.getId(), MILLISECONDS);
 
         // then
         AttendanceHistory attendanceHistory = response.getAttendances().get(0);

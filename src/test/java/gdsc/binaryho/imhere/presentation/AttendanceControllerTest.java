@@ -17,7 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import gdsc.binaryho.imhere.core.attendance.application.AttendanceService;
+import gdsc.binaryho.imhere.core.attendance.application.LecturerAttendanceService;
+import gdsc.binaryho.imhere.core.attendance.application.StudentAttendanceService;
 import gdsc.binaryho.imhere.core.attendance.controller.AttendanceController;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
 import gdsc.binaryho.imhere.core.attendance.model.response.LecturerAttendanceResponse;
@@ -40,7 +41,10 @@ public class AttendanceControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private AttendanceService attendanceService;
+    private StudentAttendanceService studentAttendanceService;
+
+    @MockBean
+    private LecturerAttendanceService lecturerAttendanceService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -52,7 +56,7 @@ public class AttendanceControllerTest {
         AttendanceRequest attendanceRequest = new AttendanceRequest(ATTENDANCE_NUMBER, DISTANCE,
             ACCURACY, MILLISECONDS);
 
-        doNothing().when(attendanceService).takeAttendance(attendanceRequest, lectureId);
+        doNothing().when(studentAttendanceService).takeAttendance(attendanceRequest, lectureId);
 
         mockMvc.perform(post("/api/attendance/" + lectureId)
                 .with(csrf())
@@ -69,7 +73,7 @@ public class AttendanceControllerTest {
         long lectureId = 7L;
         LecturerAttendanceResponse lecturerAttendanceResponse = new LecturerAttendanceResponse(
             List.of(MOCK_ATTENDANCE));
-        given(attendanceService.getLecturerAttendances(lectureId)).willReturn(lecturerAttendanceResponse);
+        given(lecturerAttendanceService.getLecturerAttendances(lectureId)).willReturn(lecturerAttendanceResponse);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/attendance/" + lectureId)
                 .with(csrf())
@@ -107,7 +111,7 @@ public class AttendanceControllerTest {
         long milliseconds = MOCK_ATTENDANCE.getTimestamp().toInstant(ZoneOffset.UTC).toEpochMilli();
         LecturerAttendanceResponse lecturerAttendanceResponse = new LecturerAttendanceResponse(
             List.of(MOCK_ATTENDANCE));
-        given(attendanceService.getLecturerDayAttendances(lectureId, milliseconds)).willReturn(
+        given(lecturerAttendanceService.getLecturerDayAttendances(lectureId, milliseconds)).willReturn(
             lecturerAttendanceResponse);
 
         mockMvc.perform(

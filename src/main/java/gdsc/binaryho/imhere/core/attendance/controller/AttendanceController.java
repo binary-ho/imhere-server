@@ -1,11 +1,13 @@
 package gdsc.binaryho.imhere.core.attendance.controller;
 
-import gdsc.binaryho.imhere.core.attendance.application.AttendanceService;
+import gdsc.binaryho.imhere.core.attendance.application.LecturerAttendanceService;
+import gdsc.binaryho.imhere.core.attendance.application.StudentAttendanceService;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
 import gdsc.binaryho.imhere.core.attendance.model.response.LecturerAttendanceResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,19 +21,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Attendance", description = "출석 기능 관련 API입니다.")
 @RestController
 @RequestMapping("/api/attendance")
+@RequiredArgsConstructor
 public class AttendanceController {
 
-    private final AttendanceService attendanceService;
-
-    public AttendanceController(AttendanceService attendanceService) {
-        this.attendanceService = attendanceService;
-    }
+    private final StudentAttendanceService studentAttendanceService;
+    private final LecturerAttendanceService lecturerAttendanceService;
 
     @Operation(summary = "학생 출석 시도 API")
     @PostMapping("/{lecture_id}")
     public ResponseEntity<Void> takeAttendance(@RequestBody AttendanceRequest attendanceRequest,
         @PathVariable("lecture_id") Long lectureId) {
-        attendanceService.takeAttendance(attendanceRequest, lectureId);
+        studentAttendanceService.takeAttendance(attendanceRequest, lectureId);
         return ResponseEntity.ok().build();
     }
 
@@ -39,7 +39,7 @@ public class AttendanceController {
     @GetMapping("/{lecture_id}")
     public ResponseEntity<LecturerAttendanceResponse> getAttendance(@PathVariable("lecture_id") Long lectureId) {
         return ResponseEntity
-            .ok(attendanceService.getLecturerAttendances(lectureId));
+            .ok(lecturerAttendanceService.getLecturerAttendances(lectureId));
     }
 
     @Operation(summary = "특정 강의의 지정 날짜 출석 리스트를 가져오는 API")
@@ -48,6 +48,6 @@ public class AttendanceController {
         @Parameter(description = "js Date 객체의 getTime 메서드로 만든 milliseconds 현재 시각")
         @PathVariable("day_milliseconds") Long milliseconds) {
         return ResponseEntity
-            .ok(attendanceService.getLecturerDayAttendances(lectureId, milliseconds));
+            .ok(lecturerAttendanceService.getLecturerDayAttendances(lectureId, milliseconds));
     }
 }
