@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,11 +34,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AttendanceService {
 
-    private final AuthenticationHelper authenticationHelper;
     private final OpenLectureService openLectureService;
     private final AttendanceRepository attendanceRepository;
     private final EnrollmentInfoRepository enrollmentRepository;
+    private final ApplicationEventPublisher eventPublisher;
+
     private final SeoulDateTimeHolder seoulDateTimeHolder;
+    private final AuthenticationHelper authenticationHelper;
 
     private final static Duration RECENT_TIME = Duration.ofHours(1L);
 
@@ -58,11 +61,14 @@ public class AttendanceService {
     @Transactional(readOnly = true)
     public StudentAttendanceResponse getStudentRecentAttendance(Long lectureId) {
         Long studentId = authenticationHelper.getCurrentMember().getId();
+
+        // TODO : Look Aside 도입
         LocalDateTime now = seoulDateTimeHolder.getSeoulDateTime();
         LocalDateTime beforeRecentTime = now.minusHours(RECENT_TIME.toHours());
 
         List<Attendance> attendances = attendanceRepository
-            .findByLectureIdAndStudentIdAndTimestampBetween(lectureId, studentId, beforeRecentTime, now);
+            .findByLectureIdAndStudentIdAndTimestampBetween(
+                lectureId, studentId, beforeRecentTime, now);
         return new StudentAttendanceResponse(attendances);
     }
 
@@ -71,8 +77,8 @@ public class AttendanceService {
         LocalDateTime timestamp = getTodaySeoulDateTime(milliseconds);
         Long studentId = authenticationHelper.getCurrentMember().getId();
         List<Attendance> attendances = attendanceRepository
-            .findByLectureIdAndStudentIdAndTimestampBetween(lectureId, studentId,
-                timestamp, timestamp.plusDays(1));
+            .findByLectureIdAndStudentIdAndTimestampBetween(
+                lectureId, studentId, timestamp, timestamp.plusDays(1));
 
         return new StudentAttendanceResponse(attendances);
     }
@@ -96,16 +102,24 @@ public class AttendanceService {
     }
 
     private void attend(AttendanceRequest attendanceRequest, EnrollmentInfo enrollmentInfo) {
+        Member student = enrollmentInfo.getMember();
+        Lecture lecture = enrollmentInfo.getLecture();
         Attendance attendance = Attendance.createAttendance(
-            enrollmentInfo.getMember(),
-            enrollmentInfo.getLecture(),
+            student, lecture,
             attendanceRequest.getDistance(),
             attendanceRequest.getAccuracy(),
             seoulDateTimeHolder.from(attendanceRequest.getMilliseconds())
         );
 
         attendanceRepository.save(attendance);
+        publishStudentAttendedEvent(attendance, lecture, student);
         logAttendanceHistory(enrollmentInfo, attendance);
+    }
+
+    private void publishStudentAttendedEvent(Attendance attendance, Lecture lecture, Member student) {
+        LocalDateTime timestamp = attendance.getTimestamp();
+        eventPublisher.publishEvent(
+            new StudentAttendedEvent(lecture.getId(), student.getId(), timestamp));
     }
 
     private void logAttendanceHistory(EnrollmentInfo enrollmentInfo, Attendance attendance) {
