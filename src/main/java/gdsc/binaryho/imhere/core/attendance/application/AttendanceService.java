@@ -20,6 +20,7 @@ import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.util.SeoulDateTimeHolder;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,8 @@ public class AttendanceService {
     private final EnrollmentInfoRepository enrollmentRepository;
     private final SeoulDateTimeHolder seoulDateTimeHolder;
 
+    private final static Duration RECENT_TIME = Duration.ofHours(1L);
+
     @Transactional
     public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) {
         Member currentStudent = authenticationHelper.getCurrentMember();
@@ -50,6 +53,17 @@ public class AttendanceService {
         validateAttendanceNumber(enrollmentInfo, attendanceRequest.getAttendanceNumber());
 
         attend(attendanceRequest, enrollmentInfo);
+    }
+
+    @Transactional(readOnly = true)
+    public StudentAttendanceResponse getStudentRecentAttendance(Long lectureId) {
+        Long studentId = authenticationHelper.getCurrentMember().getId();
+        LocalDateTime now = seoulDateTimeHolder.getSeoulDateTime();
+        LocalDateTime beforeRecentTime = now.minusHours(RECENT_TIME.toHours());
+
+        List<Attendance> attendances = attendanceRepository
+            .findByLectureIdAndStudentIdAndTimestampBetween(lectureId, studentId, beforeRecentTime, now);
+        return new StudentAttendanceResponse(attendances);
     }
 
     @Transactional(readOnly = true)
@@ -100,10 +114,6 @@ public class AttendanceService {
         log.info("[출석 완료] {}({}) , 학생 : {} ({})",
             lecture::getLectureName, lecture::getId,
             attendMember::getUnivId, attendMember::getName);
-    }
-
-    private void logAttendanceHistory() {
-
     }
 
     private void validateLectureOpen(EnrollmentInfo enrollmentInfo) {
