@@ -17,6 +17,7 @@ import gdsc.binaryho.imhere.core.lecture.application.OpenLectureService;
 import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
 import gdsc.binaryho.imhere.core.member.Member;
+import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.util.SeoulDateTimeHolder;
 import java.time.LocalDateTime;
@@ -64,17 +65,19 @@ public class AttendanceService {
 
     @Transactional(readOnly = true)
     public LecturerAttendanceResponse getLecturerAttendances(Long lectureId) {
+        authenticationHelper.verifyMemberHasRole(Role.LECTURER);
+
         List<Attendance> attendances = attendanceRepository.findAllByLectureId(lectureId);
-        // TODO : 강사 권한 체크
         return new LecturerAttendanceResponse(attendances);
     }
 
     @Transactional(readOnly = true)
     public LecturerAttendanceResponse getLecturerDayAttendances(Long lectureId, Long milliseconds) {
+        authenticationHelper.verifyMemberHasRole(Role.LECTURER);
+
         LocalDateTime timestamp = getTodaySeoulDateTime(milliseconds);
         List<Attendance> attendances = attendanceRepository
             .findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
-        // TODO : 강사 권한 체크
         return new LecturerAttendanceResponse(attendances);
     }
 
