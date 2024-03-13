@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.core.attendance.domain;
 
-import gdsc.binaryho.imhere.config.redis.RedisKeyPrefixes;
+import gdsc.binaryho.imhere.config.redis.RedisKeyConstants;
 import gdsc.binaryho.imhere.domain.CacheEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AttendanceHistory extends CacheEntity {
 
-    private static final String KEY_FORMAT = RedisKeyPrefixes.ATTENDANCE_HISTORY_KEY_FORMAT;
+    private static final String KEY_FORMAT = RedisKeyConstants.ATTENDANCE_HISTORY_KEY_FORMAT;
 
     private final long lectureId;
     private final long studentId;

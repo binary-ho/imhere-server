@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.core.lecture.infrastructure;
 
-import gdsc.binaryho.imhere.config.redis.RedisKeyPrefixes;
+import gdsc.binaryho.imhere.config.redis.RedisKeyConstants;
 import gdsc.binaryho.imhere.core.lecture.application.port.AttendeeCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.model.StudentIds;
 import java.util.Collections;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 public class AttendeeCacheRedisRepository implements AttendeeCacheRepository {
 
     private static final int LECTURE_STUDENT_EXPIRE_TIME = 10;
-    private static final String KEY_PREFIX = RedisKeyPrefixes.LECTURE_STUDENT_KEY_PREFIX;
+    private static final String KEY_PREFIX = RedisKeyConstants.LECTURE_STUDENT_KEY_PREFIX;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
