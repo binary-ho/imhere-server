@@ -16,7 +16,6 @@ import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.lecture.application.OpenLectureService;
 import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
-import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.util.SeoulDateTimeHolder;
@@ -36,7 +35,6 @@ public class AttendanceService {
     private final OpenLectureService openLectureService;
     private final AttendanceRepository attendanceRepository;
     private final EnrollmentInfoRepository enrollmentRepository;
-    private final LectureRepository lectureRepository;
     private final SeoulDateTimeHolder seoulDateTimeHolder;
 
     @Transactional
@@ -81,7 +79,6 @@ public class AttendanceService {
     }
 
     private void attend(AttendanceRequest attendanceRequest, EnrollmentInfo enrollmentInfo) {
-
         Attendance attendance = Attendance.createAttendance(
             enrollmentInfo.getMember(),
             enrollmentInfo.getLecture(),
@@ -91,12 +88,19 @@ public class AttendanceService {
         );
 
         attendanceRepository.save(attendance);
+        logAttendanceHistory(enrollmentInfo, attendance);
+    }
 
+    private void logAttendanceHistory(EnrollmentInfo enrollmentInfo, Attendance attendance) {
         Lecture lecture = attendance.getLecture();
         Member attendMember = enrollmentInfo.getMember();
         log.info("[출석 완료] {}({}) , 학생 : {} ({})",
             lecture::getLectureName, lecture::getId,
             attendMember::getUnivId, attendMember::getName);
+    }
+
+    private void logAttendanceHistory() {
+
     }
 
     private void validateLectureOpen(EnrollmentInfo enrollmentInfo) {
