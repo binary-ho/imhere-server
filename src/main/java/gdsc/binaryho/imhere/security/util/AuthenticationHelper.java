@@ -30,8 +30,8 @@ public class AuthenticationHelper {
         }
     }
 
-    public void verifyMemberHasAdminRole() {
-        if (!getCurrentMember().getRole().equals(Role.ADMIN)) {
+    public void verifyMemberHasRole(Role role) {
+        if (!getCurrentMember().getRole().equals(role)) {
             throw PermissionDeniedException.EXCEPTION;
         }
     }
