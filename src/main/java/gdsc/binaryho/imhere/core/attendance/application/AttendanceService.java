@@ -6,7 +6,7 @@ import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectE
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
-import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceResponse;
+import gdsc.binaryho.imhere.core.attendance.model.response.AttendancesResponse;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentNotApprovedException;
@@ -54,7 +54,7 @@ public class AttendanceService {
     }
 
     @Transactional(readOnly = true)
-    public AttendanceResponse getAttendances(Long lectureId) {
+    public AttendancesResponse getAttendances(Long lectureId) {
         List<Attendance> attendances = attendanceRepository.findAllByLectureId(lectureId);
 
         if (attendances.isEmpty()) {
@@ -63,11 +63,11 @@ public class AttendanceService {
 
         Lecture lecture = attendances.get(0).getLecture();
         verifyRequestMemberLogInMember(lecture.getMember());
-        return new AttendanceResponse(lecture, attendances);
+        return new AttendancesResponse(lecture, attendances);
     }
 
     @Transactional(readOnly = true)
-    public AttendanceResponse getDayAttendances(Long lectureId, Long milliseconds) {
+    public AttendancesResponse getDayAttendances(Long lectureId, Long milliseconds) {
         LocalDateTime timestamp = getTodaySeoulDateTime(milliseconds);
         List<Attendance> attendances = attendanceRepository
             .findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
@@ -78,7 +78,7 @@ public class AttendanceService {
 
         Lecture lecture = attendances.get(0).getLecture();
         verifyRequestMemberLogInMember(lecture.getMember());
-        return new AttendanceResponse(lecture, attendances);
+        return new AttendancesResponse(lecture, attendances);
     }
 
     private void attend(AttendanceRequest attendanceRequest, EnrollmentInfo enrollmentInfo) {
@@ -130,10 +130,10 @@ public class AttendanceService {
         authenticationHelper.verifyRequestMemberLogInMember(lecturer.getId());
     }
 
-    private AttendanceResponse getNullAttendanceDto(Long lectureId) {
+    private AttendancesResponse getNullAttendanceDto(Long lectureId) {
         Lecture lecture = lectureRepository.findById(lectureId)
             .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
-        return new AttendanceResponse(lecture, Collections.emptyList());
+        return new AttendancesResponse(lecture, Collections.emptyList());
     }
 
     private LocalDateTime getTodaySeoulDateTime(Long milliseconds) {

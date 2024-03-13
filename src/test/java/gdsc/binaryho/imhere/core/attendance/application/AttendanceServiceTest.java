@@ -23,8 +23,8 @@ import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectE
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
-import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceResponse;
-import gdsc.binaryho.imhere.core.attendance.model.response.AttendanceResponse.AttendanceInfo;
+import gdsc.binaryho.imhere.core.attendance.model.response.AttendancesResponse;
+import gdsc.binaryho.imhere.core.attendance.model.response.AttendancesResponse.AttendanceInfo;
 import gdsc.binaryho.imhere.core.auth.exception.RequestMemberIdMismatchException;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
@@ -168,7 +168,7 @@ public class AttendanceServiceTest {
             .willReturn(Collections.singletonList(MOCK_ATTENDANCE));
 
         // when
-        AttendanceResponse response = attendanceService.getAttendances(MOCK_LECTURE.getId());
+        AttendancesResponse response = attendanceService.getAttendances(MOCK_LECTURE.getId());
 
         // then
         AttendanceInfo attendanceInfo = response.getAttendanceInfos().get(0);
@@ -194,7 +194,7 @@ public class AttendanceServiceTest {
             .willReturn(Optional.of(MOCK_LECTURE));
 
         // when
-        AttendanceResponse response = attendanceService.getAttendances(MOCK_LECTURE.getId());
+        AttendancesResponse response = attendanceService.getAttendances(MOCK_LECTURE.getId());
 
         // then
         assertAll(
@@ -243,7 +243,7 @@ public class AttendanceServiceTest {
             .willReturn(Collections.singletonList(MOCK_ATTENDANCE));
 
         // when
-        AttendanceResponse response = attendanceService.getDayAttendances(MOCK_LECTURE.getId(), MILLISECONDS);
+        AttendancesResponse response = attendanceService.getDayAttendances(MOCK_LECTURE.getId(), MILLISECONDS);
 
         // then
         AttendanceInfo attendanceInfo = response.getAttendanceInfos().get(0);

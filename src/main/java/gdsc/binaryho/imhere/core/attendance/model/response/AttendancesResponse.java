@@ -10,15 +10,15 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 
 @Getter
-@Tag(name = "AttendanceDto", description = "한 강의의 출석 정보")
-public class AttendanceResponse {
+@Tag(name = "AttendancesResponse", description = "한 강의의 출석 정보")
+public class AttendancesResponse {
 
     private final String lectureName;
     private final String lecturerName;
     @Schema(description = "출석 정보 AttendanceInfo 리스트")
     private final List<AttendanceInfo> attendanceInfos;
 
-    public AttendanceResponse(Lecture lecture, List<Attendance> attendances) {
+    public AttendancesResponse(Lecture lecture, List<Attendance> attendances) {
         this.lectureName = lecture.getLectureName();
         this.lecturerName = lecture.getLecturerName();
         this.attendanceInfos = getAttendanceInfos(attendances);
