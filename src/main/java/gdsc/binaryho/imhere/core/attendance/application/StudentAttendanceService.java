@@ -70,11 +70,11 @@ public class StudentAttendanceService {
 
         if (attendanceHistories.isEmpty()) {
             List<String> timestamps = getRecentAttendanceTimestamps(lectureId, studentId);
-            return StudentRecentAttendanceResponse.of(timestamps);
+            return new StudentRecentAttendanceResponse(timestamps);
         }
 
         List<String> timestamps = getTimestamps(attendanceHistories);
-        return StudentRecentAttendanceResponse.of(timestamps);
+        return new StudentRecentAttendanceResponse(timestamps);
     }
 
     @Transactional(readOnly = true)
