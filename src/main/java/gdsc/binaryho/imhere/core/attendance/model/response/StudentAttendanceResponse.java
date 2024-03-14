@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.core.attendance.model.response;
 
-import gdsc.binaryho.imhere.core.attendance.Attendance;
+import gdsc.binaryho.imhere.core.attendance.domain.Attendance;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDateTime;

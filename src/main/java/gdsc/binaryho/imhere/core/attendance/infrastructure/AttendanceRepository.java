@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.core.attendance.infrastructure;
 
-import gdsc.binaryho.imhere.core.attendance.Attendance;
+import gdsc.binaryho.imhere.core.attendance.domain.Attendance;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

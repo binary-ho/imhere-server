@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.attendance;
+package gdsc.binaryho.imhere.core.attendance.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gdsc.binaryho.imhere.core.lecture.domain.Lecture;

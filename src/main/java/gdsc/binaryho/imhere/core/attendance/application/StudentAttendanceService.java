@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.attendance.application;
 
 
-import gdsc.binaryho.imhere.core.attendance.Attendance;
+import gdsc.binaryho.imhere.core.attendance.domain.Attendance;
 import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceHistoryCacheRepository;
 import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistory;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectException;

@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.attendance.application;
 
 
-import gdsc.binaryho.imhere.core.attendance.Attendance;
+import gdsc.binaryho.imhere.core.attendance.domain.Attendance;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.attendance.model.response.LecturerAttendanceResponse;
 import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
