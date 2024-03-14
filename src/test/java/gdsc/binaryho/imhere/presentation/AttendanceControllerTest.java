@@ -21,7 +21,6 @@ import gdsc.binaryho.imhere.core.attendance.application.StudentAttendanceService
 import gdsc.binaryho.imhere.core.attendance.controller.AttendanceController;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
 import gdsc.binaryho.imhere.core.attendance.model.response.LecturerAttendanceResponse;
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -57,7 +56,7 @@ public class AttendanceControllerTest {
 
         doNothing().when(studentAttendanceService).takeAttendance(attendanceRequest, lectureId);
 
-        mockMvc.perform(post("/api/attendance/" + lectureId)
+        mockMvc.perform(post(String.format("/api/lecture/%d/attendance", lectureId))
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(attendanceRequest))
@@ -74,7 +73,7 @@ public class AttendanceControllerTest {
             List.of(MOCK_ATTENDANCE));
         given(lecturerAttendanceService.getLecturerAttendances(lectureId)).willReturn(lecturerAttendanceResponse);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/attendance/" + lectureId)
+        mockMvc.perform(MockMvcRequestBuilders.get(String.format("/api/lecture/%d/attendance", lectureId))
                 .with(csrf())
             )
             .andDo(print())
@@ -96,11 +95,6 @@ public class AttendanceControllerTest {
             });
     }
 
-    private String getSubstring(LocalDateTime localDateTime) {
-        String timestamp = localDateTime.toString();
-        return timestamp.substring(0, timestamp.length() - 2);
-    }
-
     @Test
     @WithMockUser
     void 특정_날짜의_출석_정보를_조회한다() throws Exception {
@@ -112,7 +106,7 @@ public class AttendanceControllerTest {
             lecturerAttendanceResponse);
 
         mockMvc.perform(
-                MockMvcRequestBuilders.get("/api/attendance/" + lectureId + "/" + milliseconds)
+                MockMvcRequestBuilders.get(String.format("/api/lecture/%d/attendance?timestamp=%d", lectureId, milliseconds))
                     .with(csrf())
             )
             .andDo(print())
