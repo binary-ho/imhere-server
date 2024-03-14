@@ -4,6 +4,9 @@ package gdsc.binaryho.imhere.core.attendance.application;
 import gdsc.binaryho.imhere.core.attendance.Attendance;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.attendance.model.response.LecturerAttendanceResponse;
+import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
+import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
+import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.util.SeoulDateTimeHolder;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LecturerAttendanceService {
 
     private final AttendanceRepository attendanceRepository;
+    private final LectureRepository lectureRepository;
 
     private final SeoulDateTimeHolder seoulDateTimeHolder;
     private final AuthenticationHelper authenticationHelper;
@@ -29,6 +33,7 @@ public class LecturerAttendanceService {
         authenticationHelper.verifyMemberHasRole(Role.LECTURER);
 
         List<Attendance> attendances = attendanceRepository.findAllByLectureId(lectureId);
+        validateLectureOwnerRequested(lectureId, attendances);
         return new LecturerAttendanceResponse(attendances);
     }
 
@@ -39,11 +44,32 @@ public class LecturerAttendanceService {
         LocalDateTime timestamp = getTodaySeoulDateTime(milliseconds);
         List<Attendance> attendances = attendanceRepository
             .findByLectureIdAndTimestampBetween(lectureId, timestamp, timestamp.plusDays(1));
+        validateLectureOwnerRequested(lectureId, attendances);
         return new LecturerAttendanceResponse(attendances);
     }
 
     private LocalDateTime getTodaySeoulDateTime(Long milliseconds) {
         return seoulDateTimeHolder.from(milliseconds)
             .withHour(0).withMinute(0).withSecond(0);
+    }
+
+    private void validateLectureOwnerRequested(Long lectureId, List<Attendance> attendances) {
+        attendances.stream()
+            .findAny()
+            .ifPresentOrElse(
+                attendance -> authenticationHelper.verifyRequestMemberLogInMember(getLecturerId(attendance)),
+                () -> authenticationHelper.verifyRequestMemberLogInMember(getLecturerId(lectureId))
+            );
+    }
+
+    private long getLecturerId(Attendance attendance) {
+        Lecture lecture = attendance.getLecture();
+        return lecture.getMember().getId();
+    }
+
+    private long getLecturerId(Long id) {
+        Lecture lecture = lectureRepository.findById(id)
+            .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
+        return lecture.getMember().getId();
     }
 }
