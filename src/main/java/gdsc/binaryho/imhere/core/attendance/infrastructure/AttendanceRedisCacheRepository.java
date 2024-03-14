@@ -3,6 +3,7 @@ package gdsc.binaryho.imhere.core.attendance.infrastructure;
 import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceHistoryCacheRepository;
 import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistory;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class AttendanceRedisCacheRepository implements AttendanceHistoryCacheRepository {
 
+    private static final int ATTENDANCE_HISTORY_EXPIRE_HOUR = 1;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
@@ -33,5 +35,6 @@ public class AttendanceRedisCacheRepository implements AttendanceHistoryCacheRep
         String key = attendanceHistory.getKey();
         redisTemplate.opsForSet()
             .add(key, attendanceHistory.getTimestamp());
+        redisTemplate.expire(key, ATTENDANCE_HISTORY_EXPIRE_HOUR, TimeUnit.HOURS);
     }
 }
