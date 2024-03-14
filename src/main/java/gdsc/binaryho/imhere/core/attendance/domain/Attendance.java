@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.attendance;
+package gdsc.binaryho.imhere.core.attendance.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
@@ -36,7 +36,7 @@ public class Attendance {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
-    private Member member;
+    private Member student;
 
     private String distance;
     private String accuracy;
@@ -49,7 +49,7 @@ public class Attendance {
     public static Attendance createAttendance(Member member, Lecture lecture, String distance,
         String accuracy, LocalDateTime timestamp) {
         Attendance attendance = new Attendance();
-        attendance.member = member;
+        attendance.student = member;
         attendance.lecture = lecture;
         attendance.distance = distance;
         attendance.accuracy = accuracy;

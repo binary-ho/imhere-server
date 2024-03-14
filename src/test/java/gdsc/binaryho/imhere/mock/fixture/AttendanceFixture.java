@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.mock.fixture;
 
-import gdsc.binaryho.imhere.core.attendance.Attendance;
+import gdsc.binaryho.imhere.core.attendance.domain.Attendance;
 import gdsc.binaryho.imhere.mock.FixedSeoulTimeHolder;
 import java.time.LocalDateTime;
 

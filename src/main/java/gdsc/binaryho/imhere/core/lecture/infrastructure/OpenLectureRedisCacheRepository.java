@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.core.lecture.infrastructure;
 
-import gdsc.binaryho.imhere.config.redis.RedisKeyPrefixes;
+import gdsc.binaryho.imhere.config.redis.RedisKeyConstants;
 import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import java.util.Map;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 public class OpenLectureRedisCacheRepository implements OpenLectureCacheRepository {
 
     private static final int OPEN_LECTURE_EXPIRE_TIME = 10;
-    private static final String KEY_PREFIX = RedisKeyPrefixes.OPEN_LECTURE_KEY_PREFIX;
+    private static final String KEY_PREFIX = RedisKeyConstants.OPEN_LECTURE_KEY_PREFIX;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
