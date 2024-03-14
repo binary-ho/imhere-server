@@ -2,7 +2,7 @@ package gdsc.binaryho.imhere.core.attendance.controller;
 
 import gdsc.binaryho.imhere.core.attendance.application.LecturerAttendanceService;
 import gdsc.binaryho.imhere.core.attendance.application.StudentAttendanceService;
-import gdsc.binaryho.imhere.core.attendance.application.StudentRecentAttendanceResponse;
+import gdsc.binaryho.imhere.core.attendance.model.response.StudentRecentAttendanceResponse;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
 import gdsc.binaryho.imhere.core.attendance.model.response.LecturerAttendanceResponse;
 import gdsc.binaryho.imhere.core.attendance.model.response.StudentAttendanceResponse;

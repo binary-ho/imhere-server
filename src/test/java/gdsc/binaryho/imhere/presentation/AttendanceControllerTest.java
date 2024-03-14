@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import gdsc.binaryho.imhere.core.attendance.application.LecturerAttendanceService;
 import gdsc.binaryho.imhere.core.attendance.application.StudentAttendanceService;
-import gdsc.binaryho.imhere.core.attendance.application.StudentRecentAttendanceResponse;
+import gdsc.binaryho.imhere.core.attendance.model.response.StudentRecentAttendanceResponse;
 import gdsc.binaryho.imhere.core.attendance.controller.AttendanceController;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
 import gdsc.binaryho.imhere.core.attendance.model.response.LecturerAttendanceResponse;

@@ -1,4 +1,4 @@
-package gdsc.binaryho.imhere.core.attendance.application;
+package gdsc.binaryho.imhere.core.attendance.model.response;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;

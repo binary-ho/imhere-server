@@ -9,6 +9,7 @@ import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededExce
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.attendance.model.request.AttendanceRequest;
 import gdsc.binaryho.imhere.core.attendance.model.response.StudentAttendanceResponse;
+import gdsc.binaryho.imhere.core.attendance.model.response.StudentRecentAttendanceResponse;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.exception.EnrollmentNotApprovedException;
