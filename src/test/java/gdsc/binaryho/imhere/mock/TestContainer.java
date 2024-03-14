@@ -77,7 +77,7 @@ public class TestContainer {
 
         /* Attendance service 초기화 */
         lecturerAttendanceService = new LecturerAttendanceService(
-            attendanceRepository, seoulDateTimeHolder, authenticationHelper
+            attendanceRepository, lectureRepository, seoulDateTimeHolder, authenticationHelper
         );
 
         studentAttendanceService = new StudentAttendanceService(openLectureService,

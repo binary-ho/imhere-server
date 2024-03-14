@@ -44,7 +44,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
 
 @SpringBootTest
 public class LecturerAttendanceServiceTest {
@@ -56,10 +58,14 @@ public class LecturerAttendanceServiceTest {
     @Mock
     LectureRepository lectureRepository;
 
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+
     OpenLectureCacheRepository openLectureCacheRepository;
 
     OpenLectureService openLectureService;
     LecturerAttendanceService lecturerAttendanceService;
+    StudentAttendanceService studentAttendanceService;
 
     TestContainer testContainer;
 
@@ -69,9 +75,11 @@ public class LecturerAttendanceServiceTest {
             .enrollmentInfoRepository(enrollmentRepository)
             .attendanceRepository(attendanceRepository)
             .lectureRepository(lectureRepository)
+            .applicationEventPublisher(applicationEventPublisher)
             .build();
         openLectureCacheRepository = testContainer.openLectureCacheRepository;
         lecturerAttendanceService = testContainer.lecturerAttendanceService;
+        studentAttendanceService = testContainer.studentAttendanceService;
         openLectureService = testContainer.openLectureService;
     }
 
@@ -90,7 +98,7 @@ public class LecturerAttendanceServiceTest {
         openLectureCacheRepository.cache(new OpenLecture(MOCK_OPEN_LECTURE.getId(), MOCK_OPEN_LECTURE.getLectureName(),
             MOCK_OPEN_LECTURE.getLecturerName(), ATTENDANCE_NUMBER));
 
-        lecturerAttendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId());
+        studentAttendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId());
 
         // then
         verify(attendanceRepository, times(1)).save(any());
@@ -115,7 +123,7 @@ public class LecturerAttendanceServiceTest {
 
         // then
         assertThatThrownBy(
-            () -> lecturerAttendanceService.takeAttendance(request, MOCK_CLOSED_LECTURE.getId()))
+            () -> studentAttendanceService.takeAttendance(request, MOCK_CLOSED_LECTURE.getId()))
             .isInstanceOf(LectureNotOpenException.class);
     }
 
@@ -135,7 +143,7 @@ public class LecturerAttendanceServiceTest {
         assertAll(
             () -> assertThat(attendanceNumber).isEqualTo(null),
             () -> assertThatThrownBy(
-                () -> lecturerAttendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId()))
+                () -> studentAttendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId()))
                 .isInstanceOf(AttendanceTimeExceededException.class)
         );
     }
@@ -156,7 +164,7 @@ public class LecturerAttendanceServiceTest {
 
         // then
         assertThatThrownBy(
-            () -> lecturerAttendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId()))
+            () -> studentAttendanceService.takeAttendance(request, MOCK_OPEN_LECTURE.getId()))
             .isInstanceOf(AttendanceNumberIncorrectException.class);
     }
 

@@ -5,7 +5,6 @@ import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.ATTENDANCE_NUM
 import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.DISTANCE;
 import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.MILLISECONDS;
 import static gdsc.binaryho.imhere.mock.fixture.AttendanceFixture.MOCK_ATTENDANCE;
-import static gdsc.binaryho.imhere.mock.fixture.LectureFixture.MOCK_LECTURE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -80,21 +79,19 @@ public class AttendanceControllerTest {
             )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.lectureName").value(MOCK_LECTURE.getLectureName()))
-            .andExpect(jsonPath("$.lecturerName").value(MOCK_LECTURE.getLecturerName()))
 
-            .andExpect(jsonPath("$.attendanceInfos").isNotEmpty())
-            .andExpect(jsonPath("$.attendanceInfos[0].univId").value(
+            .andExpect(jsonPath("$.attendances").isNotEmpty())
+            .andExpect(jsonPath("$.attendances[0].univId").value(
                 MOCK_ATTENDANCE.getStudent().getUnivId()))
             .andExpect(
-                jsonPath("$.attendanceInfos[0].name").value(MOCK_ATTENDANCE.getStudent().getName()))
+                jsonPath("$.attendances[0].name").value(MOCK_ATTENDANCE.getStudent().getName()))
             .andExpect(
-                jsonPath("$.attendanceInfos[0].distance").value(MOCK_ATTENDANCE.getDistance()))
+                jsonPath("$.attendances[0].distance").value(MOCK_ATTENDANCE.getDistance()))
             .andExpect(
-                jsonPath("$.attendanceInfos[0].accuracy").value(MOCK_ATTENDANCE.getAccuracy()))
+                jsonPath("$.attendances[0].accuracy").value(MOCK_ATTENDANCE.getAccuracy()))
             .andExpect(result -> {
                 String timestamp = JsonPath.read(result.getResponse().getContentAsString(),
-                    "$.attendanceInfos[0].timestamp");
+                    "$.attendances[0].timestamp");
                 assertThat(MOCK_ATTENDANCE.getTimestamp().toString()).contains(timestamp);
             });
     }
@@ -120,22 +117,20 @@ public class AttendanceControllerTest {
             )
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.lectureName").value(MOCK_LECTURE.getLectureName()))
-            .andExpect(jsonPath("$.lecturerName").value(MOCK_LECTURE.getLecturerName()))
 
-            .andExpect(jsonPath("$.attendanceInfos").isNotEmpty())
-            .andExpect(jsonPath("$.attendanceInfos[0].univId").value(
+            .andExpect(jsonPath("$.attendances").isNotEmpty())
+            .andExpect(jsonPath("$.attendances[0].univId").value(
                 MOCK_ATTENDANCE.getStudent().getUnivId()))
             .andExpect(
-                jsonPath("$.attendanceInfos[0].name").value(MOCK_ATTENDANCE.getStudent().getName()))
+                jsonPath("$.attendances[0].name").value(MOCK_ATTENDANCE.getStudent().getName()))
             .andExpect(
-                jsonPath("$.attendanceInfos[0].distance").value(MOCK_ATTENDANCE.getDistance()))
+                jsonPath("$.attendances[0].distance").value(MOCK_ATTENDANCE.getDistance()))
             .andExpect(
-                jsonPath("$.attendanceInfos[0].accuracy").value(MOCK_ATTENDANCE.getAccuracy()))
+                jsonPath("$.attendances[0].accuracy").value(MOCK_ATTENDANCE.getAccuracy()))
 
             .andExpect(result -> {
                 String timestamp = JsonPath.read(result.getResponse().getContentAsString(),
-                    "$.attendanceInfos[0].timestamp");
+                    "$.attendances[0].timestamp");
                 assertThat(MOCK_ATTENDANCE.getTimestamp().toString()).contains(timestamp);
             });
     }
