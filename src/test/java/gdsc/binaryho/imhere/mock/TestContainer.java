@@ -1,6 +1,8 @@
 package gdsc.binaryho.imhere.mock;
 
-import gdsc.binaryho.imhere.core.attendance.application.AttendanceService;
+import gdsc.binaryho.imhere.core.attendance.application.LecturerAttendanceService;
+import gdsc.binaryho.imhere.core.attendance.application.StudentAttendanceService;
+import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceHistoryCacheRepository;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
 import gdsc.binaryho.imhere.core.auth.application.AuthService;
 import gdsc.binaryho.imhere.core.auth.application.EmailVerificationService;
@@ -15,6 +17,7 @@ import gdsc.binaryho.imhere.core.lecture.application.port.AttendeeCacheRepositor
 import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
+import gdsc.binaryho.imhere.mock.fakerepository.FakeAttendanceHistoryCacheRepository;
 import gdsc.binaryho.imhere.mock.fakerepository.FakeAttendeeCacheRepository;
 import gdsc.binaryho.imhere.mock.fakerepository.FakeOpenLectureCacheRepository;
 import gdsc.binaryho.imhere.mock.fakerepository.FakeVerificationCodeRepository;
@@ -26,16 +29,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class TestContainer {
 
-    public final OpenLectureCacheRepository openLectureCacheRepository = new FakeOpenLectureCacheRepository();
-    public final AttendeeCacheRepository attendeeCacheRepository = new FakeAttendeeCacheRepository();
-    public final VerificationCodeRepository verificationCodeRepository = new FakeVerificationCodeRepository();
-
     public final AuthService authService;
     public final EmailVerificationService emailVerificationService;
     public final LectureService lectureService;
-    public final AttendanceService attendanceService;
+    public final LecturerAttendanceService lecturerAttendanceService;
+    public final StudentAttendanceService studentAttendanceService;
     public final OpenLectureService openLectureService;
     public final EnrollmentService enrollmentService;
+
+    public final OpenLectureCacheRepository openLectureCacheRepository = new FakeOpenLectureCacheRepository();
+    public final AttendeeCacheRepository attendeeCacheRepository = new FakeAttendeeCacheRepository();
+    public final VerificationCodeRepository verificationCodeRepository = new FakeVerificationCodeRepository();
+    private final AttendanceHistoryCacheRepository attendanceHistoryCacheRepository = new FakeAttendanceHistoryCacheRepository();
 
     public boolean isMailSent = false;
     private final MailSender mailSender = (recipient, verificationCode) -> isMailSent = true;
@@ -54,7 +59,8 @@ public class TestContainer {
         ApplicationEventPublisher applicationEventPublisher) {
 
         /* EmailVerificationService 초기화 */
-        emailVerificationService = new EmailVerificationService(mailSender, emailFormValidator, verificationCodeRepository);
+        emailVerificationService = new EmailVerificationService(mailSender, emailFormValidator,
+            verificationCodeRepository);
 
         /* AuthService 초기화 */
         authService = new AuthService(
@@ -65,17 +71,25 @@ public class TestContainer {
         openLectureService = new OpenLectureService(openLectureCacheRepository);
 
         enrollmentService = new EnrollmentService(
-            authenticationHelper, openLectureService, lectureRepository, enrollmentInfoRepository, applicationEventPublisher
+            authenticationHelper, openLectureService, lectureRepository, enrollmentInfoRepository,
+            applicationEventPublisher
         );
 
-        /* Attendance ervice 초기화 */
-        attendanceService = new AttendanceService(
-            authenticationHelper, openLectureService, attendanceRepository, enrollmentInfoRepository, seoulDateTimeHolder
+        /* Attendance service 초기화 */
+        lecturerAttendanceService = new LecturerAttendanceService(
+            attendanceRepository, seoulDateTimeHolder, authenticationHelper
+        );
+
+        studentAttendanceService = new StudentAttendanceService(openLectureService,
+            attendanceRepository, enrollmentInfoRepository, attendanceHistoryCacheRepository,
+            applicationEventPublisher, seoulDateTimeHolder, authenticationHelper
         );
 
         /* LectureService 초기화 */
         lectureService = new LectureService(
-            authenticationHelper, lectureRepository, enrollmentInfoRepository, openLectureCacheRepository, attendeeCacheRepository, applicationEventPublisher, seoulDateTimeHolder
+            authenticationHelper, lectureRepository, enrollmentInfoRepository,
+            openLectureCacheRepository, attendeeCacheRepository, applicationEventPublisher,
+            seoulDateTimeHolder
         );
     }
 }
