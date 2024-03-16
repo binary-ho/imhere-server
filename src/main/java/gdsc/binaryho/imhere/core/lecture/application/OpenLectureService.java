@@ -5,6 +5,7 @@ import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheReposi
 import gdsc.binaryho.imhere.core.lecture.domain.AttendeeCacheEvent;
 import gdsc.binaryho.imhere.core.lecture.domain.OpenLecture;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -30,10 +31,15 @@ public class OpenLectureService {
         return openLectureCacheRepository.findAttendanceNumber(lectureId);
     }
 
+    @Transactional(readOnly = true)
+    public Set<Long> findAllOpenLectureIdByStudentId(Long studentId) {
+        return attendeeCacheRepository.findAllAttendLectureId(studentId);
+    }
+
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void cache(AttendeeCacheEvent event) {
+    public void cacheStudent(AttendeeCacheEvent event) {
         attendeeCacheRepository.cache(event.getLectureId(), event.getStudentIds());
     }
 }

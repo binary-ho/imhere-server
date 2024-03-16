@@ -4,7 +4,6 @@ import gdsc.binaryho.imhere.core.enrollment.EnrollmentInfo;
 import gdsc.binaryho.imhere.core.enrollment.EnrollmentState;
 import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoRepository;
 import gdsc.binaryho.imhere.core.lecture.LectureState;
-import gdsc.binaryho.imhere.core.lecture.application.port.AttendeeCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.application.port.OpenLectureCacheRepository;
 import gdsc.binaryho.imhere.core.lecture.domain.AttendeeCacheEvent;
 import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
@@ -41,8 +40,8 @@ public class LectureService {
     private final AuthenticationHelper authenticationHelper;
     private final LectureRepository lectureRepository;
     private final EnrollmentInfoRepository enrollmentInfoRepository;
+    private final OpenLectureService openLectureService;
     private final OpenLectureCacheRepository openLectureCacheRepository;
-    private final AttendeeCacheRepository attendeeCacheRepository;
 
     private final ApplicationEventPublisher eventPublisher;
 
@@ -95,7 +94,7 @@ public class LectureService {
     }
 
     private OpenLectures findCachedOpenLectures(Long studentId) {
-        Set<Long> lectureIds = attendeeCacheRepository.findAllAttendLectureId(studentId);
+        Set<Long> lectureIds = openLectureService.findAllOpenLectureIdByStudentId(studentId);
 
         List<OpenLecture> openLectures = lectureIds.stream()
             .map(openLectureCacheRepository::find)
