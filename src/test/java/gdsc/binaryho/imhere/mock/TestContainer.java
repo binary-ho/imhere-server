@@ -68,7 +68,8 @@ public class TestContainer {
         );
 
         /* OpenLectureService 초기화 */
-        openLectureService = new OpenLectureService(openLectureCacheRepository, attendeeCacheRepository);
+        openLectureService = new OpenLectureService(openLectureCacheRepository,
+            attendeeCacheRepository);
 
         enrollmentService = new EnrollmentService(
             authenticationHelper, openLectureService, lectureRepository, enrollmentInfoRepository,
@@ -88,7 +89,7 @@ public class TestContainer {
         /* LectureService 초기화 */
         lectureService = new LectureService(
             authenticationHelper, lectureRepository, enrollmentInfoRepository,
-            openLectureCacheRepository, attendeeCacheRepository, applicationEventPublisher,
+            openLectureService, openLectureCacheRepository, applicationEventPublisher,
             seoulDateTimeHolder
         );
     }

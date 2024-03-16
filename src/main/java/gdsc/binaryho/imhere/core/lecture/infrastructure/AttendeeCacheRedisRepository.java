@@ -22,7 +22,7 @@ public class AttendeeCacheRedisRepository implements AttendeeCacheRepository {
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public Boolean isStudentLectureExist(Long studentId, Long lectureId) {
+    public Boolean isStudentOpenLectureExist(Long studentId, Long lectureId) {
         Set<Long> openLectureIds = findAllAttendLectureId(studentId);
         return openLectureIds.contains(lectureId);
     }

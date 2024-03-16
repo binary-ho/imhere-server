@@ -32,7 +32,7 @@ public class AttendeeCacheServiceTest {
     void Attendee_정보를_저장할_수_있다() {
         // given
         StudentIds studentIds = new StudentIds(MOCK_STUDENT.getId());
-        openLectureService.cache(new AttendeeCacheEvent(MOCK_LECTURE.getId(), studentIds));
+        openLectureService.cacheStudent(new AttendeeCacheEvent(MOCK_LECTURE.getId(), studentIds));
 
         // when
         Set<Long> lectureIds = attendeeCacheRepository.findAllAttendLectureId(MOCK_STUDENT.getId());
