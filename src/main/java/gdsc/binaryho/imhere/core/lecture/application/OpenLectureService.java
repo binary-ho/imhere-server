@@ -36,6 +36,11 @@ public class OpenLectureService {
         return attendeeCacheRepository.findAllAttendLectureId(studentId);
     }
 
+    @Transactional(readOnly = true)
+    public Boolean isStudentOpenLectureExist(Long studentId, Long lectureId) {
+        return attendeeCacheRepository.isStudentOpenLectureExist(studentId, lectureId);
+    }
+
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)

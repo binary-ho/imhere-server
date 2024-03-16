@@ -82,7 +82,7 @@ public class TestContainer {
         );
 
         studentAttendanceService = new StudentAttendanceService(openLectureService,
-            attendanceRepository, enrollmentInfoRepository, attendanceHistoryCacheRepository,
+            lectureRepository, attendanceRepository, enrollmentInfoRepository, attendanceHistoryCacheRepository,
             applicationEventPublisher, seoulDateTimeHolder, authenticationHelper
         );
 

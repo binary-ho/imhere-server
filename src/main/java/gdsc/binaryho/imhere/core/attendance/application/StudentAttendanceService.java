@@ -1,8 +1,8 @@
 package gdsc.binaryho.imhere.core.attendance.application;
 
 
-import gdsc.binaryho.imhere.core.attendance.domain.Attendance;
 import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceHistoryCacheRepository;
+import gdsc.binaryho.imhere.core.attendance.domain.Attendance;
 import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistory;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectException;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
@@ -17,7 +17,9 @@ import gdsc.binaryho.imhere.core.enrollment.infrastructure.EnrollmentInfoReposit
 import gdsc.binaryho.imhere.core.lecture.LectureState;
 import gdsc.binaryho.imhere.core.lecture.application.OpenLectureService;
 import gdsc.binaryho.imhere.core.lecture.domain.Lecture;
+import gdsc.binaryho.imhere.core.lecture.exception.LectureNotFoundException;
 import gdsc.binaryho.imhere.core.lecture.exception.LectureNotOpenException;
+import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Member;
 import gdsc.binaryho.imhere.security.util.AuthenticationHelper;
 import gdsc.binaryho.imhere.util.SeoulDateTimeHolder;
@@ -39,6 +41,7 @@ public class StudentAttendanceService {
 
     private final OpenLectureService openLectureService;
 
+    private final LectureRepository lectureRepository;
     private final AttendanceRepository attendanceRepository;
     private final EnrollmentInfoRepository enrollmentRepository;
     private final AttendanceHistoryCacheRepository attendanceHistoryCacheRepository;
@@ -53,31 +56,15 @@ public class StudentAttendanceService {
     @Transactional
     public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) {
         Member currentStudent = authenticationHelper.getCurrentMember();
-        EnrollmentInfo enrollmentInfo = enrollmentRepository
-            .findByMemberIdAndLectureIdAndEnrollmentState(currentStudent.getId(), lectureId,
-                EnrollmentState.APPROVAL)
-            .orElseThrow(() -> EnrollmentNotApprovedException.EXCEPTION);
 
-        validateLectureOpen(enrollmentInfo);
-        validateAttendanceNumber(enrollmentInfo, attendanceRequest.getAttendanceNumber());
+        if (isOpenLectureCacheExist(currentStudent.getId(), lectureId)) {
+            Lecture lecture = lectureRepository.findById(lectureId)
+                .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
+            attend(attendanceRequest, currentStudent, lecture);
+            return;
+        }
 
-        attend(attendanceRequest, enrollmentInfo);
-    }
-
-    @Transactional
-    public void takeAttendanceVer2(AttendanceRequest attendanceRequest, Long lectureId) {
-        Member currentStudent = authenticationHelper.getCurrentMember();
-
-
-        EnrollmentInfo enrollmentInfo = enrollmentRepository
-            .findByMemberIdAndLectureIdAndEnrollmentState(currentStudent.getId(), lectureId,
-                EnrollmentState.APPROVAL)
-            .orElseThrow(() -> EnrollmentNotApprovedException.EXCEPTION);
-
-        validateLectureOpen(enrollmentInfo);
-        validateAttendanceNumber(enrollmentInfo, attendanceRequest.getAttendanceNumber());
-
-        attend(attendanceRequest, enrollmentInfo);
+        attendWithEnrollmentInfo(attendanceRequest, lectureId, currentStudent);
     }
 
     @Transactional(readOnly = true)
@@ -105,6 +92,20 @@ public class StudentAttendanceService {
                 lectureId, studentId, timestamp, timestamp.plusDays(1));
 
         return new StudentAttendanceResponse(attendances);
+    }
+
+    private void attendWithEnrollmentInfo(AttendanceRequest attendanceRequest, Long lectureId,
+        Member currentStudent) {
+        EnrollmentInfo enrollmentInfo = enrollmentRepository
+            .findByMemberIdAndLectureIdAndEnrollmentState(currentStudent.getId(), lectureId,
+                EnrollmentState.APPROVAL)
+            .orElseThrow(() -> EnrollmentNotApprovedException.EXCEPTION);
+        validateLectureOpen(enrollmentInfo);
+        attend(attendanceRequest, enrollmentInfo.getMember(), enrollmentInfo.getLecture());
+    }
+
+    private boolean isOpenLectureCacheExist(Long studentId, Long lectureId) {
+        return openLectureService.isStudentOpenLectureExist(studentId, lectureId);
     }
 
     private List<String> getRecentAttendanceTimestamps(Long lectureId, Long studentId) {
@@ -140,8 +141,7 @@ public class StudentAttendanceService {
         }
     }
 
-    private void validateAttendanceNumber(EnrollmentInfo enrollmentInfo, int attendanceNumber) {
-        long lectureId = enrollmentInfo.getLecture().getId();
+    private void validateAttendanceNumber(Long lectureId, int attendanceNumber) {
         Integer actualAttendanceNumber = openLectureService.findAttendanceNumber(lectureId);
 
         validateAttendanceNumberNotTimeOut(actualAttendanceNumber);
@@ -160,7 +160,22 @@ public class StudentAttendanceService {
 
         attendanceRepository.save(attendance);
         publishStudentAttendedEvent(attendance, lecture, student);
-        logAttendanceHistory(enrollmentInfo, attendance);
+        logAttendanceHistory(enrollmentInfo.getMember(), attendance);
+    }
+
+    private void attend(AttendanceRequest attendanceRequest, Member student, Lecture lecture) {
+        validateAttendanceNumber(lecture.getId(), attendanceRequest.getAttendanceNumber());
+
+        Attendance attendance = Attendance.createAttendance(
+            student, lecture,
+            attendanceRequest.getDistance(),
+            attendanceRequest.getAccuracy(),
+            seoulDateTimeHolder.from(attendanceRequest.getMilliseconds())
+        );
+
+        attendanceRepository.save(attendance);
+        publishStudentAttendedEvent(attendance, lecture, student);
+        logAttendanceHistory(student, attendance);
     }
 
     private void publishStudentAttendedEvent(
@@ -170,12 +185,11 @@ public class StudentAttendanceService {
             new StudentAttendedEvent(lecture.getId(), student.getId(), timestamp));
     }
 
-    private void logAttendanceHistory(EnrollmentInfo enrollmentInfo, Attendance attendance) {
+    private void logAttendanceHistory(Member student, Attendance attendance) {
         Lecture lecture = attendance.getLecture();
-        Member attendMember = enrollmentInfo.getMember();
         log.info("[출석 완료] {}({}) , 학생 : {} ({})",
             lecture::getLectureName, lecture::getId,
-            attendMember::getUnivId, attendMember::getName);
+            student::getUnivId, student::getName);
     }
 
     private void validateAttendanceNumberNotTimeOut(Integer attendanceNumber) {
