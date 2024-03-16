@@ -21,6 +21,7 @@ public class EmailVerificationService {
 
     private final VerificationCodeRepository verificationCodeRepository;
 
+    @Transactional
     public void sendVerificationCodeByEmail(String recipient) {
         emailFormValidator.validateEmailForm(recipient);
 

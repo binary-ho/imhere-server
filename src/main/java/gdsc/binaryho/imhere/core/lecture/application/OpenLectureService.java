@@ -20,10 +20,12 @@ public class OpenLectureService {
     private final OpenLectureCacheRepository openLectureCacheRepository;
     private final AttendeeCacheRepository attendeeCacheRepository;
 
+    @Transactional(readOnly = true)
     public Optional<OpenLecture> find(Long lectureId) {
         return openLectureCacheRepository.find(lectureId);
     }
 
+    @Transactional(readOnly = true)
     public Integer findAttendanceNumber(Long lectureId) {
         return openLectureCacheRepository.findAttendanceNumber(lectureId);
     }

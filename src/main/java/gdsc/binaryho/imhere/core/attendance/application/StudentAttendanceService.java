@@ -68,6 +68,7 @@ public class StudentAttendanceService {
     public void takeAttendanceVer2(AttendanceRequest attendanceRequest, Long lectureId) {
         Member currentStudent = authenticationHelper.getCurrentMember();
 
+
         EnrollmentInfo enrollmentInfo = enrollmentRepository
             .findByMemberIdAndLectureIdAndEnrollmentState(currentStudent.getId(), lectureId,
                 EnrollmentState.APPROVAL)
