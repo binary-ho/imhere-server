@@ -13,6 +13,12 @@ public class FakeAttendeeCacheRepository implements AttendeeCacheRepository {
     private final Map<Long, Set<Long>> data = new HashMap<>();
 
     @Override
+    public Boolean isStudentLectureExist(Long studentId, Long lectureId) {
+        Set<Long> openLectureIds = findAllAttendLectureId(studentId);
+        return openLectureIds.contains(lectureId);
+    }
+
+    @Override
     public Set<Long> findAllAttendLectureId(Long studentId) {
         return data.getOrDefault(
             studentId, Collections.emptySet());

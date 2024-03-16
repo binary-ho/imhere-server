@@ -5,6 +5,8 @@ import java.util.Set;
 
 public interface AttendeeCacheRepository {
 
+    Boolean isStudentLectureExist(Long studentId, Long lectureId);
+
     Set<Long> findAllAttendLectureId(Long studentId);
 
     void cache(Long lectureId, StudentIds studentIds);
