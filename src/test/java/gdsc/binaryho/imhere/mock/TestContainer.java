@@ -68,7 +68,7 @@ public class TestContainer {
         );
 
         /* OpenLectureService 초기화 */
-        openLectureService = new OpenLectureService(openLectureCacheRepository);
+        openLectureService = new OpenLectureService(openLectureCacheRepository, attendeeCacheRepository);
 
         enrollmentService = new EnrollmentService(
             authenticationHelper, openLectureService, lectureRepository, enrollmentInfoRepository,

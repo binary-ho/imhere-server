@@ -38,9 +38,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudentAttendanceService {
 
     private final OpenLectureService openLectureService;
+
     private final AttendanceRepository attendanceRepository;
     private final EnrollmentInfoRepository enrollmentRepository;
     private final AttendanceHistoryCacheRepository attendanceHistoryCacheRepository;
+
     private final ApplicationEventPublisher eventPublisher;
 
     private final SeoulDateTimeHolder seoulDateTimeHolder;
@@ -51,6 +53,21 @@ public class StudentAttendanceService {
     @Transactional
     public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) {
         Member currentStudent = authenticationHelper.getCurrentMember();
+        EnrollmentInfo enrollmentInfo = enrollmentRepository
+            .findByMemberIdAndLectureIdAndEnrollmentState(currentStudent.getId(), lectureId,
+                EnrollmentState.APPROVAL)
+            .orElseThrow(() -> EnrollmentNotApprovedException.EXCEPTION);
+
+        validateLectureOpen(enrollmentInfo);
+        validateAttendanceNumber(enrollmentInfo, attendanceRequest.getAttendanceNumber());
+
+        attend(attendanceRequest, enrollmentInfo);
+    }
+
+    @Transactional
+    public void takeAttendanceVer2(AttendanceRequest attendanceRequest, Long lectureId) {
+        Member currentStudent = authenticationHelper.getCurrentMember();
+
         EnrollmentInfo enrollmentInfo = enrollmentRepository
             .findByMemberIdAndLectureIdAndEnrollmentState(currentStudent.getId(), lectureId,
                 EnrollmentState.APPROVAL)
