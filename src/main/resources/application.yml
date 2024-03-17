@@ -7,11 +7,20 @@ spring:
   jpa:
     open-in-view: false
 
-jwt:
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ENC(18FNZ6cjSHBH889DgERn3ZscMgAY8R02b6DBg9l47Xs=)
+            client-secret: ENC(hUvBA0g45hgzXQ2Ia/ovO8dQWDR67BsVt6Um0h1cSh/qrwKaWdVND06XApXIJMSaZy5Kem6nJx4=)
+
+token:
   secret: ENC(Wi5BD1R9VNidIJj2xI10Ww==)
   prefix: "Bearer "
   header-string: "Authorization"
   access-token-prefix: "Token "
+  access-token-expire-minute: 30
 
 # SMTP
 mail:

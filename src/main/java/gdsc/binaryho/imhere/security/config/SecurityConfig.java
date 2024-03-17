@@ -2,14 +2,17 @@ package gdsc.binaryho.imhere.security.config;
 
 
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
-import gdsc.binaryho.imhere.security.filter.JwtAuthenticationFilter;
 import gdsc.binaryho.imhere.security.filter.JwtAuthorizationFilter;
-import gdsc.binaryho.imhere.security.jwt.TokenService;
+import gdsc.binaryho.imhere.security.jwt.TokenPropertyHolder;
+import gdsc.binaryho.imhere.security.jwt.TokenUtil;
+import gdsc.binaryho.imhere.security.oauth.CustomOAuth2SuccessHandler;
+import gdsc.binaryho.imhere.security.oauth.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,7 +25,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.channel.ChannelProcessingFilter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
@@ -35,8 +38,11 @@ public class SecurityConfig {
     private final MemberRepository memberRepository;
 
     private final CorsFilter corsFilter;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
-    private final TokenService tokenService;
+    private final TokenUtil tokenUtil;
+    private final TokenPropertyHolder tokenPropertyHolder;
 
     @Value("${actuator.username}")
     private String ACTUATOR_USERNAME;
@@ -89,9 +95,16 @@ public class SecurityConfig {
             .formLogin().disable()
             .httpBasic().disable()
 
-            .authorizeRequests()
+            .oauth2Login(configurer -> {
+                    configurer.userInfoEndpoint(
+                        endpoint -> endpoint.userService(customOAuth2UserService));
+                    configurer.successHandler(customOAuth2SuccessHandler);
+                    configurer.failureHandler(setStatusUnauthorized());
+                }
+            )
 
-            .antMatchers("/login", "/logout", "/member/**",
+            .authorizeRequests()
+            .antMatchers("/login/**", "/logout", "/member/**",
                 "/swagger*/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**")
             .permitAll()
 
@@ -103,11 +116,10 @@ public class SecurityConfig {
 
             .anyRequest().authenticated();
 
-        http.addFilterBefore(new JwtAuthenticationFilter(
-            authenticationManager(authenticationConfiguration), tokenService), UsernamePasswordAuthenticationFilter.class);
-
         http.addFilterBefore(new JwtAuthorizationFilter(
-            authenticationManager(authenticationConfiguration), tokenService, memberRepository), BasicAuthenticationFilter.class);
+                authenticationManager(authenticationConfiguration),
+                tokenUtil, memberRepository, tokenPropertyHolder),
+            BasicAuthenticationFilter.class);
 
         return http.build();
     }
@@ -120,5 +132,10 @@ public class SecurityConfig {
             .build();
 
         return new InMemoryUserDetailsManager(userDetails);
+    }
+
+    private AuthenticationFailureHandler setStatusUnauthorized() {
+        int unauthorized = HttpStatus.UNAUTHORIZED.value();
+        return (request, response, exception) -> response.setStatus(unauthorized);
     }
 }

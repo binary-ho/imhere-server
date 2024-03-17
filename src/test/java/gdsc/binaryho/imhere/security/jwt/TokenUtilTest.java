@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.mock.FixedSeoulTimeHolder;
-import gdsc.binaryho.imhere.mock.TestSecretHolder;
+import gdsc.binaryho.imhere.security.FakeTokenPropertyHolder;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,24 +20,19 @@ import java.util.Date;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
-public class TokenServiceTest {
+public class TokenUtilTest {
 
     private static final Role ROLE = MOCK_STUDENT.getRole();
     private static final String SECRET = "TEST_SECRET";
     private static final long ACCESS_TOKEN_EXPIRATION_TIME = 1000L * 60L * 20L;
     private static final long TIME_NOW = FixedSeoulTimeHolder.FIXED_MILLISECONDS;
 
-//    public static long getTimeNowByMillis() {
-//        ZonedDateTime seoulTimeNow = ZonedDateTime.now(ZoneId.of("Asia/Seoul"));
-//        return seoulTimeNow.toInstant().toEpochMilli();
-//    }
-
-    SecretHolder secretHolder = new TestSecretHolder(SECRET);
-    TokenService tokenService = new TokenService(secretHolder, new FixedSeoulTimeHolder());
+    TokenPropertyHolder tokenPropertyHolder = new FakeTokenPropertyHolder(SECRET, Duration.ofDays(999L), "prefix");
+    TokenUtil tokenUtil = new TokenUtil(new FixedSeoulTimeHolder(), tokenPropertyHolder);
 
     @Test
     void 이메일과_권한을_넣어_토큰을_만들_수_있다() throws JsonProcessingException {
-        Token token = tokenService.createToken(UNIV_ID, ROLE.getKey());
+        Token token = tokenUtil.createToken(UNIV_ID, ROLE.getKey());
         String accessToken = token.getAccessToken();
 
         String[] splitToken = accessToken.split("\\.");
@@ -46,15 +41,28 @@ public class TokenServiceTest {
         JsonNode payloadJson = new ObjectMapper().readTree(payload);
         String subject = payloadJson.get("sub").asText();
         String role = payloadJson.get("role").asText();
-//        Claims claims = Jwts.parser()
-//            .setSigningKey(secretHolder.getSecret())
-//            .set
-//            .setAllowedClockSkewSeconds(Long.MAX_VALUE)
-//            .parseClaimsJws(accessToken)
-//            .getBody();
 
         assertAll(
             () -> assertThat(subject).isEqualTo(UNIV_ID),
+            () -> assertThat(role).isEqualTo(ROLE.getKey())
+        );
+    }
+
+    @Test
+    void 맴버_아이디와_권한을_넣어_토큰을_만들_수_있다() throws JsonProcessingException {
+        Long id = MOCK_STUDENT.getId();
+        Token token = tokenUtil.createToken(id, ROLE);
+        String accessToken = token.getAccessToken();
+
+        String[] splitToken = accessToken.split("\\.");
+        String payload = new String(Base64.getDecoder().decode(splitToken[1]));
+        System.out.println(payload);
+        JsonNode payloadJson = new ObjectMapper().readTree(payload);
+        Long subject = payloadJson.get("sub").asLong();
+        String role = payloadJson.get("role").asText();
+
+        assertAll(
+            () -> assertThat(subject).isEqualTo(id),
             () -> assertThat(role).isEqualTo(ROLE.getKey())
         );
     }
@@ -69,14 +77,14 @@ public class TokenServiceTest {
             .setIssuedAt(new Date(TIME_NOW))
             .setExpiration(
                 new Date(TIME_NOW + ACCESS_TOKEN_EXPIRATION_TIME))
-            .signWith(SignatureAlgorithm.HS256, secretHolder.getSecret())
+            .signWith(SignatureAlgorithm.HS256, tokenPropertyHolder.getSecret())
             .compact();
         Token token = new Token(jwt);
 
         // when
         // then
         assertThat(
-            tokenService.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
+            tokenUtil.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
             .isNotNull();
     }
 
@@ -90,14 +98,14 @@ public class TokenServiceTest {
             .setIssuedAt(new Date(TIME_NOW))
             .setExpiration(
                 new Date(TIME_NOW + ACCESS_TOKEN_EXPIRATION_TIME))
-            .signWith(SignatureAlgorithm.HS256, secretHolder.getSecret())
+            .signWith(SignatureAlgorithm.HS256, tokenPropertyHolder.getSecret())
             .compact();
         Token token = new Token(jwt);
 
         // when
         // then
         assertThat(
-            tokenService.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
+            tokenUtil.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
             .isTrue();
     }
 
@@ -111,14 +119,14 @@ public class TokenServiceTest {
             .setIssuedAt(new Date(TIME_NOW))
             .setExpiration(
                 new Date(TIME_NOW - Duration.ofDays(7777L).toMillis()))
-            .signWith(SignatureAlgorithm.HS256, secretHolder.getSecret())
+            .signWith(SignatureAlgorithm.HS256, tokenPropertyHolder.getSecret())
             .compact();
         Token token = new Token(jwt);
 
         // when
         // then
         assertThat(
-            tokenService.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
+            tokenUtil.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
             .isFalse();
     }
 
@@ -130,7 +138,7 @@ public class TokenServiceTest {
         // when
         // then
         assertThat(
-            tokenService.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
+            tokenUtil.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
             .isFalse();
     }
 
@@ -142,7 +150,7 @@ public class TokenServiceTest {
         // when
         // then
         assertThat(
-            tokenService.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
+            tokenUtil.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
             .isFalse();
     }
 
@@ -154,7 +162,7 @@ public class TokenServiceTest {
         // when
         // then
         assertThat(
-            tokenService.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
+            tokenUtil.validateTokenExpirationTimeNotExpired(token.getAccessToken()))
             .isFalse();
     }
 }

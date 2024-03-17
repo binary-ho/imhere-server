@@ -2,7 +2,8 @@ package gdsc.binaryho.imhere.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gdsc.binaryho.imhere.security.jwt.Token;
-import gdsc.binaryho.imhere.security.jwt.TokenService;
+import gdsc.binaryho.imhere.security.jwt.TokenPropertyHolder;
+import gdsc.binaryho.imhere.security.jwt.TokenUtil;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -20,14 +21,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+// TODO : 사용하지 않을 예정인 클래스
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private static final String HEADER_STRING = HttpHeaders.AUTHORIZATION;
-    private static final String ACCESS_TOKEN_PREFIX = "Token ";
 
     private final AuthenticationManager authenticationManager;
-    private final TokenService tokenService;
+    private final TokenUtil tokenUtil;
+    private final TokenPropertyHolder tokenPropertyHolder;
 
     @Override
     public Authentication attemptAuthentication(
@@ -59,11 +61,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public void successfulAuthentication(HttpServletRequest request,
         HttpServletResponse response, FilterChain chain, Authentication authResult) {
 
-        String grantedAuthority = authResult.getAuthorities().stream().findAny().orElseThrow().toString();
-        Token jwtToken = tokenService.createToken(authResult.getPrincipal().toString(), grantedAuthority);
+        String grantedAuthority = authResult.getAuthorities()
+            .stream()
+            .findAny()
+            .orElseThrow()
+            .toString();
 
+        Token jwtToken = tokenUtil.createToken(authResult.getPrincipal().toString(), grantedAuthority);
+
+        String accessTokenPrefix = tokenPropertyHolder.getAccessTokenPrefix();
         response.addHeader(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.AUTHORIZATION);
-        response.addHeader(HEADER_STRING, ACCESS_TOKEN_PREFIX + jwtToken.getAccessToken());
+        response.addHeader(HEADER_STRING, accessTokenPrefix + jwtToken.getAccessToken());
     }
 
     @Override
