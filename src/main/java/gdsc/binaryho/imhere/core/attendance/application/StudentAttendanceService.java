@@ -58,14 +58,14 @@ public class StudentAttendanceService {
     public void takeAttendance(AttendanceRequest attendanceRequest, Long lectureId) {
         Member currentStudent = authenticationHelper.getCurrentMember();
 
-        if (isOpenLectureCacheExist(currentStudent.getId(), lectureId)) {
-            Lecture lecture = lectureRepository.findById(lectureId)
-                .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
-            attend(attendanceRequest, currentStudent, lecture);
+        if (isOpenLectureCacheNotExist(currentStudent.getId(), lectureId)) {
+            attendWithValidateEnrollment(attendanceRequest, currentStudent, lectureId);
             return;
         }
 
-        attendWithEnrollmentInfo(attendanceRequest, lectureId, currentStudent);
+        Lecture lecture = lectureRepository.findById(lectureId)
+            .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
+        attend(attendanceRequest, currentStudent, lecture);
     }
 
     @Transactional(readOnly = true)
@@ -95,19 +95,10 @@ public class StudentAttendanceService {
         return new StudentAttendanceResponse(attendances);
     }
 
-    private void attendWithEnrollmentInfo(AttendanceRequest attendanceRequest, Long lectureId,
-        Member currentStudent) {
-        EnrollmentInfo enrollmentInfo = enrollmentRepository
-            .findByMemberIdAndLectureIdAndEnrollmentState(currentStudent.getId(), lectureId,
-                EnrollmentState.APPROVAL)
-            .orElseThrow(() -> EnrollmentNotApprovedException.EXCEPTION);
-        validateLectureOpen(enrollmentInfo);
-        attend(attendanceRequest, enrollmentInfo.getMember(), enrollmentInfo.getLecture());
+    private boolean isOpenLectureCacheNotExist(Long studentId, Long lectureId) {
+        return !openLectureService.isStudentOpenLectureExist(studentId, lectureId);
     }
 
-    private boolean isOpenLectureCacheExist(Long studentId, Long lectureId) {
-        return openLectureService.isStudentOpenLectureExist(studentId, lectureId);
-    }
 
     private List<Attendance> findRecentAttendances(Long lectureId, Long studentId) {
         LocalDateTime now = seoulDateTimeHolder.getSeoulDateTime();
@@ -149,19 +140,20 @@ public class StudentAttendanceService {
         validateAttendanceNumberCorrect(actualAttendanceNumber, attendanceNumber);
     }
 
-    private void attend(AttendanceRequest attendanceRequest, EnrollmentInfo enrollmentInfo) {
-        Member student = enrollmentInfo.getMember();
-        Lecture lecture = enrollmentInfo.getLecture();
-        Attendance attendance = Attendance.createAttendance(
-            student, lecture,
-            attendanceRequest.getDistance(),
-            attendanceRequest.getAccuracy(),
-            seoulDateTimeHolder.from(attendanceRequest.getMilliseconds())
-        );
 
-        attendanceRepository.save(attendance);
-        publishStudentAttendedEvent(attendance, lecture, student);
-        logAttendanceHistory(enrollmentInfo.getMember(), attendance);
+    // 이거 그냥 Lecture를 확인하면 되는거 아닌가? -> 아냐
+    private void attendWithValidateEnrollment(
+        AttendanceRequest attendanceRequest, Member student, Long lectureId) {
+        EnrollmentInfo enrollmentInfo = findApprovalEnrollment(lectureId, student);
+        validateLectureOpen(enrollmentInfo);
+        attend(attendanceRequest, enrollmentInfo.getMember(), enrollmentInfo.getLecture());
+    }
+
+    private EnrollmentInfo findApprovalEnrollment(Long lectureId, Member student) {
+        return enrollmentRepository
+            .findByMemberIdAndLectureIdAndEnrollmentState(
+                student.getId(), lectureId, EnrollmentState.APPROVAL)
+            .orElseThrow(() -> EnrollmentNotApprovedException.EXCEPTION);
     }
 
     private void attend(AttendanceRequest attendanceRequest, Member student, Lecture lecture) {
