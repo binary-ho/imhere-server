@@ -1,6 +1,7 @@
 package gdsc.binaryho.imhere.mock.fakerepository;
 
 import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceHistoryCacheRepository;
+import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistories;
 import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistory;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,12 +16,13 @@ public class FakeAttendanceHistoryCacheRepository implements AttendanceHistoryCa
     private final Map<String, Set<String>> data = new HashMap<>();
 
     @Override
-    public List<AttendanceHistory> findAllByLectureIdAndStudentId(final long lectureId, final long studentId) {
-        return data.getOrDefault(
-            AttendanceHistory.convertToKey(lectureId, studentId), Collections.emptySet())
+    public AttendanceHistories findAllByLectureIdAndStudentId(final long lectureId, final long studentId) {
+        List<AttendanceHistory> attendanceHistories = data.getOrDefault(
+                AttendanceHistory.convertToKey(lectureId, studentId), Collections.emptySet())
             .stream()
             .map(timestamp -> new AttendanceHistory(lectureId, studentId, timestamp))
             .collect(Collectors.toList());
+        return AttendanceHistories.of(attendanceHistories);
     }
 
     @Override

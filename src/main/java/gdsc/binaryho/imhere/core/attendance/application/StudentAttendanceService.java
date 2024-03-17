@@ -3,6 +3,7 @@ package gdsc.binaryho.imhere.core.attendance.application;
 
 import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceHistoryCacheRepository;
 import gdsc.binaryho.imhere.core.attendance.domain.Attendance;
+import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistories;
 import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistory;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectException;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
@@ -71,15 +72,15 @@ public class StudentAttendanceService {
     public StudentRecentAttendanceResponse getStudentRecentAttendance(Long lectureId) {
         Long studentId = authenticationHelper.getCurrentMember().getId();
 
-        List<AttendanceHistory> attendanceHistories = attendanceHistoryCacheRepository
+        AttendanceHistories attendanceHistories = attendanceHistoryCacheRepository
             .findAllByLectureIdAndStudentId(lectureId, studentId);
 
-        if (attendanceHistories.isEmpty()) {
-            List<String> timestamps = getRecentAttendanceTimestamps(lectureId, studentId);
+        if (attendanceHistories.isNotEmpty()) {
+            List<String> timestamps = getTimestamps(attendanceHistories);
             return new StudentRecentAttendanceResponse(timestamps);
         }
 
-        List<String> timestamps = getTimestamps(attendanceHistories);
+        List<String> timestamps = getRecentAttendanceTimestamps(lectureId, studentId);
         return new StudentRecentAttendanceResponse(timestamps);
     }
 
@@ -108,15 +109,6 @@ public class StudentAttendanceService {
         return openLectureService.isStudentOpenLectureExist(studentId, lectureId);
     }
 
-    private List<String> getRecentAttendanceTimestamps(Long lectureId, Long studentId) {
-        List<Attendance> attendances = findRecentAttendances(lectureId, studentId);
-        List<String> timestamps = attendances.stream()
-            .map(Attendance::getTimestamp)
-            .map(LocalDateTime::toString)
-            .collect(Collectors.toList());
-        return timestamps;
-    }
-
     private List<Attendance> findRecentAttendances(Long lectureId, Long studentId) {
         LocalDateTime now = seoulDateTimeHolder.getSeoulDateTime();
         LocalDateTime beforeRecentTime = now.minusHours(RECENT_TIME.toHours());
@@ -127,13 +119,22 @@ public class StudentAttendanceService {
         return attendances;
     }
 
-    private List<String> getTimestamps(List<AttendanceHistory> attendanceHistories) {
-        return attendanceHistories.stream()
+    private List<String> getTimestamps(AttendanceHistories attendanceHistories) {
+        return attendanceHistories.getHistories()
+            .stream()
             .map(AttendanceHistory::getTimestamp)
             .map(Objects::toString)
             .collect(Collectors.toList());
     }
 
+    private List<String> getRecentAttendanceTimestamps(Long lectureId, Long studentId) {
+        List<Attendance> attendances = findRecentAttendances(lectureId, studentId);
+        List<String> timestamps = attendances.stream()
+            .map(Attendance::getTimestamp)
+            .map(LocalDateTime::toString)
+            .collect(Collectors.toList());
+        return timestamps;
+    }
 
     private void validateLectureOpen(EnrollmentInfo enrollmentInfo) {
         if (enrollmentInfo.getLecture().getLectureState() != LectureState.OPEN) {
