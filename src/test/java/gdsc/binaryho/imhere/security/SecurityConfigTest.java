@@ -10,11 +10,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import gdsc.binaryho.imhere.core.lecture.infrastructure.LectureRepository;
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.security.jwt.Token;
 import gdsc.binaryho.imhere.security.jwt.TokenPropertyHolder;
 import gdsc.binaryho.imhere.security.jwt.TokenUtil;
+import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +37,14 @@ public class SecurityConfigTest {
     @Autowired
     private TokenUtil tokenUtil;
 
+    @Autowired
+    private TokenPropertyHolder tokenPropertyHolder;
+
     @MockBean
     private MemberRepository memberRepository;
 
-    @Autowired
-    private TokenPropertyHolder tokenPropertyHolder;
+    @MockBean
+    private LectureRepository lectureRepository;
 
     @Test
     public void 인증이_필요한_경로에_접근하면_깃허브_로그인_페이지로_Redirection_된다() throws Exception {
@@ -54,6 +59,9 @@ public class SecurityConfigTest {
     public void 토큰을_통해_인가_할_수_있다() throws Exception {
         given(memberRepository.findById(any()))
             .willReturn(Optional.of(MOCK_LECTURER));
+        given(lectureRepository.findAllByLectureStateNot(any()))
+            .willReturn(Collections.emptyList());
+
         String prefix = tokenPropertyHolder.getAccessTokenPrefix();
         Token token = tokenUtil.createToken(MOCK_LECTURER.getId(), Role.LECTURER);
 
