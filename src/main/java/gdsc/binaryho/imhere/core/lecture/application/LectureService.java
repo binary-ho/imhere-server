@@ -144,7 +144,7 @@ public class LectureService {
     }
 
     private void saveOpenLecture(Lecture lecture, int attendanceNumber) {
-        OpenLecture openLecture = OpenLecture.from(lecture, attendanceNumber);
+        OpenLecture openLecture = OpenLecture.of(lecture, attendanceNumber);
         openLectureCacheRepository.cache(openLecture);
     }
 

@@ -52,9 +52,9 @@ class AuthenticationHelperTest {
 
     @Test
     @MockSecurityContextMember(role = Role.ADMIN)
-    void 현재_로그인된_유저가_Admin인지_확인할_수_있다() {
+    void 현재_로그인된_유저의_권한을_확인할_수_있다_ADMIN() {
         try {
-            authenticationHelper.verifyMemberHasAdminRole();
+            authenticationHelper.verifyMemberHasRole(Role.ADMIN);
         } catch (PermissionDeniedException e) {
             fail();
         }
@@ -62,9 +62,19 @@ class AuthenticationHelperTest {
 
     @Test
     @MockSecurityContextMember(role = Role.LECTURER)
-    void 현재_로그인된_유저가_Admin이_아닌_경우_예외를_던진다() {
+    void 현재_로그인된_유저의_권한을_확인할_수_있다_LECTURER() {
+        try {
+            authenticationHelper.verifyMemberHasRole(Role.LECTURER);
+        } catch (PermissionDeniedException e) {
+            fail();
+        }
+    }
+
+    @Test
+    @MockSecurityContextMember(role = Role.LECTURER)
+    void 현재_로그인된_유저가_검증하는_권한을_갖지_않은_경우_예외를_발생시킨다() {
         assertThatThrownBy(
-            authenticationHelper::verifyMemberHasAdminRole
+            () -> authenticationHelper.verifyMemberHasRole(Role.ADMIN)
         ).isInstanceOf(PermissionDeniedException.class);
     }
 }

@@ -1,6 +1,6 @@
 package gdsc.binaryho.imhere.core.auth.infrastructure;
 
-import gdsc.binaryho.imhere.config.redis.RedisKeyPrefixes;
+import gdsc.binaryho.imhere.config.redis.RedisKeyConstants;
 import gdsc.binaryho.imhere.core.auth.application.port.VerificationCodeRepository;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public class VerificationCodeRedisRepository implements VerificationCodeRepository {
 
     private static final Integer VERIFICATION_CODE_EXPIRE_TIME = 10;
-    private final String KEY_PREFIX = RedisKeyPrefixes.VERIFICATION_CODE_KEY_PREFIX;
+    private final String KEY_PREFIX = RedisKeyConstants.VERIFICATION_CODE_KEY_PREFIX;
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override

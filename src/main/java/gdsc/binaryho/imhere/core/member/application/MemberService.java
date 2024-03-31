@@ -21,7 +21,7 @@ public class MemberService {
 
     @Transactional
     public void changeMemberRole(ChangeRoleRequest changeRoleRequest, String univId) {
-        authenticationHelper.verifyMemberHasAdminRole();
+        authenticationHelper.verifyMemberHasRole(Role.ADMIN);
 
         Member targetMember = memberRepository.findByUnivId(univId)
             .orElseThrow(() -> MemberNotFoundException.EXCEPTION);

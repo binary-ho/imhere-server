@@ -41,3 +41,23 @@ jobs:
           JASYPT_ENCRYPTION_PASSWORD: ${{ secrets.PROPERTY_ENCRYPTION_PASSWORD }}
         run: |
           ./gradlew build --no-build-cache
+      
+      - name: All Error Report Files 압축
+        if: ${{ failure() }}
+        run: |
+          echo "All Error Report Files 압축"
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          mkdir error_report_files
+          REPORT_DIRS=$(find . -type d -path '*/build/reports/tests/test')
+          for dir in $REPORT_DIRS; do
+            module_path=$(echo $dir | awk -F'/build/' '{print $1}' | cut -c 3-)
+            cp -r $dir error_report_files/$module_path/$(basename $(dirname $dir))
+          done
+          tar czvf error_report_files_$TIMESTAMP.tar.gz error_report_files
+
+      - name: Error Report Files를 Artifacts에 업로드
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: error_report_files
+          path: error_report_files_*.tar.gz
