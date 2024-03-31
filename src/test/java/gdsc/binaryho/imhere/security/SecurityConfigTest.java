@@ -1,5 +1,6 @@
 package gdsc.binaryho.imhere.security;
 
+import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.MOCK_LECTURER;
 import static gdsc.binaryho.imhere.mock.fixture.MemberFixture.MOCK_STUDENT;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import gdsc.binaryho.imhere.core.member.Role;
 import gdsc.binaryho.imhere.core.member.infrastructure.MemberRepository;
 import gdsc.binaryho.imhere.security.jwt.Token;
+import gdsc.binaryho.imhere.security.jwt.TokenPropertyHolder;
 import gdsc.binaryho.imhere.security.jwt.TokenUtil;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,9 @@ public class SecurityConfigTest {
     @MockBean
     private MemberRepository memberRepository;
 
+    @Autowired
+    private TokenPropertyHolder tokenPropertyHolder;
+
     @Test
     public void 인증이_필요한_경로에_접근하면_깃허브_로그인_페이지로_Redirection_된다() throws Exception {
         mockMvc.perform(post("/")
@@ -48,12 +53,14 @@ public class SecurityConfigTest {
     @Test
     public void 토큰을_통해_인가_할_수_있다() throws Exception {
         given(memberRepository.findById(any()))
-            .willReturn(Optional.of(MOCK_STUDENT));
-        Token token = tokenUtil.createToken(MOCK_STUDENT.getId(), Role.LECTURER);
+            .willReturn(Optional.of(MOCK_LECTURER));
+        String prefix = tokenPropertyHolder.getAccessTokenPrefix();
+        Token token = tokenUtil.createToken(MOCK_LECTURER.getId(), Role.LECTURER);
 
         mockMvc.perform(get("/api/lecture")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, token.getAccessToken())
+                .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, HttpHeaders.AUTHORIZATION)
+                .header(HttpHeaders.AUTHORIZATION, prefix + token.getAccessToken())
             )
             .andExpect(status().is2xxSuccessful());
     }
