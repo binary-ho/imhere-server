@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.mock.fakerepository;
 
+import gdsc.binaryho.imhere.core.attendance.application.AttendanceSaveRequestStatus;
 import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceHistoryCacheRepository;
-import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistories;
 import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistory;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,5 +28,13 @@ public class FakeAttendanceHistoryCacheRepository implements AttendanceHistoryCa
     @Override
     public void cache(AttendanceHistory attendanceHistory) {
         data.putIfAbsent(attendanceHistory.getKey(), new HashSet<>());
+    }
+
+    @Override
+    public AttendanceSaveRequestStatus getRequestStatusByLectureIdAndStudentId(
+        Long lectureId, Long studentId) {
+
+        data.getOrDefault(AttendanceHistory.convertToKey(lectureId, studentId))
+        return null;
     }
 }

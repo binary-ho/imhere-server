@@ -1,7 +1,7 @@
 package gdsc.binaryho.imhere.core.attendance.infrastructure;
 
+import gdsc.binaryho.imhere.core.attendance.application.AttendanceSaveRequestStatus;
 import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceHistoryCacheRepository;
-import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistories;
 import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistory;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -33,9 +33,17 @@ public class AttendanceRedisCacheRepository implements AttendanceHistoryCacheRep
 
     @Override
     public void cache(AttendanceHistory attendanceHistory) {
+        attendanceHistory.getAttendanceSaveRequestStatus();
         String key = attendanceHistory.getKey();
+        String savedStatus = redisTemplate.opsForValue().get(key);
         redisTemplate.opsForSet()
             .add(key, attendanceHistory.getTimestamp());
         redisTemplate.expire(key, ATTENDANCE_HISTORY_EXPIRE_HOUR, TimeUnit.HOURS);
+    }
+
+    @Override
+    public AttendanceSaveRequestStatus getRequestStatusByLectureIdAndStudentId(Long lectureId,
+        Long studentId) {
+        return null;
     }
 }

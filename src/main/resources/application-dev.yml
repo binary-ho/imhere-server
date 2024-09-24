@@ -23,9 +23,9 @@ spring:
       ddl-auto: none
       dialect: -- org.hibernate.dialect.PostgreSQLDialect
 
-    properties:
-      hibernate:
-        format_sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
 
 logging.level:
   org.hibernate.SQL: debug

@@ -1,10 +1,11 @@
 package gdsc.binaryho.imhere.core.attendance.application;
 
 
+import static gdsc.binaryho.imhere.core.attendance.application.AttendanceSaveRequestStatus.NO_REQUEST;
+import static gdsc.binaryho.imhere.core.attendance.application.AttendanceSaveRequestStatus.SUCCESS;
+
 import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceHistoryCacheRepository;
 import gdsc.binaryho.imhere.core.attendance.domain.Attendance;
-import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistories;
-import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistory;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceNumberIncorrectException;
 import gdsc.binaryho.imhere.core.attendance.exception.AttendanceTimeExceededException;
 import gdsc.binaryho.imhere.core.attendance.infrastructure.AttendanceRepository;
@@ -27,20 +28,18 @@ import gdsc.binaryho.imhere.util.SeoulDateTimeHolder;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Log4j2
 @Service
 @RequiredArgsConstructor
 public class StudentAttendanceService {
 
     private final OpenLectureService openLectureService;
+    private final AttendanceSaveService attendanceSaveService;
 
     private final LectureRepository lectureRepository;
     private final AttendanceRepository attendanceRepository;
@@ -69,19 +68,27 @@ public class StudentAttendanceService {
     }
 
     @Transactional(readOnly = true)
-    public StudentRecentAttendanceResponse getStudentRecentAttendance(Long lectureId) {
+    public StudentRecentAttendanceResponse getStudentRecentAttendanceStatus(Long lectureId) {
         Long studentId = authenticationHelper.getCurrentMember().getId();
+        AttendanceSaveRequestStatus attendanceSaveRequestStatus = attendanceHistoryCacheRepository
+            .getRequestStatusByLectureIdAndStudentId(lectureId, studentId);
 
-        AttendanceHistories attendanceHistories = attendanceHistoryCacheRepository
-            .findAllByLectureIdAndStudentId(lectureId, studentId);
-
-        if (attendanceHistories.isNotEmpty()) {
-            List<String> timestamps = getTimestamps(attendanceHistories);
-            return new StudentRecentAttendanceResponse(timestamps);
+        if (isRequestExist(attendanceSaveRequestStatus)) {
+            return new StudentRecentAttendanceResponse(attendanceSaveRequestStatus);
         }
 
-        List<String> timestamps = getRecentAttendanceTimestamps(lectureId, studentId);
-        return new StudentRecentAttendanceResponse(timestamps);
+        return getStudentRecentAttendanceStatus(lectureId, studentId);
+    }
+
+    private boolean isRequestExist(AttendanceSaveRequestStatus attendanceSaveRequestStatus) {
+        return !attendanceSaveRequestStatus.equals(NO_REQUEST);
+    }
+
+    private StudentRecentAttendanceResponse getStudentRecentAttendanceStatus(Long lectureId, Long studentId) {
+        if (isRecentAttendancesExist(lectureId, studentId)) {
+            return new StudentRecentAttendanceResponse(SUCCESS);
+        }
+        return new StudentRecentAttendanceResponse(NO_REQUEST);
     }
 
     @Transactional(readOnly = true)
@@ -99,32 +106,14 @@ public class StudentAttendanceService {
         return !openLectureService.isStudentOpenLectureExist(studentId, lectureId);
     }
 
-
-    private List<Attendance> findRecentAttendances(Long lectureId, Long studentId) {
+    private Boolean isRecentAttendancesExist(Long lectureId, Long studentId) {
         LocalDateTime now = seoulDateTimeHolder.getSeoulDateTime();
         LocalDateTime beforeRecentTime = now.minusHours(RECENT_TIME.toHours());
 
         List<Attendance> attendances = attendanceRepository
             .findByLectureIdAndStudentIdAndTimestampBetween(
                 lectureId, studentId, beforeRecentTime, now);
-        return attendances;
-    }
-
-    private List<String> getTimestamps(AttendanceHistories attendanceHistories) {
-        return attendanceHistories.getHistories()
-            .stream()
-            .map(AttendanceHistory::getTimestamp)
-            .map(Objects::toString)
-            .collect(Collectors.toList());
-    }
-
-    private List<String> getRecentAttendanceTimestamps(Long lectureId, Long studentId) {
-        List<Attendance> attendances = findRecentAttendances(lectureId, studentId);
-        List<String> timestamps = attendances.stream()
-            .map(Attendance::getTimestamp)
-            .map(LocalDateTime::toString)
-            .collect(Collectors.toList());
-        return timestamps;
+        return !attendances.isEmpty();
     }
 
     private void validateLectureOpen(EnrollmentInfo enrollmentInfo) {
@@ -140,8 +129,6 @@ public class StudentAttendanceService {
         validateAttendanceNumberCorrect(actualAttendanceNumber, attendanceNumber);
     }
 
-
-    // 이거 그냥 Lecture를 확인하면 되는거 아닌가? -> 아냐
     private void attendWithValidateEnrollment(
         AttendanceRequest attendanceRequest, Member student, Long lectureId) {
         EnrollmentInfo enrollmentInfo = findApprovalEnrollment(lectureId, student);
@@ -166,23 +153,40 @@ public class StudentAttendanceService {
             seoulDateTimeHolder.from(attendanceRequest.getMilliseconds())
         );
 
-        attendanceRepository.save(attendance);
-        publishStudentAttendedEvent(attendance, lecture, student);
-        logAttendanceHistory(student, attendance);
+        saveAttendanceAsynchronously(attendance);
+        publishAttendanceRequestedEvent(attendance);
     }
 
-    private void publishStudentAttendedEvent(
-        Attendance attendance, Lecture lecture, Member student) {
-        LocalDateTime timestamp = attendance.getTimestamp();
+    private void saveAttendanceAsynchronously(Attendance attendance) {
+        CompletableFuture.runAsync(
+            () -> attendanceSaveService.save(attendance)
+        ).thenRun(
+            () -> publishAttendanceSaveSucceedEvent(attendance)
+        ).exceptionally(
+            exception -> publishAttendanceFailedEvent(attendance, exception)
+        );
+    }
+
+    private void publishAttendanceSaveSucceedEvent(Attendance attendance) {
+        Long lectureId = attendance.getLecture().getId();
+        Long studentId = attendance.getStudent().getId();
+        AttendanceSaveSucceedEvent event = new AttendanceSaveSucceedEvent(lectureId, studentId);
+        eventPublisher.publishEvent(event);
+    }
+
+    private Void publishAttendanceFailedEvent(Attendance attendance, Throwable throwable) {
+        Long lectureId = attendance.getLecture().getId();
+        Long studentId = attendance.getStudent().getId();
+        AttendanceFailedEvent event = new AttendanceFailedEvent(lectureId, studentId, throwable);
+        eventPublisher.publishEvent(event);
+        return null;
+    }
+
+    private void publishAttendanceRequestedEvent(Attendance attendance) {
+        Long lectureId = attendance.getLecture().getId();
+        Long studentId = attendance.getStudent().getId();
         eventPublisher.publishEvent(
-            new StudentAttendedEvent(lecture.getId(), student.getId(), timestamp));
-    }
-
-    private void logAttendanceHistory(Member student, Attendance attendance) {
-        Lecture lecture = attendance.getLecture();
-        log.info("[출석 완료] {}({}) , 학생 : {} ({})",
-            lecture::getLectureName, lecture::getId,
-            student::getUnivId, student::getName);
+            new AttendanceRequestedEvent(lectureId, studentId));
     }
 
     private void validateAttendanceNumberNotTimeOut(Integer attendanceNumber) {

@@ -79,7 +79,7 @@ public class AttendanceControllerTest {
         long milliseconds = MOCK_ATTENDANCE.getTimestamp().toInstant(ZoneOffset.UTC).toEpochMilli();
         StudentRecentAttendanceResponse response = new StudentRecentAttendanceResponse(
             List.of(MOCK_ATTENDANCE.getTimestamp().toString()));
-        given(studentAttendanceService.getStudentRecentAttendance(lectureId))
+        given(studentAttendanceService.getStudentRecentAttendanceStatus(lectureId))
             .willReturn(response);
 
         mockMvc.perform(

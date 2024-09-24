@@ -1,6 +1,11 @@
 package gdsc.binaryho.imhere.core.attendance.domain;
 
+import static gdsc.binaryho.imhere.core.attendance.application.AttendanceSaveRequestStatus.SUCCESS;
+import static gdsc.binaryho.imhere.core.attendance.application.AttendanceSaveRequestStatus.PROCESSING;
+import static gdsc.binaryho.imhere.core.attendance.application.AttendanceSaveRequestStatus.FAILED;
+
 import gdsc.binaryho.imhere.config.redis.RedisKeyConstants;
+import gdsc.binaryho.imhere.core.attendance.application.AttendanceSaveRequestStatus;
 import gdsc.binaryho.imhere.domain.CacheEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +18,18 @@ public class AttendanceHistory extends CacheEntity {
 
     private final long lectureId;
     private final long studentId;
-    private final String timestamp;
+    private final AttendanceSaveRequestStatus attendanceSaveRequestStatus;
 
-    public static AttendanceHistory of(long lectureId, long studentId, String timestamp) {
-        return new AttendanceHistory(lectureId, studentId, timestamp);
+    public static AttendanceHistory createAwaitAttendanceHistory(long lectureId, long studentId) {
+        return new AttendanceHistory(lectureId, studentId, PROCESSING);
+    }
+
+    public static AttendanceHistory createAcceptedAttendanceHistory(long lectureId, long studentId) {
+        return new AttendanceHistory(lectureId, studentId, SUCCESS);
+    }
+
+    public static AttendanceHistory createFailedAttendanceHistory(long lectureId, long studentId) {
+        return new AttendanceHistory(lectureId, studentId, FAILED);
     }
 
     @Override

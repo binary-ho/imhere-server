@@ -142,6 +142,25 @@ public class LectureService {
         return new AttendanceNumberResponse(attendanceNumber);
     }
 
+    // TODO : 테스트용
+    @Transactional
+    public AttendanceNumberResponse openLectureAndGenerateAttendanceNumber(Long lectureId, int attendanceNumber) {
+        Lecture lecture = lectureRepository.findById(lectureId)
+            .orElseThrow(() -> LectureNotFoundException.EXCEPTION);
+//        authenticationHelper.verifyRequestMemberLogInMember(lecture.getMember().getId());
+
+        lecture.setLectureState(LectureState.OPEN);
+        lecture.setLastOpeningTime(seoulDateTimeHolder.getSeoulDateTime());
+
+        saveOpenLecture(lecture, attendanceNumber);
+        cacheAttendee(lecture);
+
+        log.info("[강의 OPEN] {} ({}), 출석 번호 : " + attendanceNumber
+            , lecture::getLectureName, lecture::getId);
+
+        return new AttendanceNumberResponse(attendanceNumber);
+    }
+
     private void saveOpenLecture(Lecture lecture, int attendanceNumber) {
         OpenLecture openLecture = OpenLecture.of(lecture, attendanceNumber);
         openLectureCacheRepository.cache(openLecture);

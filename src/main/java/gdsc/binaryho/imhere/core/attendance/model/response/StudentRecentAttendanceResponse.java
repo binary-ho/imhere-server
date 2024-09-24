@@ -1,14 +1,16 @@
 package gdsc.binaryho.imhere.core.attendance.model.response;
 
+import gdsc.binaryho.imhere.core.attendance.application.AttendanceSaveRequestStatus;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
-@Tag(name = "StudentRecentAttendanceResponse", description = "학생의 최근 출석 시간들")
+@Tag(name = "StudentRecentAttendanceResponse", description = "학생의 최근 출석 상태")
 public class StudentRecentAttendanceResponse {
 
-    private final List<String> timestamps;
+    private final String recentAttendanceStatus;
+
+    public StudentRecentAttendanceResponse(AttendanceSaveRequestStatus status) {
+        this.recentAttendanceStatus = status.name();
+    }
 }
