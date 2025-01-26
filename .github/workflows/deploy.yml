@@ -1,0 +1,83 @@
+name: Deploy!
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 11
+          cache: 'gradle'
+
+      - name: Build with Gradle
+        env:
+          JASYPT_ENCRYPTION_PASSWORD: ${{ secrets.PROPERTY_ENCRYPTION_PASSWORD }}
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build --no-build-cache
+
+      - name: Login to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_PASSWORD }}
+
+      - name: Build and push image
+        run: |
+          IMAGE="ghcr.io/${{ secrets.GHCR_USERNAME }}"
+          APP_NAME="imhere-server"
+          TAG="latest"
+          
+          docker build -t $IMAGE/$APP_NAME:$TAG .
+          docker push $IMAGE/$APP_NAME:$TAG
+
+      # TODO: scp로 docker-compose.yml 전달
+      - name: Deploy!
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl netcat-openbsd openssh-client
+          curl -L "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64" \
+            -o /usr/local/bin/cloudflared
+          chmod +x /usr/local/bin/cloudflared
+
+          nohup cloudflared access tcp \
+            --hostname "${{ secrets.SSH_HOST }}" \
+            --url "127.0.0.1:2222" \
+            --service-token-id "${{ secrets.CLOUDFLARE_TOKEN_ID }}" \
+            --service-token-secret "${{ secrets.CLOUDFLARE_TOKEN_SECRET }}" \
+            >/tmp/cloudflared.log 2>&1 &
+
+          for i in {1..20}; do
+            if nc -z 127.0.0.1 2222; then
+              echo "Connected!"
+              break
+            fi
+            echo "Waiting... ($i/20)"
+            sleep 1
+          done
+
+          echo "${{ secrets.SERVER_SSH_KEY }}" > /tmp/server_key
+          chmod 600 /tmp/server_key
+
+          ssh -t -o StrictHostKeyChecking=no \
+            -i /tmp/server_key \
+            -p 2222 \
+            ${{ secrets.SERVER_USERNAME }}@127.0.0.1 \
+            "cd imhere-server/docker-compose
+            
+            docker login ghcr.io -u '${{ secrets.GHCR_USERNAME }}' -p '${{ secrets.GHCR_PASSWORD }}'
+            
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d --remove-orphans"

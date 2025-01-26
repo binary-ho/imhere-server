@@ -1,3 +1,4 @@
+### Build ###
 HELP.md
 .gradle
 build/
@@ -45,3 +46,7 @@ out/
 /src/test/java/gdsc/binaryho/imhere/dev
 /src/main/java/gdsc/binaryho/imhere/dev
 /docker-compose**
+
+### secrets ###
+.*secrets
+.*env
