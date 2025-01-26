@@ -57,7 +57,7 @@ jobs:
 
       - name: Error Report Files를 Artifacts에 업로드
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: error_report_files
           path: error_report_files_*.tar.gz
