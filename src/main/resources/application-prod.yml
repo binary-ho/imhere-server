@@ -13,9 +13,9 @@ spring:
       on-profile: prod
 
   datasource:
-    url: ENC(5zqShAjVmyJ2d45bahY29W9iJjjlaopZCiHWBQDmnGsysvfNPhV+8r1iA2w18NWLVUfctiS5Z4a/l3/QLay6MEIdE1DUkhsATbpZrDyy7lrHCGX/r2KxIhzEwE093+dadkERKLhDtIs=)
-    username: ENC(97015VsffcgI0f3/4wkIRF83s66KSbgB)
-    password: ENC(k9/r7urCpjm1zejJNalPZ+CnqEuf3b/r9t+66h8bZVw=)
+    url: ENC(SNtSOgu9DXFa98NXZZApP57X87SbGOQlCI2MkAKS/XLR6feP68CNr8yrx3z8txuck+Lg1dvdr2rPcm0plv/NUGJc2hRe0R+N2v7iPzYrhFi/L+dJ0YhKYg==)
+    username: ENC(zuc9rYGxV0dXP101AWu5asaq14XpNZl7oJGN0so6k6RH6D/4MIEowA==)
+    password: ENC(WuzgxtxpITkzbwKWlAkXyzQpc+vE/Y+CPJjcbxloxV8=)
     driver-class-name: org.postgresql.Driver
 
   jpa:
