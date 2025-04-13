@@ -2,7 +2,7 @@ name : 풀 리퀘스트 Gradle 빌드 테스트
 
 on:
   pull_request:
-    types: [opened, reopen, synchronize, closed]
+    types: [opened, synchronize, closed]
 
 permissions: read-all
 
@@ -57,7 +57,7 @@ jobs:
 
       - name: Error Report Files를 Artifacts에 업로드
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: error_report_files
           path: error_report_files_*.tar.gz
