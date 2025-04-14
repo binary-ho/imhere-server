@@ -1,0 +1,46 @@
+name: Health Check
+
+on:
+  schedule:
+    # 3시간 마다 수행
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-health:
+    runs-on: ubuntu-latest
+
+    env:
+      HEALTHCHECK_ENDPOINT: ${{ secrets.HEALTHCHECK_ENDPOINT }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.IMHERE_DISCORD_BOT_WEBHOOK_URL }}
+
+    steps:
+      - name: Health Check
+        id: healthcheck
+        run: |
+          # Healthcheck
+          echo "Checking health at: $HEALTHCHECK_ENDPOINT"
+          RESPONSE=$(curl -s --max-time 10 "$HEALTHCHECK_ENDPOINT" || true)
+          
+          # Validate Response
+          echo "Response = $RESPONSE"
+          if [ -z "$RESPONSE" ]; then
+            echo "Health check failed: No response"
+            exit 1
+          fi
+          
+          # Check status Up
+          if ! echo "$RESPONSE" | grep -q '"status":"UP"'; then
+            echo "Health check failed: status != UP"
+            exit 1
+          fi
+          
+          echo "Health check success: status UP"
+
+      - name: Send Discord Notification
+        if: failure()
+        run: |
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"content": "Health check FAILED for '${HEALTHCHECK_ENDPOINT}'"}' \
+            "$DISCORD_WEBHOOK_URL"
