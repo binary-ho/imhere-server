@@ -11,6 +11,14 @@ spring:
   profiles:
     active: test
 
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ENC(cwYhhVQPF7EA6AsPSNX7BkV4o1Q+kWM1SqFh6SfDoxQ=)
+            client-secret: ENC(sI6HRt2XDATOJWZvrUqzqrdtO++dR9ttm69l3hwsJX8=)
+
   jpa:
     open-in-view: false
 
@@ -30,11 +38,12 @@ spring:
     port: 6378
     password: ENC(t9qeZ6WjZb8nTCX6USgT0Q==)
 
-jwt:
+token:
   secret: ENC(Wi5BD1R9VNidIJj2xI10Ww==)
-  prefix: "Bearer "
-  header-string: "Authorization"
-  access-token-prefix: "Token "
+  prefix: ""
+  header-string: ""
+  access-token-prefix: ""
+  access-token-expire-minute: 9999
 
 admin:
   univ-id: ENC(MnnJJNaW4by9rR1oo90AfA==)

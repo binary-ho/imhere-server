@@ -8,4 +8,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findById(Long id);
     Optional<Member> findByUnivId(String univId);
+    Optional<Member> findByGitHubResource_Id(String gitHubId);
 }

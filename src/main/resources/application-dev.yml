@@ -27,6 +27,14 @@ spring:
       hibernate:
         format_sql: true
 
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: ENC(cwYhhVQPF7EA6AsPSNX7BkV4o1Q+kWM1SqFh6SfDoxQ=)
+            client-secret: ENC(sI6HRt2XDATOJWZvrUqzqrdtO++dR9ttm69l3hwsJX8=)
+
 logging.level:
   org.hibernate.SQL: debug
 
