@@ -18,6 +18,16 @@ spring:
     password: ENC(WuzgxtxpITkzbwKWlAkXyzQpc+vE/Y+CPJjcbxloxV8=)
     driver-class-name: org.postgresql.Driver
 
+    hikari:
+      # 정적 검사에서 jasypt를 인식 못하는 에러 무시
+      # 실제 환경에서는 복호화된 값을 int, long 으로 잘 변경해 주기 떄문에 실제로는 문제 없음
+      # noinspection SpringBootApplicationYaml
+      maximum-pool-size: 'ENC(kHyTOSaHTMJ03b6pWJc8rQ==)'
+      # noinspection SpringBootApplicationYaml
+      minimum-idle: 'ENC(4yWCXqBgfrpUbWQKixqjWw==)'
+      # noinspection SpringBootApplicationYaml
+      idle-timeout: 'ENC(LDxGQpR0QzMKAFHBAhYwTw==)'
+
   jpa:
     hibernate:
       ddl-auto: none
