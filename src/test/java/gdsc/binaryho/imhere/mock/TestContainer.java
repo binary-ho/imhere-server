@@ -68,7 +68,8 @@ public class TestContainer {
         );
 
         /* OpenLectureService 초기화 */
-        openLectureService = new OpenLectureService(openLectureCacheRepository);
+        openLectureService = new OpenLectureService(openLectureCacheRepository,
+            attendeeCacheRepository);
 
         enrollmentService = new EnrollmentService(
             authenticationHelper, openLectureService, lectureRepository, enrollmentInfoRepository,
@@ -81,14 +82,14 @@ public class TestContainer {
         );
 
         studentAttendanceService = new StudentAttendanceService(openLectureService,
-            attendanceRepository, enrollmentInfoRepository, attendanceHistoryCacheRepository,
+            lectureRepository, attendanceRepository, enrollmentInfoRepository, attendanceHistoryCacheRepository,
             applicationEventPublisher, seoulDateTimeHolder, authenticationHelper
         );
 
         /* LectureService 초기화 */
         lectureService = new LectureService(
             authenticationHelper, lectureRepository, enrollmentInfoRepository,
-            openLectureCacheRepository, attendeeCacheRepository, applicationEventPublisher,
+            openLectureService, openLectureCacheRepository, applicationEventPublisher,
             seoulDateTimeHolder
         );
     }

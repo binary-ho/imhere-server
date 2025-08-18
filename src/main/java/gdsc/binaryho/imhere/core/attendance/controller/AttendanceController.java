@@ -58,7 +58,7 @@ public class AttendanceController {
     public ResponseEntity<StudentRecentAttendanceResponse> getStudentRecentAttendance(
         @PathVariable("lecture_id") Long lectureId) {
         return ResponseEntity.ok(
-            studentAttendanceService.getStudentRecentAttendance(lectureId));
+            studentAttendanceService.getStudentRecentAttendanceStatus(lectureId));
     }
 
     @Operation(summary = "강사가 지정 강의의 출석 정보 전체를 가져오는 API")

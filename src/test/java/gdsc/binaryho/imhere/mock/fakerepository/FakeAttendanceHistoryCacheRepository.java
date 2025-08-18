@@ -1,5 +1,6 @@
 package gdsc.binaryho.imhere.mock.fakerepository;
 
+import gdsc.binaryho.imhere.core.attendance.application.AttendanceSaveRequestStatus;
 import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceHistoryCacheRepository;
 import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistory;
 import java.util.Collections;
@@ -15,16 +16,25 @@ public class FakeAttendanceHistoryCacheRepository implements AttendanceHistoryCa
     private final Map<String, Set<String>> data = new HashMap<>();
 
     @Override
-    public List<AttendanceHistory> findAllByLectureIdAndStudentId(final long lectureId, final long studentId) {
-        return data.getOrDefault(
-            AttendanceHistory.convertToKey(lectureId, studentId), Collections.emptySet())
+    public AttendanceHistories findAllByLectureIdAndStudentId(final long lectureId, final long studentId) {
+        List<AttendanceHistory> attendanceHistories = data.getOrDefault(
+                AttendanceHistory.convertToKey(lectureId, studentId), Collections.emptySet())
             .stream()
             .map(timestamp -> new AttendanceHistory(lectureId, studentId, timestamp))
             .collect(Collectors.toList());
+        return AttendanceHistories.of(attendanceHistories);
     }
 
     @Override
     public void cache(AttendanceHistory attendanceHistory) {
         data.putIfAbsent(attendanceHistory.getKey(), new HashSet<>());
+    }
+
+    @Override
+    public AttendanceSaveRequestStatus getRequestStatusByLectureIdAndStudentId(
+        Long lectureId, Long studentId) {
+
+        data.getOrDefault(AttendanceHistory.convertToKey(lectureId, studentId))
+        return null;
     }
 }

@@ -1,8 +1,8 @@
 package gdsc.binaryho.imhere.core.attendance.infrastructure;
 
+import gdsc.binaryho.imhere.core.attendance.application.AttendanceSaveRequestStatus;
 import gdsc.binaryho.imhere.core.attendance.application.port.AttendanceHistoryCacheRepository;
 import gdsc.binaryho.imhere.core.attendance.domain.AttendanceHistory;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -19,22 +19,31 @@ public class AttendanceRedisCacheRepository implements AttendanceHistoryCacheRep
     private final RedisTemplate<String, String> redisTemplate;
 
     @Override
-    public List<AttendanceHistory> findAllByLectureIdAndStudentId(
+    public AttendanceHistories findAllByLectureIdAndStudentId(
         final long lectureId, final long studentId) {
         String key = AttendanceHistory.convertToKey(lectureId, studentId);
 
-        return redisTemplate.opsForSet()
+        return AttendanceHistories.of(
+            redisTemplate.opsForSet()
             .members(key)
             .stream()
             .map(timestamp -> AttendanceHistory.of(lectureId, studentId, timestamp))
-            .collect(Collectors.toList());
+            .collect(Collectors.toList()));
     }
 
     @Override
     public void cache(AttendanceHistory attendanceHistory) {
+        attendanceHistory.getAttendanceSaveRequestStatus();
         String key = attendanceHistory.getKey();
+        String savedStatus = redisTemplate.opsForValue().get(key);
         redisTemplate.opsForSet()
             .add(key, attendanceHistory.getTimestamp());
         redisTemplate.expire(key, ATTENDANCE_HISTORY_EXPIRE_HOUR, TimeUnit.HOURS);
+    }
+
+    @Override
+    public AttendanceSaveRequestStatus getRequestStatusByLectureIdAndStudentId(Long lectureId,
+        Long studentId) {
+        return null;
     }
 }
